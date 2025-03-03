@@ -1,0 +1,45 @@
+# Objective
+Able to compile using Visual Studio 2022
+
+# Progress Overview
+## Work-in-Progress
+
+Project | Path | Status
+--------|------|--------
+buildVersionUpdate | Tools\buildVersionUpdate\buildVersionUpdate.vcxproj | Done
+Compress | Tools\Compress\Compress.vcxproj | Not Started
+Compression | Libraries\Source\Compression\Compression.vcxproj | Not Started
+DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Not Started
+DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
+EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
+GameEngine | GameEngine\GameEngine.vcxproj | Not Started
+GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Not Started
+GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Not Started
+ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Not Started
+launcher | Tools\Launcher\launcher.vcxproj | Not Started
+MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Not Started
+max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started
+ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | Not Started
+pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started
+textureCompress | Tools\textureCompress\textureCompress.vcxproj | Not Started
+versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
+WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
+ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Not Started
+wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
+WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
+wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Not Started
+wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Not Started
+wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Not Started
+wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Not Started
+RTS | RTS.vcxproj | Not Started
+Solution | RTS.sln | Not Started
+
+## Excluded
+Project | Path |
+--------|------|
+Benchmark	LIBRARIES\SOURCE\Benchmark\Benchmark.dsp
+GameSpyHTTP	Libraries\Source\GameSpy\GameSpy\ghttp\GameSpyHTTP.dsp
+GameSpyPatching	Libraries\Source\GameSpy\GameSpy\pt\GameSpyPatching.dsp
+GameSpyPeer	Libraries\Source\GameSpy\GameSpy\peer\GameSpyPeer.dsp
+GameSpyPresence	Libraries\Source\GameSpy\GameSpy\gp\GameSpyPresence.dsp
+GameSpyStats	Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
