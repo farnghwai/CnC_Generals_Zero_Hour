@@ -4,11 +4,11 @@ Able to compile using Visual Studio 2022
 # Progress Overview
 ## Work-in-Progress
 
-Project | Path | Status
---------|------|--------
-buildVersionUpdate | Tools\buildVersionUpdate\buildVersionUpdate.vcxproj | Done
-Compress | Tools\Compress\Compress.vcxproj | Not Started
-Compression | Libraries\Source\Compression\Compression.vcxproj | Not Started
+Project | Path | Status | Remarks
+--------|------|--------|---------
+buildVersionUpdate | Tools\buildVersionUpdate\buildVersionUpdate.vcxproj | Done 
+Compress | Tools\Compress\Compress.vcxproj | Done
+Compression | Libraries\Source\Compression\Compression.vcxproj | Done | See note 1
 DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Not Started
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
@@ -37,9 +37,15 @@ Solution | RTS.sln | Not Started
 ## Excluded
 Project | Path |
 --------|------|
-Benchmark	LIBRARIES\SOURCE\Benchmark\Benchmark.dsp
-GameSpyHTTP	Libraries\Source\GameSpy\GameSpy\ghttp\GameSpyHTTP.dsp
-GameSpyPatching	Libraries\Source\GameSpy\GameSpy\pt\GameSpyPatching.dsp
-GameSpyPeer	Libraries\Source\GameSpy\GameSpy\peer\GameSpyPeer.dsp
-GameSpyPresence	Libraries\Source\GameSpy\GameSpy\gp\GameSpyPresence.dsp
-GameSpyStats	Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
+Benchmark | LIBRARIES\SOURCE\Benchmark\Benchmark.dsp
+GameSpyHTTP | Libraries\Source\GameSpy\GameSpy\ghttp\GameSpyHTTP.dsp
+GameSpyPatching | Libraries\Source\GameSpy\GameSpy\pt\GameSpyPatching.dsp
+GameSpyPeer | Libraries\Source\GameSpy\GameSpy\peer\GameSpyPeer.dsp
+GameSpyPresence | Libraries\Source\GameSpy\GameSpy\gp\GameSpyPresence.dsp
+GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
+
+## Notes
+1. Update Compression library 
+- Remove LZHCompress dependency; 
+- Use Zlib v1.3.1 library from https://github.com/madler/zlib
+- Use Preprocessor _CRT_SECURE_NO_WARNINGS to support warning

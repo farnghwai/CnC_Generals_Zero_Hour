@@ -22,9 +22,10 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Compression.h"
-#include "LZHCompress/NoxCompress.h"
+//#include "LZHCompress/NoxCompress.h"
 extern "C" {
-#include "ZLib/zlib.h"
+//#include "ZLib/zlib.h"
+#include "zLib/zlib.h"
 }
 #include "EAC/codex.h"
 #include "EAC/btreecodex.h"
@@ -105,8 +106,8 @@ CompressionType CompressionManager::getCompressionType( const void *mem, Int len
 	if (len < 8)
 		return COMPRESSION_NONE;
 
-	if ( memcmp( mem, "NOX\0", 4 ) == 0 )
-		return COMPRESSION_NOXLZH;
+	//if ( memcmp( mem, "NOX\0", 4 ) == 0 )
+	//	return COMPRESSION_NOXLZH;
 
 	if ( memcmp( mem, "ZL1\0", 4 ) == 0 )
 		return COMPRESSION_ZLIB1;
@@ -140,8 +141,8 @@ Int CompressionManager::getMaxCompressedSize( Int uncompressedLen, CompressionTy
 {
 	switch (compType)
 	{
-		case COMPRESSION_NOXLZH:
-			return CalcNewSize(uncompressedLen) + 8;
+		//case COMPRESSION_NOXLZH:
+		//	return CalcNewSize(uncompressedLen) + 8;
 
 		case COMPRESSION_BTREE:   // guessing here
 		case COMPRESSION_HUFF:    // guessing here
@@ -171,7 +172,7 @@ Int CompressionManager::getUncompressedSize( const void *mem, Int len )
 	CompressionType compType = getCompressionType( mem, len );
 	switch (compType)
 	{
-		case COMPRESSION_NOXLZH:
+		//case COMPRESSION_NOXLZH:
 		case COMPRESSION_ZLIB1:
 		case COMPRESSION_ZLIB2:
 		case COMPRESSION_ZLIB3:
@@ -240,19 +241,19 @@ Int CompressionManager::compressData( CompressionType compType, void *srcVoid, I
 			return 0;
 	}
 
-	if (compType == COMPRESSION_NOXLZH)
-	{
-		memcpy(dest, "NOX\0", 4);
-		*(Int *)(dest+4) = 0;
-		Bool ret = CompressMemory(src, srcLen, dest+8, destLen);
-		if (ret)
-		{
-			*(Int *)(dest+4) = srcLen;
-			return destLen + 8;
-		}
-		else
-			return 0;
-	}
+	//if (compType == COMPRESSION_NOXLZH)
+	//{
+	//	memcpy(dest, "NOX\0", 4);
+	//	*(Int *)(dest+4) = 0;
+	//	Bool ret = CompressMemory(src, srcLen, dest+8, destLen);
+	//	if (ret)
+	//	{
+	//		*(Int *)(dest+4) = srcLen;
+	//		return destLen + 8;
+	//	}
+	//	else
+	//		return 0;
+	//}
 
 	if (compType >= COMPRESSION_ZLIB1 && compType <= COMPRESSION_ZLIB9)
 	{
@@ -317,14 +318,14 @@ Int CompressionManager::decompressData( void *srcVoid, Int srcLen, void *destVoi
 			return 0;
 	}
 
-	if (compType == COMPRESSION_NOXLZH)
-	{
-		Bool ret = DecompressMemory(src+8, srcLen-8, dest, destLen);
-		if (ret)
-			return destLen;
-		else
-			return 0;
-	}
+	//if (compType == COMPRESSION_NOXLZH)
+	//{
+	//	Bool ret = DecompressMemory(src+8, srcLen-8, dest, destLen);
+	//	if (ret)
+	//		return destLen;
+	//	else
+	//		return 0;
+	//}
 
 	if (compType >= COMPRESSION_ZLIB1 && compType <= COMPRESSION_ZLIB9)
 	{

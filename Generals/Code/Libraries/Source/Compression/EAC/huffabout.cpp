@@ -79,9 +79,10 @@ CODEXABOUT *GCALL HUFF_about(void)
         info->decode          = 1;      /* supports decoding */
         info->encode          = 1;      /* supports encoding */
         info->size32          = 0;      /* supports 32 bit size field */
-        strcpy(info->versionstr,    "1.04");     /* version # */
-        strcpy(info->shorttypestr,  "huff");     /* type */
-        strcpy(info->longtypestr,   "Huffman");  /* longtype */
+        strcpy_s(info->versionstr, sizeof(info->versionstr), "1.04");     /* version # */
+        strcpy_s(info->shorttypestr, sizeof(info->shorttypestr), "huff");     /* type */
+        strcpy_s(info->longtypestr, sizeof(info->longtypestr), "Huffman");  /* longtype */
+
     }
     return(info);
 }

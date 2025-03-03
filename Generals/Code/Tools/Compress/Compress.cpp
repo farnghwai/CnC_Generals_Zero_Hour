@@ -62,7 +62,7 @@ void main(int argc, char **argv)
 
 	for (int i=1; i<argc; ++i)
 	{
-		if ( !stricmp(argv[i], "-help") )
+		if ( !_stricmp(argv[i], "-help") )
 		{
 			dumpHelp(argv[0]);
 			exit(0);
@@ -93,7 +93,7 @@ void main(int argc, char **argv)
 			{
 				for (int j=COMPRESSION_MIN; j<=COMPRESSION_MAX; ++j)
 				{
-					if ( !stricmp(CompressionManager::getCompressionNameByType((CompressionType)j), argv[i]) )
+					if ( !_stricmp(CompressionManager::getCompressionNameByType((CompressionType)j), argv[i]) )
 					{
 						compressType = (CompressionType)j;
 						break;
@@ -115,8 +115,9 @@ void main(int argc, char **argv)
 	if (outFile.empty())
 	{
 		// just check compression
-		FILE *fp = fopen(inFile.c_str(), "rb");
-		if (!fp)
+		FILE* fp;
+		errno_t err = fopen_s(&fp, inFile.c_str(), "rb");
+		if (err != 0 || !fp)
 		{
 			DEBUG_LOG(("Cannot open '%s'\n", inFile.c_str()));
 			return;

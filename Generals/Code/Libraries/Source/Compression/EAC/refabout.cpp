@@ -96,9 +96,9 @@ CODEXABOUT *GCALL REF_about(void)
         info->decode          = 1;      /* supports decoding */
         info->encode          = 1;      /* supports encoding */
         info->size32          = 1;      /* supports 32 bit size field */
-        strcpy(info->versionstr,    "1.01");     /* version # */
-        strcpy(info->shorttypestr,  "ref");      /* type */
-        strcpy(info->longtypestr,   "Refpack");    /* longtype */
+        strcpy_s(info->versionstr, sizeof(info->versionstr), "1.01");     /* version # */
+        strcpy_s(info->shorttypestr, sizeof(info->shorttypestr), "ref");      /* type */
+        strcpy_s(info->longtypestr, sizeof(info->longtypestr), "Refpack");    /* longtype */
     }
     return(info);
 }

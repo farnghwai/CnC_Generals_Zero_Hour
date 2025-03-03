@@ -84,15 +84,15 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;WIN32;_LIB;Z_PREFIX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_LIB;Z_PREFIX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>.\Debug\Compression.pch</PrecompiledHeaderOutputFile>
@@ -184,32 +184,21 @@
     <ClCompile Include="EAC\refabout.cpp" />
     <ClCompile Include="EAC\refdecode.cpp" />
     <ClCompile Include="EAC\refencode.cpp" />
-    <ClCompile Include="LZHCompress\CompLibSource\Huff.cpp" />
-    <ClCompile Include="LZHCompress\CompLibSource\Lz.cpp" />
-    <ClCompile Include="LZHCompress\CompLibSource\Lzhl.cpp" />
-    <ClCompile Include="LZHCompress\CompLibSource\Lzhl_tcp.cpp" />
-    <ClCompile Include="LZHCompress\NoxCompress.cpp" />
     <ClCompile Include="ZLib\adler32.c" />
     <ClCompile Include="ZLib\compress.c" />
     <ClCompile Include="ZLib\crc32.c" />
     <ClCompile Include="ZLib\deflate.c" />
-    <ClCompile Include="ZLib\gzio.c" />
-    <ClCompile Include="ZLib\infblock.c" />
-    <ClCompile Include="ZLib\infcodes.c" />
+    <ClCompile Include="Zlib\gzclose.c" />
+    <ClCompile Include="Zlib\gzlib.c" />
+    <ClCompile Include="Zlib\gzread.c" />
+    <ClCompile Include="Zlib\gzwrite.c" />
+    <ClCompile Include="Zlib\infback.c" />
     <ClCompile Include="ZLib\inffast.c" />
     <ClCompile Include="ZLib\inflate.c" />
     <ClCompile Include="ZLib\inftrees.c" />
-    <ClCompile Include="ZLib\infutil.c" />
-    <ClCompile Include="ZLib\maketree.c" />
     <ClCompile Include="ZLib\trees.c" />
     <ClCompile Include="ZLib\uncompr.c" />
     <ClCompile Include="ZLib\zutil.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdec_g.tbl" />
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdec_s.tbl" />
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdisp.tbl" />
-    <CustomBuild Include="LZHCompress\CompLibSource\Henc.tbl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Compression.h" />
@@ -218,19 +207,13 @@
     <ClInclude Include="EAC\gimex.h" />
     <ClInclude Include="EAC\huffcodex.h" />
     <ClInclude Include="EAC\refcodex.h" />
-    <ClInclude Include="LZHCompress\CompLibHeader\Lzhl.h" />
-    <ClInclude Include="LZHCompress\CompLibHeader\Lzhl_tcp.h" />
-    <ClInclude Include="LZHCompress\CompLibHeader\_huff.h" />
-    <ClInclude Include="LZHCompress\CompLibHeader\_lz.h" />
-    <ClInclude Include="LZHCompress\CompLibHeader\_lzhl.h" />
-    <ClInclude Include="LZHCompress\NoxCompress.h" />
+    <ClInclude Include="Zlib\crc32.h" />
     <ClInclude Include="ZLib\deflate.h" />
-    <ClInclude Include="ZLib\infblock.h" />
-    <ClInclude Include="ZLib\infcodes.h" />
+    <ClInclude Include="Zlib\gzguts.h" />
     <ClInclude Include="ZLib\inffast.h" />
     <ClInclude Include="ZLib\inffixed.h" />
+    <ClInclude Include="Zlib\inflate.h" />
     <ClInclude Include="ZLib\inftrees.h" />
-    <ClInclude Include="ZLib\infutil.h" />
     <ClInclude Include="ZLib\trees.h" />
     <ClInclude Include="ZLib\zconf.h" />
     <ClInclude Include="ZLib\zlib.h" />

@@ -8,9 +8,6 @@
     <Filter Include="Source Files\Zlib">
       <UniqueIdentifier>{daacfc24-6653-4b88-9ce9-d8def40c0aa5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\NoxLZH">
-      <UniqueIdentifier>{826d1bc6-64af-4f29-b2de-42cf3abe9690}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\EAC">
       <UniqueIdentifier>{8548ed25-7f7a-43f5-9981-54c94e878487}</UniqueIdentifier>
     </Filter>
@@ -20,9 +17,6 @@
     </Filter>
     <Filter Include="Header Files\Zlib.H">
       <UniqueIdentifier>{a8a3310f-bbce-4f88-9c5e-c8b897973d06}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\NoxLZH.H">
-      <UniqueIdentifier>{1a05eda5-9fb1-4c85-8a7a-829ee2879a8f}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\EAC.H">
       <UniqueIdentifier>{89637b3a-7829-443a-a1f8-86bf90ab6560}</UniqueIdentifier>
@@ -41,15 +35,6 @@
     <ClCompile Include="ZLib\deflate.c">
       <Filter>Source Files\Zlib</Filter>
     </ClCompile>
-    <ClCompile Include="ZLib\gzio.c">
-      <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="ZLib\infblock.c">
-      <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="ZLib\infcodes.c">
-      <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
     <ClCompile Include="ZLib\inffast.c">
       <Filter>Source Files\Zlib</Filter>
     </ClCompile>
@@ -57,12 +42,6 @@
       <Filter>Source Files\Zlib</Filter>
     </ClCompile>
     <ClCompile Include="ZLib\inftrees.c">
-      <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="ZLib\infutil.c">
-      <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="ZLib\maketree.c">
       <Filter>Source Files\Zlib</Filter>
     </ClCompile>
     <ClCompile Include="ZLib\trees.c">
@@ -73,21 +52,6 @@
     </ClCompile>
     <ClCompile Include="ZLib\zutil.c">
       <Filter>Source Files\Zlib</Filter>
-    </ClCompile>
-    <ClCompile Include="LZHCompress\CompLibSource\Huff.cpp">
-      <Filter>Source Files\NoxLZH</Filter>
-    </ClCompile>
-    <ClCompile Include="LZHCompress\CompLibSource\Lz.cpp">
-      <Filter>Source Files\NoxLZH</Filter>
-    </ClCompile>
-    <ClCompile Include="LZHCompress\CompLibSource\Lzhl.cpp">
-      <Filter>Source Files\NoxLZH</Filter>
-    </ClCompile>
-    <ClCompile Include="LZHCompress\CompLibSource\Lzhl_tcp.cpp">
-      <Filter>Source Files\NoxLZH</Filter>
-    </ClCompile>
-    <ClCompile Include="LZHCompress\NoxCompress.cpp">
-      <Filter>Source Files\NoxLZH</Filter>
     </ClCompile>
     <ClCompile Include="EAC\btreeabout.cpp">
       <Filter>Source Files\EAC</Filter>
@@ -119,15 +83,24 @@
     <ClCompile Include="CompressionManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Zlib\infback.c">
+      <Filter>Source Files\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Zlib\gzclose.c">
+      <Filter>Source Files\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Zlib\gzlib.c">
+      <Filter>Source Files\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Zlib\gzread.c">
+      <Filter>Source Files\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="Zlib\gzwrite.c">
+      <Filter>Source Files\Zlib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ZLib\deflate.h">
-      <Filter>Header Files\Zlib.H</Filter>
-    </ClInclude>
-    <ClInclude Include="ZLib\infblock.h">
-      <Filter>Header Files\Zlib.H</Filter>
-    </ClInclude>
-    <ClInclude Include="ZLib\infcodes.h">
       <Filter>Header Files\Zlib.H</Filter>
     </ClInclude>
     <ClInclude Include="ZLib\inffast.h">
@@ -137,9 +110,6 @@
       <Filter>Header Files\Zlib.H</Filter>
     </ClInclude>
     <ClInclude Include="ZLib\inftrees.h">
-      <Filter>Header Files\Zlib.H</Filter>
-    </ClInclude>
-    <ClInclude Include="ZLib\infutil.h">
       <Filter>Header Files\Zlib.H</Filter>
     </ClInclude>
     <ClInclude Include="ZLib\trees.h">
@@ -153,24 +123,6 @@
     </ClInclude>
     <ClInclude Include="ZLib\zutil.h">
       <Filter>Header Files\Zlib.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\CompLibHeader\_huff.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\CompLibHeader\_lz.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\CompLibHeader\_lzhl.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\CompLibHeader\Lzhl.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\CompLibHeader\Lzhl_tcp.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
-    </ClInclude>
-    <ClInclude Include="LZHCompress\NoxCompress.h">
-      <Filter>Header Files\NoxLZH.H</Filter>
     </ClInclude>
     <ClInclude Include="EAC\btreecodex.h">
       <Filter>Header Files\EAC.H</Filter>
@@ -190,19 +142,14 @@
     <ClInclude Include="Compression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdec_g.tbl">
-      <Filter>Source Files\NoxLZH</Filter>
-    </CustomBuild>
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdec_s.tbl">
-      <Filter>Source Files\NoxLZH</Filter>
-    </CustomBuild>
-    <CustomBuild Include="LZHCompress\CompLibSource\Hdisp.tbl">
-      <Filter>Source Files\NoxLZH</Filter>
-    </CustomBuild>
-    <CustomBuild Include="LZHCompress\CompLibSource\Henc.tbl">
-      <Filter>Source Files\NoxLZH</Filter>
-    </CustomBuild>
+    <ClInclude Include="Zlib\crc32.h">
+      <Filter>Header Files\Zlib.H</Filter>
+    </ClInclude>
+    <ClInclude Include="Zlib\inflate.h">
+      <Filter>Header Files\Zlib.H</Filter>
+    </ClInclude>
+    <ClInclude Include="Zlib\gzguts.h">
+      <Filter>Header Files\Zlib.H</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

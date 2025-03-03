@@ -96,9 +96,9 @@ CODEXABOUT *GCALL BTREE_about(void)
         info->decode          = 1;      /* supports decoding */
         info->encode          = 1;      /* supports encoding */
         info->size32          = 0;      /* supports 32 bit size field */
-        strcpy(info->versionstr,    "1.02");     /* version # */
-        strcpy(info->shorttypestr,  "btr");      /* type */
-        strcpy(info->longtypestr,   "BTree");    /* longtype */
+        strcpy_s(info->versionstr, sizeof(info->versionstr), "1.02");     /* version # */
+        strcpy_s(info->shorttypestr, sizeof(info->shorttypestr), "btr");      /* type */
+        strcpy_s(info->longtypestr, sizeof(info->longtypestr), "BTree");    /* longtype */
     }
     return(info);
 }
