@@ -2,14 +2,15 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-## Work-in-Progress
+Completion: 44% (12 / 27)
 
+## Work-in-Progress
 Project | Path | Status | Remarks
 --------|------|--------|---------
 buildVersionUpdate | Tools\buildVersionUpdate\buildVersionUpdate.vcxproj | Done 
 Compress | Tools\Compress\Compress.vcxproj | Done
 Compression | Libraries\Source\Compression\Compression.vcxproj | Done | See note 1
-DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Not Started
+DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Done* | See note 2
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
 GameEngine | GameEngine\GameEngine.vcxproj | Not Started
@@ -28,9 +29,9 @@ ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Not Started
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
 wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Not Started
-wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Not Started
-wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Not Started
-wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Not Started
+wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done* | See note 3
+wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done*
+wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done*
 RTS | RTS.vcxproj | Not Started
 Solution | RTS.sln | Not Started
 
@@ -49,3 +50,5 @@ GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
 - Remove LZHCompress dependency; 
 - Use Zlib v1.3.1 library from https://github.com/madler/zlib
 - Use Preprocessor _CRT_SECURE_NO_WARNINGS to support warning
+2. Remove SafeDisk\CdaPfn.h control
+3. Attempt retrofit original DirectX library to newer version of DirectX library

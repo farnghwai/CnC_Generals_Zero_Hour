@@ -26,7 +26,7 @@
 //-----------------------------------------------------------------------------
 #include "miscutil.h" // I WANNA BE FIRST!
 
-#include <time.h>
+#include <ctime>
 
 #include "rawfile.h"
 #include "wwdebug.h"
@@ -41,16 +41,33 @@
 //---------------------------------------------------------------------------
 LPCSTR cMiscUtil::Get_Text_Time(void)
 {
-   //
-   // Returns a pointer to an internal statically allocated buffer...
-   // Subsequent time operations will destroy the contents of that buffer.
-   // Note: BoundsChecker reports 2 memory leaks in ctime here.
+	//
+	// Returns a pointer to an internal statically allocated buffer...
+	// Subsequent time operations will destroy the contents of that buffer.
+	// Note: BoundsChecker reports 2 memory leaks in ctime here.
 	//
 
-	long time_now = ::time(NULL);
-   char * time_str = ::ctime(&time_now);
-   time_str[::strlen(time_str) - 1] = 0; // remove \n
-   return time_str; 
+	//long time_now = ::time(NULL);
+	//char * time_str = ::ctime(&time_now);
+	//time_str[::strlen(time_str) - 1] = 0; // remove \n
+	//return time_str; 
+
+	static char time_str[26]; // Buffer to hold the time string (26 is enough for ctime format)
+	time_t time_now;
+	if (::time(&time_now) == (time_t)-1)
+	{
+		WWDEBUG_SAY(("Error: time function failed\n"));
+		return "";
+	}
+
+	if (ctime_s(time_str, sizeof(time_str), &time_now) != 0)
+	{
+		WWDEBUG_SAY(("Error: ctime_s function failed\n"));
+		return "";
+	}
+
+	time_str[::strlen(time_str) - 1] = 0; // remove \n
+	return time_str;
 }
 
 //---------------------------------------------------------------------------
@@ -77,7 +94,7 @@ bool cMiscUtil::Is_String_Same(LPCSTR str1, LPCSTR str2)
    WWASSERT(str1 != NULL);
    WWASSERT(str2 != NULL);
 
-   return(::stricmp(str1, str2) == 0);
+   return(_stricmp(str1, str2) == 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -86,7 +103,7 @@ bool cMiscUtil::Is_String_Different(LPCSTR str1, LPCSTR str2)
    WWASSERT(str1 != NULL);
    WWASSERT(str2 != NULL);
 
-   return(::stricmp(str1, str2) != 0);
+   return(_stricmp(str1, str2) != 0);
 }
 
 //-----------------------------------------------------------------------------
@@ -193,8 +210,9 @@ void cMiscUtil::Get_File_Id_String(LPCSTR filename, StringClass & str)
 	int time_date_stamp = header.TimeDateStamp;
 
 	char working_filename[500];
-	strcpy(working_filename, filename);
-	::strupr(working_filename);
+	strcpy_s(working_filename, sizeof(working_filename), filename);
+	_strupr_s(working_filename, sizeof(working_filename));
+
 
    //
    // Strip path off filename

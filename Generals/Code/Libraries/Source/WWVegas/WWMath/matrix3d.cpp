@@ -62,7 +62,7 @@
 #include "matrix3.h"
 #include "matrix4.h"
 #include "quat.h"
-#include "D3dx8math.h"
+#include <DirectXMath.h>
 
 // some static matrices which are sometimes useful
 const Matrix3D Matrix3D::Identity
@@ -512,27 +512,35 @@ void Matrix3D::Get_Inverse(Matrix3D & inv) const
 {
 	// TODO: Implement the general purpose inverse function here (once we need it :-)
 	//Get_Orthogonal_Inverse(inv);
+	
+	DirectX::XMMATRIX mat4 = DirectX::XMMATRIX(
+		this->Row[0][0], this->Row[0][1], this->Row[0][2], this->Row[0][3],
+		this->Row[1][0], this->Row[1][1], this->Row[1][2], this->Row[1][3],
+		this->Row[2][0], this->Row[2][1], this->Row[2][2], this->Row[2][3],
+		0.0, 0.0, 0.0, 1.0
+	);
+	DirectX::XMMATRIX xmmInv;
 
-	Matrix4	mat4(*this);
-	Matrix4	mat4Inv;
+	DirectX::XMVECTOR det;
+	xmmInv = DirectX::XMMatrixInverse(&det, mat4);
 
-	float det;
-	D3DXMatrixInverse((D3DXMATRIX *)&mat4Inv, &det, (D3DXMATRIX*)&mat4);
+	DirectX::XMFLOAT4X4 mat4Inv;
+	DirectX::XMStoreFloat4x4(&mat4Inv, xmmInv);
 
-	inv.Row[0][0]=mat4Inv[0][0];
-	inv.Row[0][1]=mat4Inv[0][1];
-	inv.Row[0][2]=mat4Inv[0][2];
-	inv.Row[0][3]=mat4Inv[0][3];
+	inv.Row[0][0] = mat4Inv.m[0][0];
+	inv.Row[0][1] = mat4Inv.m[0][1];
+	inv.Row[0][2] = mat4Inv.m[0][2];
+	inv.Row[0][3] = mat4Inv.m[0][3];
 
-	inv.Row[1][0]=mat4Inv[1][0];
-	inv.Row[1][1]=mat4Inv[1][1];
-	inv.Row[1][2]=mat4Inv[1][2];
-	inv.Row[1][3]=mat4Inv[1][3];
+	inv.Row[1][0] = mat4Inv.m[1][0];
+ 	inv.Row[1][1] = mat4Inv.m[1][1];
+	inv.Row[1][2] = mat4Inv.m[1][2];
+	inv.Row[1][3] = mat4Inv.m[1][3];
 
-	inv.Row[2][0]=mat4Inv[2][0];
-	inv.Row[2][1]=mat4Inv[2][1];
-	inv.Row[2][2]=mat4Inv[2][2];
-	inv.Row[2][3]=mat4Inv[2][3];
+	inv.Row[2][0] = mat4Inv.m[2][0];
+	inv.Row[2][1] = mat4Inv.m[2][1];
+	inv.Row[2][2] = mat4Inv.m[2][2];
+	inv.Row[2][3] = mat4Inv.m[2][3];
 }
 
 /*********************************************************************************************** 

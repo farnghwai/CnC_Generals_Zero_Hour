@@ -24,12 +24,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bfish.h"
-#include "SafeDisk\CdaPfn.h"
+//#include "SafeDisk\CdaPfn.h"
 #include <Debug\DebugPrint.h>
 
 void __cdecl doIt(void);
 
-CDAPFN_DECLARE_GLOBAL(doIt, CDAPFN_OVERHEAD_L5, CDAPFN_CONSTRAINT_NONE);
+//CDAPFN_DECLARE_GLOBAL(doIt, CDAPFN_OVERHEAD_L5, CDAPFN_CONSTRAINT_NONE);
 
 static void doIt(void)
 {
@@ -64,9 +64,17 @@ static void doIt(void)
 	DebugPrint("Game install path: %s\n", installPath);
 
 	// Retrieve Hard drive S/N
-	char drive[8];
-	_splitpath((const char*)installPath, drive, NULL, NULL, NULL);
-	strcat(drive, "\\");
+	char drive[8];	
+	errno_t err = _splitpath_s((const char*)installPath, drive, sizeof(drive), NULL, 0, NULL, 0, NULL, 0);
+	if (err != 0) {
+		PrintWin32Error("***** _splitpath_s() Failed!");
+		return;
+	}
+	err = strcat_s(drive, sizeof(drive), "\\");
+	if (err != 0) {
+		PrintWin32Error("***** strcat_s(drive) Failed!");
+		return;
+	}
 
 	DWORD volumeSerialNumber = 0;
 	DWORD maxComponentLength;
@@ -83,8 +91,16 @@ static void doIt(void)
 
 	// Add hard drive serial number portion
 	char volumeSN[16];
-	sprintf(volumeSN, "%lx-", volumeSerialNumber);
-	strcat(passKey, volumeSN);
+	err = sprintf_s(volumeSN, sizeof(volumeSN), "%lx-", volumeSerialNumber); 
+	if (err < 0) {
+		PrintWin32Error("***** sprintf_s(volumeSerialNumber) Failed!");
+		return;
+	}
+	err = strcat_s(passKey, sizeof(passKey), volumeSN);
+	if (err != 0) {
+		PrintWin32Error("***** strcat_s(volumeSN) Failed!");
+		return;
+	}
 
 	// Retrieve game serial #
 	unsigned char gameSerialNumber[64];
@@ -112,7 +128,11 @@ static void doIt(void)
 	RegCloseKey(hKey);
 
 	// Add game serial number portion
-	strcat(passKey, (char*)gameSerialNumber);
+	err = strcat_s(passKey, sizeof(passKey), (char*)gameSerialNumber);
+	if (err != 0) {
+		PrintWin32Error("***** strcat_s(gameSerialNumber) Failed!");
+		return;
+	}
 
 	// Obtain windows product ID
 	result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey);
@@ -136,8 +156,16 @@ static void doIt(void)
 		RegCloseKey(hKey);
 
 		// Add windows product ID portion
-		strcat(passKey, "-");
-		strcat(passKey, (char*)winProductID);
+		err = strcat_s(passKey, sizeof(passKey), "-");
+		if (err != 0) {
+			PrintWin32Error("***** strcat_s(product ID portion) Failed!");
+			return;
+		}
+		err = strcat_s(passKey, sizeof(passKey), (char*)winProductID);
+		if (err != 0) {
+			PrintWin32Error("***** strcat_s(winProductID) Failed!");
+			return;
+		}
 	}
 
 	DebugPrint("Retrieved PassKey: %s\n", passKey);
@@ -165,24 +193,35 @@ static void doIt(void)
 	if (lastBackslash)
 		*lastBackslash = 0; // strip of \\game.exe from install path
 
-	strcat((char *)installPath, "\\Generals.dat");
+	err = strcat_s((char*)installPath, sizeof(installPath), "\\Generals.dat");
+	if (err != 0) {
+		PrintWin32Error("***** strcat_s(Generals.dat) Failed!");
+		return;
+	}
 
 	DebugPrint("DAT file = '%s'\n", installPath);
 
-	FILE *fp = fopen((char *)installPath, "wb");
+	FILE* fp;
+	err = fopen_s(&fp, (char*)installPath, "wb"); 
+	if (err != 0 || fp == NULL) {
+		PrintWin32Error("***** fopen_s() Failed!");
+		return;
+	}
 	if (fp)
 	{
 		fwrite(cypherText, textLen, 1, fp);
 		fclose(fp);
 	}
 
-	CDAPFN_ENDMARK(doIt);
+	//CDAPFN_ENDMARK(doIt);
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
+int APIENTRY WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nShowCmd
+)
 {
 	doIt();
 
