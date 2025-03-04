@@ -420,6 +420,6 @@ void DirectInputKeyboard::update( void )
 Bool DirectInputKeyboard::getCapsState( void )
 {
 
-	return BitTest( GetKeyState( VK_CAPITAL ), 0X01);
+	return BitTestTwid( GetKeyState( VK_CAPITAL ), 0X01);
 
 }  // end getCapsState

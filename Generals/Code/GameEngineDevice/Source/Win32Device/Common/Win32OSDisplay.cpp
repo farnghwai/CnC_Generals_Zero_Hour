@@ -50,40 +50,40 @@ static void RTSFlagsToOSFlags(UnsignedInt buttonFlags, UnsignedInt otherFlags, U
 {
 	outWindowsFlags = 0;
 
-	if (BitTest(buttonFlags, OSDBT_OK)) {
+	if (BitTestTwid(buttonFlags, OSDBT_OK)) {
 		outWindowsFlags |= MB_OK;
 	}
 	
-	if (BitTest(buttonFlags, OSDBT_CANCEL)) {
+	if (BitTestTwid(buttonFlags, OSDBT_CANCEL)) {
 		outWindowsFlags |= MB_OKCANCEL;
 	}
 
 	//-----------------------------------------------------------------------------------------------
-	if (BitTest(otherFlags, OSDOF_SYSTEMMODAL)) {
+	if (BitTestTwid(otherFlags, OSDOF_SYSTEMMODAL)) {
 		outWindowsFlags |= MB_SYSTEMMODAL;
 	}
 
-	if (BitTest(otherFlags, OSDOF_APPLICATIONMODAL)) {
+	if (BitTestTwid(otherFlags, OSDOF_APPLICATIONMODAL)) {
 		outWindowsFlags |= MB_APPLMODAL;
 	}
 
-	if (BitTest(otherFlags, OSDOF_TASKMODAL)) {
+	if (BitTestTwid(otherFlags, OSDOF_TASKMODAL)) {
 		outWindowsFlags |= MB_TASKMODAL;
 	}
 
-	if (BitTest(otherFlags, OSDOF_EXCLAMATIONICON)) {
+	if (BitTestTwid(otherFlags, OSDOF_EXCLAMATIONICON)) {
 		outWindowsFlags |= MB_ICONEXCLAMATION;
 	}
 
-	if (BitTest(otherFlags, OSDOF_INFORMATIONICON)) {
+	if (BitTestTwid(otherFlags, OSDOF_INFORMATIONICON)) {
 		outWindowsFlags |= MB_ICONINFORMATION;
 	}
 
-	if (BitTest(otherFlags, OSDOF_ERRORICON)) {
+	if (BitTestTwid(otherFlags, OSDOF_ERRORICON)) {
 		outWindowsFlags |= MB_ICONERROR;
 	}
 
-	if (BitTest(otherFlags, OSDOF_STOPICON)) {
+	if (BitTestTwid(otherFlags, OSDOF_STOPICON)) {
 		outWindowsFlags |= MB_ICONSTOP;
 	}
 
