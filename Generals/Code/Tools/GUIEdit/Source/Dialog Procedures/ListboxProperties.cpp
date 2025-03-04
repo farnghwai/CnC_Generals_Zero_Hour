@@ -56,7 +56,35 @@
 #include "GameClient/GameWindowManager.h"
 
 // DEFINES ////////////////////////////////////////////////////////////////////
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
 
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr;
+		return strtok_s(str, delim, &context);
+	}
+
+	#define sprintf safe_sprintf
+	#define strcat safe_strcat
+	#define strtok safe_strtok
+#endif
 // PRIVATE TYPES //////////////////////////////////////////////////////////////
 
 // PRIVATE DATA ///////////////////////////////////////////////////////////////
@@ -602,7 +630,8 @@ static LRESULT CALLBACK listboxPropertiesCallback( HWND hWndDialog,
 						{
 							char *percentages = new char[60];
 							char *token;
-							GetDlgItemText(hWndDialog,EDIT_COLUMN_PERCENT,percentages,200);
+							// GetDlgItemText(hWndDialog,EDIT_COLUMN_PERCENT,percentages,200);
+							GetDlgItemText(hWndDialog, EDIT_COLUMN_PERCENT, percentages, 60);
 							if(strlen(percentages) == 0)
 							{
 								MessageBox(NULL,"You have specified a column amount greater then 1, please enter the same about of percentages","whoops",MB_OK | MB_ICONSTOP | MB_APPLMODAL);
@@ -947,7 +976,18 @@ HWND InitListboxPropertiesDialog( GameWindow *window )
 		for(Int i = 1; i < listData->columns; i++ )
 		{
 			strcat(percentages,",");
-			strcat(percentages,itoa(listData->columnWidthPercentage[i],tempStr,10));
+			errno_t err = _itoa_s(listData->columnWidthPercentage[i], tempStr, sizeof(tempStr), 10);
+			if (err == 0) 
+			{
+				// TO-DO: fix fail silently
+			}
+			else 
+			{
+				strcat(percentages, tempStr);
+			}
+
+
+			
 		}
 		SetDlgItemText(dialog,EDIT_COLUMN_PERCENT,percentages);
 

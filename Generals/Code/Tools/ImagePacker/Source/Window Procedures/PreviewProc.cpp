@@ -50,6 +50,22 @@
 ///////////////////////////////////////////////////////////////////////////////
 #define PREVIEW_STYLE WS_CAPTION
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+#endif
+
 // PRIVATE TYPES //////////////////////////////////////////////////////////////
 
 // PRIVATE DATA ///////////////////////////////////////////////////////////////
@@ -112,7 +128,7 @@ LRESULT CALLBACK PreviewProc( HWND hWnd, UINT message,
 							page->getPixel( x, y, &r, &g, &b );
 
 							// create a new pen of the right color
-							pen = CreatePen( 1, 1, RGB( r, g, b, ) );
+							pen = CreatePen( 1, 1, RGB( r, g, b ) );
 							
 							// select pen into hdc
 							prevPen = (HPEN)SelectObject( hdc, pen );

@@ -43,6 +43,38 @@
 #include "GUIEdit.h"
 #include "HierarchyView.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+#endif
+
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 GUIEditWindowManager *TheGUIEditWindowManager = NULL;  ///< editor use only
 
@@ -564,7 +596,11 @@ void GUIEditWindowManager::incrementName( GameWindow *window )
 		number++;
 
 		// turn number back into string
-		itoa( number, numberBuffer, 10 );
+		errno_t err = _itoa_s(number, numberBuffer, sizeof(numberBuffer), 10);
+		if (err == 0)
+		{
+			// TO-DO: fix fail silently
+		}
 
 		// put number string OVER the original number string in the name
 		len = strlen( numberBuffer );

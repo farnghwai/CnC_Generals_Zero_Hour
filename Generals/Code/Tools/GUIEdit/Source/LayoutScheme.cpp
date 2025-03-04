@@ -70,6 +70,37 @@
 #include "LayoutScheme.h"
 
 // DEFINES ////////////////////////////////////////////////////////////////////
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_fscanf(FILE* stream, const char* format, ...) {
+		int result;
+		va_list args;
+		va_start(args, format);
+		result = vfscanf_s(stream, format, args);
+		va_end(args);
+		return result;
+	}
+	#define sprintf safe_sprintf
+	#define fopen safe_fopen
+	#define fscanf safe_fscanf
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // PRIVATE TYPES //////////////////////////////////////////////////////////////

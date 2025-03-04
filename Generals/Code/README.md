@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 48% (13 / 27)
+Completion: 52% (14 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -15,14 +15,14 @@ DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
 GameEngine | GameEngine\GameEngine.vcxproj | Not Started
 GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Not Started
-GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Not Started
-ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Not Started
+GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Halt* | Reference to WW3D2Debug.lib
+ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
 launcher | Tools\Launcher\launcher.vcxproj | Not Started
 MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Not Started
-max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started
-ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | WIP
-pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started
-textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done*
+max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started | 3DSMax
+ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | Done*
+pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
+textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
 WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
 ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Not Started | DirectX
