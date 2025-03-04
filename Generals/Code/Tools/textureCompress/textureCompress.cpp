@@ -624,10 +624,12 @@ static void scanDir( const std::string& sourceDirName, const std::string& target
 //-------------------------------------------------------------------------------------------------
 #define USE_WINMAIN
 #ifdef USE_WINMAIN
-int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
+int APIENTRY WinMain(
+		_In_ HINSTANCE hInstance,
+		_In_opt_ HINSTANCE hPrevInstance,
+		_In_ LPSTR lpCmdLine,
+		_In_ int nShowCmd
+	)
 {
 	/*
 	** Convert WinMain arguments to simple main argc and argv
