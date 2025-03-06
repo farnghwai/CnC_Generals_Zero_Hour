@@ -37,9 +37,8 @@
 
 #include "texture.h"
 
-#include <d3d8.h>
+#include <d3d11.h>
 #include <stdio.h>
-#include <D3dx8core.h>
 #include "dx8wrapper.h"
 #include "targa.h"
 #include <nstrdup.h>
@@ -70,7 +69,7 @@ static int Calculate_Texture_Memory_Usage(const TextureClass* texture,int red_fa
 	// Set performance statistics
 
 	int size=0;
-	IDirect3DTexture8* d3d_texture=const_cast<TextureClass*>(texture)->Peek_DX8_Texture();
+	IDirect3DTexture9* d3d_texture=const_cast<TextureClass*>(texture)->Peek_DX8_Texture();
 	if (!d3d_texture) return 0;
 	for (unsigned i=red_factor;i<d3d_texture->GetLevelCount();++i) {
 		D3DSURFACE_DESC desc;
@@ -274,7 +273,7 @@ TextureClass::TextureClass(SurfaceClass *surface, MipCountType mip_level_count)
 
 // ----------------------------------------------------------------------------
 
-TextureClass::TextureClass(IDirect3DTexture8* d3d_texture)
+TextureClass::TextureClass(IDirect3DTexture9* d3d_texture)
 	:
 	D3DTexture(d3d_texture),
 	texture_id(unused_texture_id++),
@@ -294,7 +293,7 @@ TextureClass::TextureClass(IDirect3DTexture8* d3d_texture)
 	TextureLoadTask(NULL)
 {
 	D3DTexture->AddRef();
-	IDirect3DSurface8* surface;
+	IDirect3DSurface9* surface;
 	DX8_ErrorCode(D3DTexture->GetSurfaceLevel(0,&surface));
 	D3DSURFACE_DESC d3d_desc;
 	::ZeroMemory(&d3d_desc, sizeof(D3DSURFACE_DESC));
@@ -388,7 +387,7 @@ void TextureClass::Load_Locked_Surface()
 bool TextureClass::Is_Missing_Texture()
 {
 	bool flag = false;
-	IDirect3DTexture8 *missing_texture = MissingTexture::_Get_Missing_Texture();
+	IDirect3DTexture9 *missing_texture = MissingTexture::_Get_Missing_Texture();
 	
 	if(D3DTexture == missing_texture)
 		flag = true;
@@ -437,7 +436,7 @@ void TextureClass::Get_Level_Description(SurfaceClass::SurfaceDescription &surfa
 
 SurfaceClass *TextureClass::Get_Surface_Level(unsigned int level)
 {
-	IDirect3DSurface8 *d3d_surface = NULL;
+	IDirect3DSurface9 *d3d_surface = NULL;
 	DX8_ErrorCode(D3DTexture->GetSurfaceLevel(level, &d3d_surface));
 	SurfaceClass *surface = W3DNEW SurfaceClass(d3d_surface);
 	d3d_surface->Release();
@@ -555,7 +554,7 @@ void TextureClass::Apply_New_Surface(bool initialized)
 	if (initialized) Initialized=true;
 
 	WWASSERT(D3DTexture);
-	IDirect3DSurface8* surface;
+	IDirect3DSurface9* surface;
 	DX8_ErrorCode(D3DTexture->GetSurfaceLevel(0,&surface));
 	D3DSURFACE_DESC d3d_desc;
 	::ZeroMemory(&d3d_desc, sizeof(D3DSURFACE_DESC));
@@ -734,7 +733,7 @@ bool Validate_Filters(unsigned type)
 */
 void TextureClass::_Init_Filters()
 {
-	const D3DCAPS8& dx8caps=DX8Caps::Get_Default_Caps();
+	const D3DCAPS9& dx8caps=DX8Caps::Get_Default_Caps();
 
 	_MinTextureFilters[FILTER_TYPE_NONE]=D3DTEXF_POINT;
 	_MagTextureFilters[FILTER_TYPE_NONE]=D3DTEXF_POINT;

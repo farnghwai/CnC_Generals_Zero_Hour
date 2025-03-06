@@ -1815,7 +1815,8 @@ void ParticleBufferClass::Reset_Frames(ParticlePropertyStruct<float> &new_props)
 		// keytime of MaxAge or larger. (If all keyframes below MaxAge, the value is
 		// constant during the last segment between last keyframe and MaxAge).
 		ui_previous_key_time = 0;
-		for (unsigned int key = 0; key < new_props.NumKeyFrames; key++) {
+		unsigned int key = 0;
+		for (key = 0; key < new_props.NumKeyFrames; key++) {
 			ui_current_key_time = (unsigned int)(new_props.KeyTimes[key] * 1000.0f);
 			WWASSERT(ui_current_key_time > ui_previous_key_time);
 			if (ui_current_key_time >= MaxAge) break;

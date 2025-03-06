@@ -41,8 +41,8 @@
 #include "dx8wrapper.h"
 #include "formconv.h"
 
-D3DCAPS8 DX8Caps::hwVPCaps;
-D3DCAPS8 DX8Caps::swVPCaps;
+D3DCAPS9 DX8Caps::hwVPCaps;
+D3DCAPS9 DX8Caps::swVPCaps;
 bool DX8Caps::UseTnL;	
 bool DX8Caps::SupportDOT3;
 bool DX8Caps::SupportDXTC;
@@ -66,15 +66,16 @@ enum {
 //
 // ----------------------------------------------------------------------------
 
-void DX8Caps::Init_Caps(IDirect3DDevice8* D3DDevice)
+void DX8Caps::Init_Caps(IDirect3DDevice9* D3DDevice)
 {
-	D3DDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,TRUE);
+	// ref: https://learn.microsoft.com/en-us/windows/win32/api/d3d9/nf-d3d9-idirect3ddevice9-setsoftwarevertexprocessing
+	D3DDevice->SetSoftwareVertexProcessing(TRUE);
 	DX8CALL(GetDeviceCaps(&swVPCaps));
 
 	if ((swVPCaps.DevCaps&D3DDEVCAPS_HWTRANSFORMANDLIGHT)==D3DDEVCAPS_HWTRANSFORMANDLIGHT) {
 		UseTnL=true;
 
-		D3DDevice->SetRenderState(D3DRS_SOFTWAREVERTEXPROCESSING,FALSE);
+		D3DDevice->SetSoftwareVertexProcessing(FALSE);
 		DX8CALL(GetDeviceCaps(&hwVPCaps));	
 	} else {
 		UseTnL=false;			
@@ -87,13 +88,13 @@ void DX8Caps::Init_Caps(IDirect3DDevice8* D3DDevice)
 //
 // ----------------------------------------------------------------------------
 
-void DX8Caps::Compute_Caps(D3DFORMAT display_format, D3DFORMAT depth_stencil_format, IDirect3DDevice8* D3DDevice)
+void DX8Caps::Compute_Caps(D3DFORMAT display_format, D3DFORMAT depth_stencil_format, IDirect3DDevice9* D3DDevice)
 {
-	const D3DADAPTER_IDENTIFIER8& adapter_id=DX8Wrapper::Get_Current_Adapter_Identifier();
+	const D3DADAPTER_IDENTIFIER9& adapter_id=DX8Wrapper::Get_Current_Adapter_Identifier();
 
 	Init_Caps(D3DDevice);
 
-	const D3DCAPS8& caps=Get_Default_Caps();
+	const D3DCAPS9& caps=Get_Default_Caps();
 
 	if ((caps.DevCaps&D3DDEVCAPS_NPATCHES)==D3DDEVCAPS_NPATCHES) {
 		SupportNPatches=true;
@@ -123,7 +124,7 @@ void DX8Caps::Compute_Caps(D3DFORMAT display_format, D3DFORMAT depth_stencil_for
 //
 // ----------------------------------------------------------------------------
 
-void DX8Caps::Check_Bumpmap_Support(const D3DCAPS8& caps)
+void DX8Caps::Check_Bumpmap_Support(const D3DCAPS9& caps)
 {
 	SupportBumpEnvmap=!!(caps.TextureOpCaps & D3DTEXOPCAPS_BUMPENVMAP);
 	SupportBumpEnvmapLuminance=!!(caps.TextureOpCaps & D3DTEXOPCAPS_BUMPENVMAPLUMINANCE);
@@ -135,16 +136,16 @@ void DX8Caps::Check_Bumpmap_Support(const D3DCAPS8& caps)
 //
 // ----------------------------------------------------------------------------
 
-void DX8Caps::Check_Texture_Compression_Support(const D3DCAPS8& caps)
+void DX8Caps::Check_Texture_Compression_Support(const D3DCAPS9& caps)
 {
-	SupportDXTC=SupportTextureFormat[WW3D_FORMAT_DXT1]|
-		SupportTextureFormat[WW3D_FORMAT_DXT2]|
-		SupportTextureFormat[WW3D_FORMAT_DXT3]|
-		SupportTextureFormat[WW3D_FORMAT_DXT4]|
+	SupportDXTC=SupportTextureFormat[WW3D_FORMAT_DXT1]||
+		SupportTextureFormat[WW3D_FORMAT_DXT2]||
+		SupportTextureFormat[WW3D_FORMAT_DXT3]||
+		SupportTextureFormat[WW3D_FORMAT_DXT4]||
 		SupportTextureFormat[WW3D_FORMAT_DXT5];
 }
 
-void DX8Caps::Check_Texture_Format_Support(D3DFORMAT display_format,const D3DCAPS8& caps)
+void DX8Caps::Check_Texture_Format_Support(D3DFORMAT display_format,const D3DCAPS9& caps)
 {
 	for (unsigned i=0;i<WW3D_FORMAT_COUNT;++i) {
 		if (i==WW3D_FORMAT_UNKNOWN) {
@@ -163,12 +164,12 @@ void DX8Caps::Check_Texture_Format_Support(D3DFORMAT display_format,const D3DCAP
 	}
 }
 
-void DX8Caps::Check_Maximum_Texture_Support(const D3DCAPS8& caps)
+void DX8Caps::Check_Maximum_Texture_Support(const D3DCAPS9& caps)
 {
 	MaxSimultaneousTextures=caps.MaxSimultaneousTextures;
 }
 
-void DX8Caps::Check_Shader_Support(const D3DCAPS8& caps)
+void DX8Caps::Check_Shader_Support(const D3DCAPS9& caps)
 {
 	VertexShaderVersion=caps.VertexShaderVersion;
 	PixelShaderVersion=caps.PixelShaderVersion;
@@ -181,16 +182,16 @@ void DX8Caps::Check_Shader_Support(const D3DCAPS8& caps)
 //
 // ----------------------------------------------------------------------------
 
-void DX8Caps::Vendor_Specific_Hacks(const D3DADAPTER_IDENTIFIER8& adapter_id)
+void DX8Caps::Vendor_Specific_Hacks(const D3DADAPTER_IDENTIFIER9& adapter_id)
 {
 	if (adapter_id.VendorId==VENDOR_ID_NVIDIA) {
 		SupportNPatches = false;	// Driver incorrectly report N-Patch support
 		SupportTextureFormat[WW3D_FORMAT_DXT1] = false;			// DXT1 is broken on NVidia hardware
 		SupportDXTC=
-			SupportTextureFormat[WW3D_FORMAT_DXT1]|
-			SupportTextureFormat[WW3D_FORMAT_DXT2]|
-			SupportTextureFormat[WW3D_FORMAT_DXT3]|
-			SupportTextureFormat[WW3D_FORMAT_DXT4]|
+			SupportTextureFormat[WW3D_FORMAT_DXT1]||
+			SupportTextureFormat[WW3D_FORMAT_DXT2]||
+			SupportTextureFormat[WW3D_FORMAT_DXT3]||
+			SupportTextureFormat[WW3D_FORMAT_DXT4]||
 			SupportTextureFormat[WW3D_FORMAT_DXT5];
 	}
 

@@ -45,12 +45,12 @@
 
 #include "always.h"
 #include "ww3dformat.h"
-#include <d3d8.h>
+#include <d3d9.h>
 
 class DX8Caps
 {
 public:
-	static void Compute_Caps(D3DFORMAT display_format, D3DFORMAT depth_stencil_format, IDirect3DDevice8* D3DDevice);
+	static void Compute_Caps(D3DFORMAT display_format, D3DFORMAT depth_stencil_format, IDirect3DDevice9* D3DDevice);
 	static bool Use_TnL() { return UseTnL; };	
 	static bool Support_DXTC() { return SupportDXTC; }
 	static bool Support_Gamma() { return supportGamma; }
@@ -74,21 +74,21 @@ public:
 
 	static bool Support_Texture_Format(WW3DFormat format) { return SupportTextureFormat[format]; }
 
-	static D3DCAPS8 const & Get_HW_VP_Caps() { return hwVPCaps; };
-	static D3DCAPS8 const & Get_SW_VP_Caps() { return swVPCaps; };
-	static D3DCAPS8 const & Get_Default_Caps() { return (UseTnL?hwVPCaps:swVPCaps); };
+	static D3DCAPS9 const & Get_HW_VP_Caps() { return hwVPCaps; };
+	static D3DCAPS9 const & Get_SW_VP_Caps() { return swVPCaps; };
+	static D3DCAPS9 const & Get_Default_Caps() { return (UseTnL?hwVPCaps:swVPCaps); };
 
 private:
-	static void Init_Caps(IDirect3DDevice8* D3DDevice);
-	static void Check_Texture_Format_Support(D3DFORMAT display_format,const D3DCAPS8& caps);
-	static void Check_Texture_Compression_Support(const D3DCAPS8& caps);
-	static void Check_Bumpmap_Support(const D3DCAPS8& caps);
-	static void Check_Shader_Support(const D3DCAPS8& caps);
-	static void Check_Maximum_Texture_Support(const D3DCAPS8& caps);
-	static void Vendor_Specific_Hacks(const D3DADAPTER_IDENTIFIER8& adapter_id);
+	static void Init_Caps(IDirect3DDevice9* D3DDevice);
+	static void Check_Texture_Format_Support(D3DFORMAT display_format,const D3DCAPS9& caps);
+	static void Check_Texture_Compression_Support(const D3DCAPS9& caps);
+	static void Check_Bumpmap_Support(const D3DCAPS9& caps);
+	static void Check_Shader_Support(const D3DCAPS9& caps);
+	static void Check_Maximum_Texture_Support(const D3DCAPS9& caps);
+	static void Vendor_Specific_Hacks(const D3DADAPTER_IDENTIFIER9& adapter_id);
 
-	static D3DCAPS8 hwVPCaps;
-	static D3DCAPS8 swVPCaps;
+	static D3DCAPS9 hwVPCaps;
+	static D3DCAPS9 swVPCaps;
 	static bool UseTnL;	
 	static bool SupportDXTC;
 	static bool supportGamma;

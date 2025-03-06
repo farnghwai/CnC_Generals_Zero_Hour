@@ -90,6 +90,20 @@
 #include "ww3dids.h"
 #include "intersec.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+#endif
 
 
 // Definitions of static members:
@@ -103,15 +117,17 @@ Filename_From_Asset_Name (const char *asset_name)
 	StringClass filename;
 	if (asset_name != NULL) {
 		
+		int required_size = ::lstrlen(asset_name) + 5; // ::lstrlen(asset_name) + 4 + 1;
+
 		//
 		// Copy the model name into a new filename buffer
 		//
-		::lstrcpy (filename.Get_Buffer (::lstrlen (asset_name) + 5), asset_name);
-		
+		::lstrcpy (filename.Get_Buffer (required_size), asset_name);
+
 		//
 		// Do we need to strip off the model's suffix?
 		//
-		char *suffix = ::strchr (filename, '.');
+		char *suffix = ::strchr (filename.Get_Buffer(required_size), '.');
 		if (suffix != NULL) {
 			suffix[0] = 0;
 		}
@@ -522,7 +538,7 @@ RenderObjClass * RenderObjClass::Get_Sub_Object_By_Name(const char * name, int *
 	for (i=0; i<Get_Num_Sub_Objects(); i++) {
 		RenderObjClass * robj = Get_Sub_Object(i);
 		if (robj) {
-			if (stricmp(robj->Get_Name(),name) == 0) {
+			if (_stricmp(robj->Get_Name(),name) == 0) {
 				if (index) *index=i;
 				return robj;
 			} else {
@@ -543,7 +559,7 @@ RenderObjClass * RenderObjClass::Get_Sub_Object_By_Name(const char * name, int *
 				subobjname = subobjname+1;
 			}
 
-			if (stricmp(subobjname,name) == 0) {
+			if (_stricmp(subobjname,name) == 0) {
 				if (index) *index=i;
 				return robj;
 			} else {

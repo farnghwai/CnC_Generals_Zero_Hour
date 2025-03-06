@@ -33,7 +33,6 @@
  *---------------------------------------------------------------------------------------------*
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
-
 #include "render2dsentence.h"
 #include "surfaceclass.h"
 #include "texture.h"
@@ -1720,9 +1719,9 @@ FontCharsClass::Grow_Unicode_Array (WCHAR ch)
 		return ;
 	} 
 
-	uint16 first_index	= min( FirstUnicodeChar, ch );
-	uint16 last_index		= max( LastUnicodeChar, ch );
-	uint16 count			= (last_index - first_index) + 1;
+	uint16 first_index	= min(FirstUnicodeChar, static_cast<uint16>(ch));
+	uint16 last_index	= max(LastUnicodeChar, static_cast<uint16>(ch));
+	uint16 count		= (last_index - first_index) + 1;
 
 	//
 	//	Allocate enough memory to hold the new cells
@@ -1746,7 +1745,7 @@ FontCharsClass::Grow_Unicode_Array (WCHAR ch)
 	}
 
 	FirstUnicodeChar	= first_index;
-	LastUnicodeChar	= last_index;
+	LastUnicodeChar		= last_index;
 	UnicodeCharArray	= new_array;
 	return ;
 }

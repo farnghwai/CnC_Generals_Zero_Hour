@@ -43,7 +43,7 @@
 #include "dx8fvf.h"
 #include "dx8caps.h"
 #include "thread.h"
-#include <D3dx8core.h>
+//#include <D3dx9core.h>
 
 #define DEFAULT_VB_SIZE 5000
 
@@ -457,7 +457,8 @@ void DX8VertexBufferClass::Create_Vertex_Buffer(UsageType usage)
 	WW3D::_Invalidate_Mesh_Cache();
 
 	//@todo: Find some way to invalidate the textures too
-	ret = DX8Wrapper::_Get_D3D_Device8()->ResourceManagerDiscardBytes(0);
+	//ret = DX8Wrapper::_Get_D3D_Device8()->ResourceManagerDiscardBytes(0);
+	ret = DX8Wrapper::_Get_D3D_Device8()->EvictManagedResources();
 
 	// Try again...
 	ret=DX8Wrapper::_Get_D3D_Device8()->CreateVertexBuffer(

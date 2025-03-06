@@ -86,6 +86,42 @@ static void Scan_HLOD (ChunkLoadClass &cload, StringList &files, const char *w3d
 static void Get_W3D_Name (const char *filename, char *w3d_name);
 static const char * Make_W3D_Filename (const char *w3d_name);
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline char* safe_strlwr(char* str) {
+		if (!str) return nullptr; // Ensure input is valid
+		return _strlwr_s(str, strlen(str) + 1) == 0 ? str : nullptr;
+	}
+
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+	#define strncpy safe_strncpy
+	#define strlwr safe_strlwr
+#endif
 
 /***********************************************************************************************
  * Get_W3D_Dependencies -- Scans a W3D file to determine which other files it depends on.      *
@@ -535,7 +571,7 @@ static void Get_W3D_Name (const char *filename, char *w3d_name)
 	memset(w3d_name, 0, W3D_NAME_LEN);	// blank out the buffer
 	int num_chars = end - start;
 	strncpy(w3d_name, start, num_chars < W3D_NAME_LEN ? num_chars : W3D_NAME_LEN-1);
-	strupr(w3d_name);
+	_strupr_s(w3d_name, W3D_NAME_LEN);
 }
 
 

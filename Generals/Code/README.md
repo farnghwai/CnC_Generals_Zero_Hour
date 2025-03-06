@@ -25,7 +25,7 @@ pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
 textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
 WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
-ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Not Started | DirectX
+ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Work-in-Progress | Converting to DirectX 9 and remove legacy DirectX dependencies
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
 wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Not Started
