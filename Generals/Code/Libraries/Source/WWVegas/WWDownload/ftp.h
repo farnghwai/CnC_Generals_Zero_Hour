@@ -75,7 +75,7 @@ private:
 	int		m_iStatus;
 	
 	int		m_sendNewPortStatus;
-	int		m_findStart;
+	time_t		m_findStart;
 
 	int		SendData( char * pData, int iSize );
 	int		RecvData( char * pData, int iSize );

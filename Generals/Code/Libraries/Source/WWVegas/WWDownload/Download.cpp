@@ -26,6 +26,20 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strncpy safe_strncpy
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 // CDownload
 
@@ -66,7 +80,7 @@ HRESULT CDownload::DownloadFile(LPCSTR server, LPCSTR username, LPCSTR password,
 	}
 
 	// Make sure we have a download directory
-	_mkdir("download");
+	int mdir_result = _mkdir("download");
 
 	// Copy parameters to member variables.
 	strncpy( m_Server, server, sizeof( m_Server ) );

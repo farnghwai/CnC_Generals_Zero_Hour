@@ -46,6 +46,73 @@
 //#define _DEBUG
 //#endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline void safe_splitpath(const char* path, char* drive, char* dir, char* fname, char* ext) {
+		// Define buffer sizes based on _MAX constants from <cstdlib>
+		const size_t DRIVE_SIZE = _MAX_DRIVE;
+		const size_t DIR_SIZE = _MAX_DIR;
+		const size_t FNAME_SIZE = _MAX_FNAME;
+		const size_t EXT_SIZE = _MAX_EXT;
+
+		// Call _splitpath_s with the correct buffer sizes
+		_splitpath_s(path,
+			drive, drive ? DRIVE_SIZE : 0,
+			dir, dir ? DIR_SIZE : 0,
+			fname, fname ? FNAME_SIZE : 0,
+			ext, ext ? EXT_SIZE : 0);
+	}
+
+	#define sprintf safe_sprintf	
+	#define strcat safe_strcat
+	#define strncpy safe_strncpy
+	#define fopen safe_fopen
+	#define sscanf safe_sscanf
+	#define _splitpath safe_splitpath  
+#endif
+
 /*************************************************************************/
 /*_$                      External References                            */
 /*************************************************************************/
@@ -676,7 +743,7 @@ HRESULT  Cftp::FindFile( LPCSTR szRemoteFileName, int * piSize )
 	}
 
 	//strcpy(m_szRemoteFilePath, "/");  // start at home
-	_splitpath( szRemoteFileName, NULL, m_szRemoteFilePath+strlen(m_szRemoteFilePath), 
+	safe_splitpath( szRemoteFileName, NULL, m_szRemoteFilePath+strlen(m_szRemoteFilePath),
 		m_szRemoteFileName, ext );
 
 	strcat( m_szRemoteFileName, ext );
@@ -792,7 +859,13 @@ HRESULT  Cftp::FindFile( LPCSTR szRemoteFileName, int * piSize )
 
 	if( m_iStatus == FTPSTAT_LISTDATAOPEN )
 	{
-		RecvData( listline, 256 );
+		int bytes_received = RecvData( listline, 256 );
+		if (bytes_received > 0 && bytes_received < 256) {
+			listline[bytes_received] = '\0';
+		}
+		else if (bytes_received == 256) {
+			listline[255] = '\0';
+		}
 
 		if( strlen( listline ) == 0 )
 		{
@@ -1796,7 +1869,7 @@ HRESULT  Cftp::FileRecoveryPosition( LPCSTR szLocalFileName, LPCSTR szRegistryRo
 //
 void Cftp::GetDownloadFilename(const char *localname, char *downloadname)
 {
-	char *name = strdup(localname);
+	char *name = _strdup(localname);
 	char *s = name;
 	while (*s)
 	{
