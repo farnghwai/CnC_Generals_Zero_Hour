@@ -40,6 +40,25 @@
 #include "mutex.h"
 #include <stdio.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define strcpy safe_strcpy
+	#define _vsnprintf safe_vsnprintf
+#endif
 
 ///////////////////////////////////////////////////////////////////
 //	Static member initialzation

@@ -51,6 +51,21 @@
 #include	<assert.h>
 #include <stdio.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+#endif
 
 LPDIRECTDRAW DirectDrawObject = NULL;	// Pointer to the direct draw object
 LPDIRECTDRAW2 DirectDraw2Interface = NULL;  	// Pointer to direct draw 2 interface

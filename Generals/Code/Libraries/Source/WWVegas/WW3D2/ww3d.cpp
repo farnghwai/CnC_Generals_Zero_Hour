@@ -120,6 +120,21 @@
 #include "framgrab.h"
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+#endif
 
 const char* DAZZLE_INI_FILENAME="DAZZLE.INI";
 

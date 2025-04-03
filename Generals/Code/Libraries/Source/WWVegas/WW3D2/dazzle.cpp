@@ -36,7 +36,6 @@
  * Functions:                                                                                  *
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
 
-
 #include "dazzle.h"
 #include "simplevec.h"
 #include "vector2.h"
@@ -53,7 +52,7 @@
 #include "vertmaterial.h"
 #include "chunkio.h"
 #include "wwfile.h"
-#include "inisup.h"
+//#include "inisup.h"
 #include "persistfactory.h"
 #include "ww3dids.h"
 #include "dx8wrapper.h"
@@ -66,7 +65,30 @@
 #include <cstdio>
 #include <limits.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
 
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+	
+	#define sscanf safe_sscanf
+#endif
 
 // All dazzle types appear under Dazzles_List in the dazzle.ini file.
 const char* DAZZLE_LIST_STRING="Dazzles_List";
@@ -667,7 +689,8 @@ void DazzleRenderObjClass::Init_Type(const DazzleInitClass& i)
 	if (i.type>=type_count) {
 		unsigned new_count=i.type+1;
 		DazzleTypeClass** new_types=W3DNEWARRAY DazzleTypeClass*[new_count];
-		for (unsigned a=0;a<type_count;++a) {
+		unsigned a = 0;
+		for (a=0;a<type_count;++a) {
 			new_types[a]=types[a];
 		}
 		for (;a<new_count;++a) {

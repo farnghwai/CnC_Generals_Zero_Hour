@@ -507,18 +507,18 @@ void TextureClass::Apply(unsigned int stage)
 		DX8Wrapper::Set_DX8_Texture(stage, NULL);
 	}
 
-	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MINFILTER,_MinTextureFilters[TextureMinFilter]);
-	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MAGFILTER,_MagTextureFilters[TextureMagFilter]);
-	DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MIPFILTER,_MipMapFilters[MipMapFilter]);
+	DX8Wrapper::Set_DX8_Sampler_Stage_State(stage,D3DSAMP_MINFILTER,_MinTextureFilters[TextureMinFilter]);
+	DX8Wrapper::Set_DX8_Sampler_Stage_State(stage,D3DSAMP_MAGFILTER,_MagTextureFilters[TextureMagFilter]);
+	DX8Wrapper::Set_DX8_Sampler_Stage_State(stage,D3DSAMP_MIPFILTER,_MipMapFilters[MipMapFilter]);
 
 	switch (Get_U_Addr_Mode()) {
 
 		case TEXTURE_ADDRESS_REPEAT:
-			DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ADDRESSU, D3DTADDRESS_WRAP);
+			DX8Wrapper::Set_DX8_Sampler_Stage_State(stage, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
 			break;
 
 		case TEXTURE_ADDRESS_CLAMP:
-			DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+			DX8Wrapper::Set_DX8_Sampler_Stage_State(stage, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
 			break;
 
 	}
@@ -526,11 +526,11 @@ void TextureClass::Apply(unsigned int stage)
 	switch (Get_V_Addr_Mode()) {
 
 		case TEXTURE_ADDRESS_REPEAT:
-			DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ADDRESSV, D3DTADDRESS_WRAP);
+			DX8Wrapper::Set_DX8_Sampler_Stage_State(stage, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 			break;
 
 		case TEXTURE_ADDRESS_CLAMP:
-			DX8Wrapper::Set_DX8_Texture_Stage_State(stage, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+			DX8Wrapper::Set_DX8_Sampler_Stage_State(stage, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
 			break;
 
 	}
@@ -744,9 +744,9 @@ void TextureClass::_Init_Filters()
 	_MipMapFilters[FILTER_TYPE_FAST]=D3DTEXF_POINT;
 
 	// Jani: Disabling anisotropic filtering as it doesn't seem to work with the latest nVidia drivers.
-	if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFAFLATCUBIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_FLATCUBIC;
-	else if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFANISOTROPIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_ANISOTROPIC;
-	else if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFGAUSSIANCUBIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_GAUSSIANCUBIC;
+	//if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFAFLATCUBIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_FLATCUBIC; // [DX9] not supported
+	if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFANISOTROPIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_ANISOTROPIC;
+	//else if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFGAUSSIANCUBIC) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_GAUSSIANCUBIC; // [DX9] not supported
 	else if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFLINEAR) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_LINEAR;
 	else if (dx8caps.TextureFilterCaps&D3DPTFILTERCAPS_MAGFPOINT) _MagTextureFilters[FILTER_TYPE_BEST]=D3DTEXF_POINT;
 	else {
@@ -774,7 +774,7 @@ void TextureClass::_Init_Filters()
 	_MipMapFilters[FILTER_TYPE_DEFAULT]=_MipMapFilters[FILTER_TYPE_BEST];
 
 	for (int stage=0;stage<MeshMatDescClass::MAX_TEX_STAGES;++stage) {
-		DX8Wrapper::Set_DX8_Texture_Stage_State(stage,D3DTSS_MAXANISOTROPY,2);
+		DX8Wrapper::Set_DX8_Sampler_Stage_State(stage,D3DSAMP_MAXANISOTROPY,2);
 	}
 
 

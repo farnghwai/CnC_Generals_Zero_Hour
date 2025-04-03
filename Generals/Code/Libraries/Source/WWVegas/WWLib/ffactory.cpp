@@ -42,6 +42,27 @@
 #include	<assert.h>
 #include <string.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr; // Static variable to maintain context
+		return strtok_s(str, delim, &context);
+	}
+
+	#define strcpy safe_strcpy
+	#define strtok safe_strtok 
+#endif
+
 /*
 ** Statics
 ** NOTE: If _TheFileFactory is ever changed to point to an object of a different class which does

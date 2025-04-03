@@ -901,15 +901,15 @@ void CPUDetectClass::Init_Memory()
 {
 #ifdef WIN32
 
-	MEMORYSTATUS mem;
-   GlobalMemoryStatus(&mem);
+	MEMORYSTATUSEX mem;
+   GlobalMemoryStatusEx(&mem);
 
-   TotalPhysicalMemory     = mem.dwTotalPhys;
-   AvailablePhysicalMemory = mem.dwAvailPhys;
-   TotalPageMemory         = mem.dwTotalPageFile;
-   AvailablePageMemory     = mem.dwAvailPageFile;
-   TotalVirtualMemory      = mem.dwTotalVirtual;
-   AvailableVirtualMemory  = mem.dwAvailVirtual;
+   TotalPhysicalMemory     = mem.ullTotalPhys;
+   AvailablePhysicalMemory = mem.ullAvailPhys;
+   TotalPageMemory         = mem.ullTotalPageFile;
+   AvailablePageMemory     = mem.ullAvailPageFile;
+   TotalVirtualMemory      = mem.ullTotalVirtual;
+   AvailableVirtualMemory  = mem.ullAvailVirtual;
 #elif defined(_UNIX)
 #warning FIX Init_Memory()
 #endif
@@ -919,9 +919,9 @@ void CPUDetectClass::Init_OS()
 {
 	OSVERSIONINFO os;
 #ifdef WIN32
-   os.dwOSVersionInfoSize = sizeof(os);
+   os.dwOSVersionInfoSize = sizeof(os);	
 	GetVersionEx(&os);
-
+	
    OSVersionNumberMajor = os.dwMajorVersion;
    OSVersionNumberMinor = os.dwMinorVersion;
    OSVersionBuildNumber = os.dwBuildNumber;

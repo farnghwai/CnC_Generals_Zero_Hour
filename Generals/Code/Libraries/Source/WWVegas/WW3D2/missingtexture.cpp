@@ -19,7 +19,7 @@
 #include "missingtexture.h"
 #include "texture.h"
 #include "dx8wrapper.h"
-#include <D3dx8core.h>
+//#include <D3dx8core.h>
 
 static unsigned missing_image_width=128;
 static unsigned missing_image_height=128;
@@ -46,12 +46,16 @@ IDirect3DSurface9* MissingTexture::_Create_Missing_Surface()
 	DX8_ErrorCode(texture_surface->GetDesc(&texture_surface_desc));
 	
 	IDirect3DSurface9 *surface = NULL;	
-	DX8CALL(CreateImageSurface(
-		texture_surface_desc.Width, 
-		texture_surface_desc.Height, 
-		texture_surface_desc.Format, 
-		&surface));
-	DX8CALL(CopyRects(texture_surface, NULL, 0, surface, NULL));
+	//DX8CALL(CreateImageSurface(
+	//	texture_surface_desc.Width, 
+	//	texture_surface_desc.Height, 
+	//	texture_surface_desc.Format, 
+	//	&surface));
+	D3DPOOL pool = D3DPOOL_MANAGED; // TODO: hardcoded to test out; may test out D3DPOOL_DEFAULT 
+	DX8CALL(CreateOffscreenPlainSurface(texture_surface_desc.Width, texture_surface_desc.Height, texture_surface_desc.Format, pool, &surface, NULL));
+
+	//DX8CALL(CopyRects(texture_surface, NULL, 0, surface, NULL));
+	DX8CALL(UpdateSurface(texture_surface, NULL, surface, NULL)); // [DX9]
 	texture_surface->Release();
 	return surface;
 }
@@ -99,15 +103,17 @@ void MissingTexture::_Init()
 		DX8_ErrorCode(tex->GetSurfaceLevel(i-1,&src));
 		DX8_ErrorCode(tex->GetSurfaceLevel(i,&dst));
 
-		DX8_ErrorCode(D3DXLoadSurfaceFromSurface(
-			dst,
-			NULL,	// palette
-			NULL,	// rect
-			src,
-			NULL,	// palette
-			NULL,	// rect
-			D3DX_FILTER_BOX,	// box is good for 2:1 filtering
-			0));
+		//DX8_ErrorCode(D3DXLoadSurfaceFromSurface(
+		//	dst,
+		//	NULL,	// palette
+		//	NULL,	// rect
+		//	src,
+		//	NULL,	// palette
+		//	NULL,	// rect
+		//	D3DX_FILTER_BOX,	// box is good for 2:1 filtering
+		//	0));
+		HRESULT ret = DX8Wrapper::D3D9LoadSurfaceFromSurface(dst, NULL, src, NULL, D3DX9_FILTER_TYPE::D3DX_FILTER_BOX, 0); // [DX9]
+		DX8_ErrorCode(ret);
 
 		src->Release();
 		dst->Release();

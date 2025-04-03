@@ -503,7 +503,9 @@ void SurfaceClass::Copy(
 		if (dest.right>int(sd.Width)) dest.right=int(sd.Width);
 		if (dest.bottom>int(sd.Height)) dest.bottom=int(sd.Height);
 
-		DX8_ErrorCode(D3DXLoadSurfaceFromSurface(D3DSurface,NULL,&dest,other->D3DSurface,NULL,&src,D3DX_FILTER_NONE,0));
+		//DX8_ErrorCode(D3DXLoadSurfaceFromSurface(D3DSurface,NULL,&dest,other->D3DSurface,NULL,&src,D3DX_FILTER_NONE,0));
+		HRESULT ret = DX8Wrapper::D3D9LoadSurfaceFromSurface(D3DSurface, &dest, other->D3DSurface, &src, D3DX9_FILTER_TYPE::D3DX_FILTER_NONE, 0); // [DX9]
+		DX8_ErrorCode(ret);
 	}
 }
 
@@ -545,7 +547,9 @@ void SurfaceClass::Stretch_Copy(
 	dest.top=dsty;
 	dest.bottom=dsty+dstheight;
 
-	DX8_ErrorCode(D3DXLoadSurfaceFromSurface(D3DSurface,NULL,&dest,other->D3DSurface,NULL,&src,D3DX_FILTER_TRIANGLE ,0));
+	//DX8_ErrorCode(D3DXLoadSurfaceFromSurface(D3DSurface,NULL,&dest,other->D3DSurface,NULL,&src,D3DX_FILTER_TRIANGLE ,0));
+	HRESULT ret = DX8Wrapper::D3D9LoadSurfaceFromSurface(D3DSurface, &dest, other->D3DSurface, &src, D3DX9_FILTER_TYPE::D3DX_FILTER_TRIANGLE, 0); // [DX9]
+	DX8_ErrorCode(ret);
 }
 
 /***********************************************************************************************
@@ -603,7 +607,7 @@ void SurfaceClass::FindBB(Vector2i *min,Vector2i*max)
 	for (y = min->J; y < max->J; y++) {
 		for (x = min->I; x < max->I; x++) {
 			unsigned char *alpha=(unsigned char*) ((unsigned int)lock_rect.pBits+(y-min->J)*lock_rect.Pitch+(x-min->I)*size);
-			#pragma MESSAGE("HY - this is not endian safe")
+			//TO-FIX: #pragma MESSAGE("Not endian safe")
 			unsigned char myalpha=alpha[size-1];
 			myalpha=(myalpha>>(8-alphabits)) & mask;
 			if (myalpha) {
@@ -677,7 +681,7 @@ bool SurfaceClass::Is_Transparent_Column(unsigned int column)
 	for (y = 0; y < (int) sd.Height; y++)
 	{
 		unsigned char *alpha=(unsigned char*) ((unsigned int)lock_rect.pBits+y*lock_rect.Pitch);		
-		#pragma MESSAGE("HY - this is not endian safe")
+		//TO-FIX: #pragma MESSAGE("HY - this is not endian safe")
 		unsigned char myalpha=alpha[size-1];		
 		myalpha=(myalpha>>(8-alphabits)) & mask;		
 		if (myalpha) {

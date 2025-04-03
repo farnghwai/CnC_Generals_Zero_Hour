@@ -1272,7 +1272,7 @@ void TextureLoadTaskClass::Set_Succ(TextureLoadTaskClass* succ)
 //
 // ----------------------------------------------------------------------------
 
-void TextureLoadTaskClass::Set_D3D_Texture(IDirect3DTexture8* texture)
+void TextureLoadTaskClass::Set_D3D_Texture(IDirect3DTexture9* texture)
 {
 	WWASSERT(D3DTexture==0);
 	D3DTexture=texture;

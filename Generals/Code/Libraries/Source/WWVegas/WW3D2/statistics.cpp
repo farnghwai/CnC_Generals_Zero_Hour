@@ -31,6 +31,24 @@
 #include "osdep.h"
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_snprintf(char* buffer, size_t count, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define _snprintf safe_snprintf
+#endif
+
 // ----------------------------------------------------------------------------
 //
 // Texture memory tracking system

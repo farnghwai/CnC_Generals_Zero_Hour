@@ -28,7 +28,7 @@ WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
 ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Work-in-Progress | Converting to DirectX 9 and remove legacy DirectX dependencies
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
-wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Not Started
+wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Work-in-Progress
 wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done | See note 3
 wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done
 wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done

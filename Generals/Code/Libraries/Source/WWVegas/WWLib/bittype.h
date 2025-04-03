@@ -59,7 +59,7 @@ typedef unsigned short	WORD;
 typedef unsigned char   BYTE;
 typedef int             BOOL;
 typedef unsigned short	USHORT;
-typedef const char *		LPCSTR;
+//TO-FIX: typedef const char *		LPCSTR;
 typedef unsigned int    UINT;
 typedef unsigned long   ULONG;
 

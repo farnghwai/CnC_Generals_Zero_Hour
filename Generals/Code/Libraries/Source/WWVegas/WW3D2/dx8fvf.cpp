@@ -19,7 +19,7 @@
 #include "dx8fvf.h"
 #include "wwstring.h"
 //#include <D3dx9core.h>
-#include <D3dx9mesh.h>
+//#include <D3dx9mesh.h>
 
 static unsigned Get_FVF_Vertex_Size(unsigned FVF)
 {

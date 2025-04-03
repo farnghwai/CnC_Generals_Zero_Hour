@@ -41,6 +41,18 @@
 
 #pragma warning(disable : 4514)
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define _vsnprintf safe_vsnprintf
+#endif
+
 int FileClass::Printf(char *str, ...)
 {
 	char text[PRINTF_BUFFER_SIZE];

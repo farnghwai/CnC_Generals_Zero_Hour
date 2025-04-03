@@ -126,7 +126,13 @@
 		return result;
 	}
 
+	inline char* safe_strlwr(char* str) {
+		if (!str) return nullptr; // Ensure input is valid
+		return _strlwr_s(str, strlen(str) + 1) == 0 ? str : nullptr;
+	}
+
 	#define sprintf safe_sprintf
+	#define _strlwr safe_strlwr
 #endif
 
 /*
@@ -805,7 +811,7 @@ RenderObjClass * WW3DAssetManager::Create_Render_Obj(const char * name)
 
 	if (WW3D_Load_On_Demand && proto == NULL) {	// If we didn't find one, try to load on demand
 		char filename [MAX_PATH];
-		char *mesh_name = ::strchr (name, '.');
+		const char *mesh_name = ::strchr (name, '.');
 		if (mesh_name != NULL) {
 			::lstrcpyn (filename, name, ((int)mesh_name) - ((int)name) + 1);
 			::lstrcat (filename, ".w3d");
@@ -982,7 +988,7 @@ HAnimClass *	WW3DAssetManager::Get_HAnim(const char * name)
 		if ( !HAnimManager.Is_Missing( name ) ) {	// if this is NOT a known missing anim
 
 			char filename[ MAX_PATH ];
-			char *animname = strchr( name, '.');
+			const char *animname = strchr( name, '.');
 			if (animname != NULL) {
 				sprintf( filename, "%s.w3d", animname+1);
 			} else {

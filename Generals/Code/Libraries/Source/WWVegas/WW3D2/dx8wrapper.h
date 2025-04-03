@@ -58,6 +58,8 @@
 #include "dx8vertexbuffer.h"
 #include "dx8indexbuffer.h"
 #include "vertmaterial.h"
+#include <stdint.h>
+#include <math.h>
 
 const unsigned MAX_TEXTURE_STAGES=2;
 
@@ -68,6 +70,13 @@ enum {
 	BUFFER_TYPE_DYNAMIC_SORTING,
 	BUFFER_TYPE_INVALID
 };
+
+// [DX9] - custom
+typedef enum _D3DX9_FILTER_TYPE {
+	D3DX_FILTER_NONE = 1,  // No filtering
+	D3DX_FILTER_BOX = 2,  // Box filter
+	D3DX_FILTER_TRIANGLE = 3   // Triangle filter
+} D3DX9_FILTER_TYPE;
 
 class VertexMaterialClass;
 class CameraClass;
@@ -89,6 +98,7 @@ class SurfaceClass;
 #define DX8_RECORD_TEXTURE_CHANGE()				texture_changes++
 #define DX8_RECORD_RENDER_STATE_CHANGE()		render_state_changes++
 #define DX8_RECORD_TEXTURE_STAGE_STATE_CHANGE() texture_stage_state_changes++
+#define DX8_RECORD_SAMPLER_STAGE_STATE_CHANGE() sampler_stage_state_changes++  // [DX9]
 
 extern unsigned number_of_DX8_calls;
 extern bool _DX8SingleThreaded;
@@ -288,6 +298,7 @@ public:
 	static void Set_DX8_Render_State(D3DRENDERSTATETYPE state, unsigned value);
 	static void Set_DX8_Clip_Plane(DWORD Index, CONST float* pPlane);
 	static void Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURESTAGESTATETYPE state, unsigned value);
+	static void Set_DX8_Sampler_Stage_State(unsigned stage, D3DSAMPLERSTATETYPE state, unsigned value);  // [DX9]
 	static void Set_DX8_Texture(unsigned int stage, IDirect3DBaseTexture9* texture);
 	static void Set_Light_Environment(LightEnvironmentClass* light_env);
 	static void Set_Fog(bool enable, const Vector3 &color, float start, float end);
@@ -358,6 +369,15 @@ public:
 	static unsigned _Get_Main_Thread_ID() { return _MainThreadID; }
 	static const D3DADAPTER_IDENTIFIER9& Get_Current_Adapter_Identifier() { return CurrentAdapterIdentifier; }
 
+	// [DX9]
+	static HRESULT D3D9LoadSurfaceFromSurface(
+		LPDIRECT3DSURFACE9 pDestSurface,
+		const RECT* pDestRect,
+		LPDIRECT3DSURFACE9 pSrcSurface,
+		const RECT* pSrcRect,
+		DWORD Filter,
+		D3DCOLOR ColorKey);
+
 	/*
 	** Statistics
 	*/
@@ -376,7 +396,7 @@ public:
 	static unsigned long Get_FrameCount(void);
 
 	// Needed by shader class
-	static bool						Get_Fog_Enable() { return FogEnable; }
+	static bool					Get_Fog_Enable() { return FogEnable; }
 	static D3DCOLOR				Get_Fog_Color() { return FogColor; }	
 
 	// Utilities
@@ -510,6 +530,7 @@ protected:
 	static bool								world_identity;
 	static unsigned							RenderStates[256];
 	static unsigned							TextureStageStates[MAX_TEXTURE_STAGES][32];
+	static unsigned							SamplerStageStates[MAX_TEXTURE_STAGES][32];  // [DX9]
 	static IDirect3DBaseTexture9 *			Textures[MAX_TEXTURE_STAGES];
 
 	// These fog settings are constant for all objects in a given scene,
@@ -525,6 +546,7 @@ protected:
 	static unsigned						texture_changes;
 	static unsigned						render_state_changes;
 	static unsigned						texture_stage_state_changes;
+	static unsigned						sampler_stage_state_changes;  // [DX9]
 	static bool							CurrentDX8LightEnables[4];
 
 	static unsigned long FrameCount;
@@ -667,6 +689,26 @@ WWINLINE void DX8Wrapper::Set_DX8_Texture_Stage_State(unsigned stage, D3DTEXTURE
 	DX8_RECORD_TEXTURE_STAGE_STATE_CHANGE();
 }
 
+// [DX9]
+WWINLINE void DX8Wrapper::Set_DX8_Sampler_Stage_State(unsigned stage, D3DSAMPLERSTATETYPE state, unsigned value)
+{
+	if (stage >= MAX_TEXTURE_STAGES)
+	{
+		DX8CALL(SetSamplerState(stage, state, value));
+		return;
+	}
+
+	// Can't monitor state changes because setShader call to GERD may change the states!
+	if (SamplerStageStates[stage][(unsigned int)state] == value) return;
+
+	SNAPSHOT_SAY(("DX8 - Set_DX8_Sampler_Stage_State(%d,%d,%d)\n", stage, state, value));
+
+	SamplerStageStates[stage][(unsigned int)state] = value;
+	DX8CALL(SetSamplerState(stage, state, value));
+	DX8_RECORD_SAMPLER_STAGE_STATE_CHANGE();
+}
+
+
 WWINLINE void DX8Wrapper::Set_DX8_Texture(unsigned int stage, IDirect3DBaseTexture9* texture)
 {
   	if (stage >= MAX_TEXTURE_STAGES)
@@ -757,72 +799,82 @@ WWINLINE unsigned int DX8Wrapper::Convert_Color(const Vector4& color)
 
 WWINLINE unsigned int DX8Wrapper::Convert_Color(const Vector3& color,float alpha)
 {
-	const float scale = 255.0;
-	unsigned int col;
+//	const float scale = 255.0;
+//	unsigned int col;
+//
+//	// Multiply r, g, b and a components (0.0,...,1.0) by 255 and convert to integer. Or the integer values togerher
+//	// such that 32 bit ingeger has AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB.
+//	__asm
+//	{
+//		sub	esp,20					// space for a, r, g and b float plus fpu rounding mode
+//
+//		// Store the fpu rounding mode
+//
+//		fwait
+//		fstcw		[esp+16]				// store control word to stack
+//		mov		eax,[esp+16]		// load it to eax
+//		mov		edi,eax				// take copy
+//		and		eax,~(1024|2048)	// mask out certain bits
+//		or			eax,(1024|2048)	// or with precision control value "truncate"
+//		sub		edi,eax				// did it change?
+//		jz			skip					// .. if not, skip
+//		mov		[esp],eax			// .. change control word
+//		fldcw		[esp]
+//skip:
+//
+//		// Convert the color
+//
+//		mov	esi,dword ptr color
+//		fld	dword ptr[scale]
+//
+//		fld	dword ptr[esi]			// r
+//		fld	dword ptr[esi+4]		// g
+//		fld	dword ptr[esi+8]		// b
+//		fld	dword ptr[alpha]		// a
+//		fld	st(4)
+//		fmul	st(4),st
+//		fmul	st(3),st
+//		fmul	st(2),st
+//		fmulp	st(1),st
+//		fistp	dword ptr[esp+0]		// a
+//		fistp	dword ptr[esp+4]		// b
+//		fistp	dword ptr[esp+8]		// g
+//		fistp	dword ptr[esp+12]		// r
+//		mov	ecx,[esp]				// a
+//		mov	eax,[esp+4]				// b
+//		mov	edx,[esp+8]				// g
+//		mov	ebx,[esp+12]			// r
+//		shl	ecx,24					// a << 24
+//		shl	ebx,16					// r << 16
+//		shl	edx,8						//	g << 8
+//		or		eax,ecx					// (a << 24) | b
+//		or		eax,ebx					// (a << 24) | (r << 16) | b
+//		or		eax,edx					// (a << 24) | (r << 16) | (g << 8) | b
+//		
+//		fstp	st(0)
+//
+//		// Restore fpu rounding mode
+//
+//		cmp	edi,0					// did we change the value?
+//		je		not_changed			// nope... skip now...
+//		fwait
+//		fldcw	[esp+16];
+//not_changed:
+//		add	esp,20
+//		mov	col,eax
+//	}
+//	return col;
 
-	// Multiply r, g, b and a components (0.0,...,1.0) by 255 and convert to integer. Or the integer values togerher
-	// such that 32 bit ingeger has AAAAAAAARRRRRRRRGGGGGGGGBBBBBBBB.
-	__asm
-	{
-		sub	esp,20					// space for a, r, g and b float plus fpu rounding mode
+	const float scale = 255.0f;
 
-		// Store the fpu rounding mode
+	// Multiply components by 255 and truncate to integer
+	uint8_t r_int = (uint8_t)floorf(color.X * scale);
+	uint8_t g_int = (uint8_t)floorf(color.Y * scale);
+	uint8_t b_int = (uint8_t)floorf(color.Z * scale);
+	uint8_t a_int = (uint8_t)floorf(alpha * scale);
 
-		fwait
-		fstcw		[esp+16]				// store control word to stack
-		mov		eax,[esp+16]		// load it to eax
-		mov		edi,eax				// take copy
-		and		eax,~(1024|2048)	// mask out certain bits
-		or			eax,(1024|2048)	// or with precision control value "truncate"
-		sub		edi,eax				// did it change?
-		jz			skip					// .. if not, skip
-		mov		[esp],eax			// .. change control word
-		fldcw		[esp]
-skip:
-
-		// Convert the color
-
-		mov	esi,dword ptr color
-		fld	dword ptr[scale]
-
-		fld	dword ptr[esi]			// r
-		fld	dword ptr[esi+4]		// g
-		fld	dword ptr[esi+8]		// b
-		fld	dword ptr[alpha]		// a
-		fld	st(4)
-		fmul	st(4),st
-		fmul	st(3),st
-		fmul	st(2),st
-		fmulp	st(1),st
-		fistp	dword ptr[esp+0]		// a
-		fistp	dword ptr[esp+4]		// b
-		fistp	dword ptr[esp+8]		// g
-		fistp	dword ptr[esp+12]		// r
-		mov	ecx,[esp]				// a
-		mov	eax,[esp+4]				// b
-		mov	edx,[esp+8]				// g
-		mov	ebx,[esp+12]			// r
-		shl	ecx,24					// a << 24
-		shl	ebx,16					// r << 16
-		shl	edx,8						//	g << 8
-		or		eax,ecx					// (a << 24) | b
-		or		eax,ebx					// (a << 24) | (r << 16) | b
-		or		eax,edx					// (a << 24) | (r << 16) | (g << 8) | b
-		
-		fstp	st(0)
-
-		// Restore fpu rounding mode
-
-		cmp	edi,0					// did we change the value?
-		je		not_changed			// nope... skip now...
-		fwait
-		fldcw	[esp+16];
-not_changed:
-		add	esp,20
-
-		mov	col,eax
-	}
-	return col;
+	// Pack into a 32-bit integer in ARGB format
+	return (a_int << 24) | (r_int << 16) | (g_int << 8) | b_int;
 }
 
 // ----------------------------------------------------------------------------
@@ -841,48 +893,55 @@ WWINLINE void DX8Wrapper::Clamp_Color(Vector4& color)
 		return;
 	}
 
-	__asm
-	{
-		mov	esi,dword ptr color
+	//__asm
+	//{
+	//	mov	esi,dword ptr color
 
-		mov edx,0x3f800000
+	//	mov edx,0x3f800000
 
-		mov edi,dword ptr[esi]
-		mov ebx,edi
-		sar edi,31
-		not edi			// mask is now zero if negative value
-		and edi,ebx
-		cmp edi,edx		// if no less than 1.0 set to 1.0
-		cmovnb edi,edx
-		mov dword ptr[esi],edi
+	//	mov edi,dword ptr[esi]
+	//	mov ebx,edi
+	//	sar edi,31
+	//	not edi			// mask is now zero if negative value
+	//	and edi,ebx
+	//	cmp edi,edx		// if no less than 1.0 set to 1.0
+	//	cmovnb edi,edx
+	//	mov dword ptr[esi],edi
 
-		mov edi,dword ptr[esi+4]
-		mov ebx,edi
-		sar edi,31
-		not edi			// mask is now zero if negative value
-		and edi,ebx
-		cmp edi,edx		// if no less than 1.0 set to 1.0
-		cmovnb edi,edx
-		mov dword ptr[esi+4],edi
+	//	mov edi,dword ptr[esi+4]
+	//	mov ebx,edi
+	//	sar edi,31
+	//	not edi			// mask is now zero if negative value
+	//	and edi,ebx
+	//	cmp edi,edx		// if no less than 1.0 set to 1.0
+	//	cmovnb edi,edx
+	//	mov dword ptr[esi+4],edi
 
-		mov edi,dword ptr[esi+8]
-		mov ebx,edi
-		sar edi,31
-		not edi			// mask is now zero if negative value
-		and edi,ebx
-		cmp edi,edx		// if no less than 1.0 set to 1.0
-		cmovnb edi,edx
-		mov dword ptr[esi+8],edi
+	//	mov edi,dword ptr[esi+8]
+	//	mov ebx,edi
+	//	sar edi,31
+	//	not edi			// mask is now zero if negative value
+	//	and edi,ebx
+	//	cmp edi,edx		// if no less than 1.0 set to 1.0
+	//	cmovnb edi,edx
+	//	mov dword ptr[esi+8],edi
 
-		mov edi,dword ptr[esi+12]
-		mov ebx,edi
-		sar edi,31
-		not edi			// mask is now zero if negative value
-		and edi,ebx
-		cmp edi,edx		// if no less than 1.0 set to 1.0
-		cmovnb edi,edx
-		mov dword ptr[esi+12],edi
-	}
+	//	mov edi,dword ptr[esi+12]
+	//	mov ebx,edi
+	//	sar edi,31
+	//	not edi			// mask is now zero if negative value
+	//	and edi,ebx
+	//	cmp edi,edx		// if no less than 1.0 set to 1.0
+	//	cmovnb edi,edx
+	//	mov dword ptr[esi+12],edi
+	//}
+	const float one = 1.0f;
+
+	// Clamp each component to be at least 1.0 if it's non-negative
+	color.X = fmaxf(0.0f, fminf(color.X, 1.0f));
+	color.Y = fmaxf(0.0f, fminf(color.Y, 1.0f));
+	color.Z = fmaxf(0.0f, fminf(color.Z, 1.0f));
+	color.W = fmaxf(0.0f, fminf(color.W, 1.0f));
 }
 
 // ----------------------------------------------------------------------------
