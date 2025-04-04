@@ -920,6 +920,7 @@ void CPUDetectClass::Init_OS()
 	OSVERSIONINFO os;
 #ifdef WIN32
    os.dwOSVersionInfoSize = sizeof(os);	
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	GetVersionEx(&os);
 	
    OSVersionNumberMajor = os.dwMajorVersion;

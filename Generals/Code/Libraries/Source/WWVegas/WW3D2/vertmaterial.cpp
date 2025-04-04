@@ -72,9 +72,9 @@ static unsigned int unique=1;
 VertexMaterialClass* VertexMaterialClass::Presets[VertexMaterialClass::PRESET_COUNT];
 
 #ifdef DYN_MAT8
-class DynD3DMATERIAL8 : public W3DMPO
+class DynD3DMATERIAL9 : public W3DMPO
 {
-	W3DMPO_GLUE(DynD3DMATERIAL8)
+	W3DMPO_GLUE(DynD3DMATERIAL9)
 public:
 	D3DMATERIAL9 Mat;
 };
@@ -111,7 +111,7 @@ VertexMaterialClass::VertexMaterialClass(void):
 	}	
 
 #ifdef DYN_MAT8
-	MaterialDyn=W3DNEW DynD3DMATERIAL8;
+	MaterialDyn=W3DNEW DynD3DMATERIAL9;
 #else
 	MaterialOld=W3DNEW D3DMATERIAL9;
 #endif
@@ -152,7 +152,7 @@ VertexMaterialClass::VertexMaterialClass(const VertexMaterialClass & src) :
 	}	
 
 #ifdef DYN_MAT8
-	MaterialDyn=W3DNEW DynD3DMATERIAL8;
+	MaterialDyn=W3DNEW DynD3DMATERIAL9;
 #else
 	MaterialOld=W3DNEW D3DMATERIAL9;
 #endif
@@ -943,7 +943,7 @@ void VertexMaterialClass::Apply(void) const
 void VertexMaterialClass::Apply_Null(void)
 {
 	int i;
-	static D3DMATERIAL8 default_settings = 
+	static D3DMATERIAL9 default_settings = 
 	{
 		{ 1.0f, 1.0f, 1.0f, 1.0f },	// diffuse
 		{ 1.0f, 1.0f, 1.0f, 1.0f },	// ambient

@@ -73,8 +73,9 @@ static int Calculate_Texture_Memory_Usage(const TextureClass* texture,int red_fa
 	if (!d3d_texture) return 0;
 	for (unsigned i=red_factor;i<d3d_texture->GetLevelCount();++i) {
 		D3DSURFACE_DESC desc;
-		DX8_ErrorCode(d3d_texture->GetLevelDesc(i,&desc));
-		size+=desc.Size;
+		DX8_ErrorCode(d3d_texture->GetLevelDesc(i,&desc));		
+		//size+=desc.Size;
+		size += desc.Width * desc.Height; //[DX9]
 	}
 	return size;
 }

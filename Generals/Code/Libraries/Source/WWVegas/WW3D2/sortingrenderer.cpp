@@ -23,7 +23,8 @@
 #include "vertmaterial.h"
 #include "texture.h"
 #include <d3d9.h>
-#include <D3dx9math.h>
+//#include <D3dx9math.h>
+#include <DirectXMath.h>
 #include "statistics.h"
 
 bool SortingRendererClass::_EnableTriangleDraw=true;
@@ -350,15 +351,20 @@ void SortingRendererClass::Insert_Triangles(
 	SortingVertexBufferClass* vertex_buffer=static_cast<SortingVertexBufferClass*>(state->sorting_state.vertex_buffer);
 	WWASSERT(vertex_buffer);
 	WWASSERT(state->vertex_count<=vertex_buffer->Get_Vertex_Count());
-
-	D3DXMATRIX mtx=(D3DXMATRIX&)state->sorting_state.world*(D3DXMATRIX&)state->sorting_state.view;
-	D3DXVECTOR3 vec=(D3DXVECTOR3&)state->bounding_sphere.Center;
-	D3DXVECTOR4 transformed_vec;
-	D3DXVec3Transform(
-		&transformed_vec,
-		&vec,
-		&mtx); 
-	state->transformed_center=Vector3(transformed_vec[0],transformed_vec[1],transformed_vec[2]);
+	//[DX9]
+	DirectX::XMMATRIX mtx=(DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.world) * (DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.view);
+	DirectX::XMVECTOR vec=(DirectX::XMLoadFloat3)((DirectX::XMFLOAT3*)&state->bounding_sphere.Center);
+	DirectX::XMVECTOR transformed_vec;
+	//D3DXVec3Transform(
+	//	&transformed_vec,
+	//	&vec,
+	//	&mtx); 
+	transformed_vec = DirectX::XMVector3Transform(
+		vec,
+		mtx);
+	DirectX::XMFLOAT3 result;
+	DirectX::XMStoreFloat3(&result, transformed_vec);
+	state->transformed_center=Vector3(result.x, result.y, result.z);
 
 	
 	/// @todo lorenzen sez use a bucket sort here... and stop copying so much data so many times
@@ -552,12 +558,13 @@ void SortingRendererClass::Flush_Sorting_Pool()
 			src_verts+=state->sorting_state.vba_offset;
 			src_verts+=state->sorting_state.index_base_offset;
 			src_verts+=state->min_vertex_index;
-
-			D3DXMATRIX d3d_mtx=(D3DXMATRIX&)state->sorting_state.world*(D3DXMATRIX&)state->sorting_state.view;
-			D3DXMatrixTranspose(&d3d_mtx,&d3d_mtx);
-			const Matrix4& mtx=(const Matrix4&)d3d_mtx;
+			//[DX9]
+			DirectX::XMMATRIX d3d_mtx = (DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.world) * (DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.view);
+			d3d_mtx = XMMatrixTranspose(d3d_mtx);
+			DirectX::XMFLOAT4X4 mtx;
+			DirectX::XMStoreFloat4x4(&mtx, d3d_mtx);			
 			for (unsigned i=0;i<state->vertex_count;++i,++src_verts) {
-				vertex_z_array[i] = (mtx[2][0] * src_verts->x + mtx[2][1] * src_verts->y + mtx[2][2] * src_verts->z + mtx[2][3]);
+				vertex_z_array[i] = (mtx.m[2][0] * src_verts->x + mtx.m[2][1] * src_verts->y + mtx.m[2][2] * src_verts->z + mtx.m[2][3]);
 				*dest_verts++=*src_verts;
 			}
 
@@ -814,16 +821,16 @@ void SortingRendererClass::Insert_VolumeParticle(
 	WWASSERT(state->vertex_count<=vertex_buffer->Get_Vertex_Count());
 
 	// Transform the center point to view space for sorting
-
-	D3DXMATRIX mtx=(D3DXMATRIX&)state->sorting_state.world*(D3DXMATRIX&)state->sorting_state.view;
-	D3DXVECTOR3 vec=(D3DXVECTOR3&)state->bounding_sphere.Center;
-	D3DXVECTOR4 transformed_vec;
-	D3DXVec3Transform(
-		&transformed_vec,
-		&vec,
-		&mtx); 
-	state->transformed_center=Vector3(transformed_vec[0],transformed_vec[1],transformed_vec[2]);
-
+	//[DX9]
+	DirectX::XMMATRIX mtx = (DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.world) * (DirectX::XMLoadFloat4x4)((DirectX::XMFLOAT4X4*)&state->sorting_state.view);
+	DirectX::XMVECTOR vec = (DirectX::XMLoadFloat3)((DirectX::XMFLOAT3*)&state->bounding_sphere.Center);
+	DirectX::XMVECTOR transformed_vec;
+	transformed_vec = DirectX::XMVector3Transform(
+		vec,
+		mtx);
+	DirectX::XMFLOAT3 result;
+	DirectX::XMStoreFloat3(&result, transformed_vec);
+	state->transformed_center = Vector3(result.x, result.y, result.z);
 
 	// BUT WHAT IS THE DEAL WITH THE VERTCOUNT AND POLYCOUNT BEING N BUT TRANSFORMED CENTER COUNT == 1
 

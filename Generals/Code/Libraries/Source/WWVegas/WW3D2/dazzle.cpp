@@ -52,7 +52,7 @@
 #include "vertmaterial.h"
 #include "chunkio.h"
 #include "wwfile.h"
-//#include "inisup.h"
+#include "inisup.h"
 #include "persistfactory.h"
 #include "ww3dids.h"
 #include "dx8wrapper.h"
@@ -78,13 +78,6 @@
 
 		va_end(args);
 		return result;
-	}
-
-	inline char* safe_strcat(char* dest, const char* src) {
-		if (dest && src) {
-			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
-		}
-		return dest;
 	}
 	
 	#define sscanf safe_sscanf

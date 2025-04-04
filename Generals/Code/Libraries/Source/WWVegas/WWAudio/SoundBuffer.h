@@ -43,11 +43,10 @@
 #define __SOUNDBUFFER_H
 
 #pragma warning (push, 3)
-#include "Mss.H"
+//#include "Mss.H"
 #pragma warning (pop)
 
 #include "RefCount.H"
-
 
 // Forward declarations
 class FileClass;
@@ -169,7 +168,7 @@ class StreamSoundBufferClass : public SoundBufferClass
 		//	Protected methods
 		//////////////////////////////////////////////////////////////////////
 		virtual void			Free_Buffer (void);
-		virtual bool			Load_From_File (HANDLE hfile, unsigned long size, unsigned long offset);
+		virtual bool			Load_From_File (HANDLE hfile, unsigned long size, unsigned long offset); //TO-FIX remove as cant find it usage
 
 		//////////////////////////////////////////////////////////////////////
 		//	Protected member data

@@ -120,12 +120,6 @@
 		return dest;
 	}
 
-	inline FILE* safe_fopen(const char* filename, const char* mode) {
-		FILE* file = nullptr;
-		fopen_s(&file, filename, mode);
-		return file;
-	}
-
 	#define strcpy safe_strcpy
 #endif
 

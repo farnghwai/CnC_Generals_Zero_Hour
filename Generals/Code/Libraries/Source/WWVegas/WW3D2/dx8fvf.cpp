@@ -21,10 +21,69 @@
 //#include <D3dx9core.h>
 //#include <D3dx9mesh.h>
 
+// [DX9][Newly added] - by Claude 3.7 Sonnet
+// reimplement method original found in D3dx9mesh.h lib
+static unsigned DX9D3DXGetFVFVertexSize(unsigned  fvf)
+{
+    unsigned  size = 0;
+
+    // Handle position
+    if ((fvf & D3DFVF_XYZ) == D3DFVF_XYZ)
+        size += 3 * sizeof(float);
+    else if ((fvf & D3DFVF_XYZRHW) == D3DFVF_XYZRHW)
+        size += 4 * sizeof(float);
+    else if ((fvf & D3DFVF_XYZB1) == D3DFVF_XYZB1)
+        size += (3 + 1) * sizeof(float);
+    else if ((fvf & D3DFVF_XYZB2) == D3DFVF_XYZB2)
+        size += (3 + 2) * sizeof(float);
+    else if ((fvf & D3DFVF_XYZB3) == D3DFVF_XYZB3)
+        size += (3 + 3) * sizeof(float);
+    else if ((fvf & D3DFVF_XYZB4) == D3DFVF_XYZB4)
+        size += (3 + 4) * sizeof(float);
+    else if ((fvf & D3DFVF_XYZB5) == D3DFVF_XYZB5)
+        size += (3 + 5) * sizeof(float);
+
+    // Handle normal, binormal, tangent
+    if (fvf & D3DFVF_NORMAL)
+        size += 3 * sizeof(float);
+    if (fvf & D3DFVF_PSIZE)
+        size += sizeof(float);
+    if (fvf & D3DFVF_DIFFUSE)
+        size += sizeof(DWORD);
+    if (fvf & D3DFVF_SPECULAR)
+        size += sizeof(DWORD);
+
+    // Handle texture coordinates
+    unsigned numTexCoords = (fvf & D3DFVF_TEXCOUNT_MASK) >> D3DFVF_TEXCOUNT_SHIFT;
+    for (unsigned i = 0; i < numTexCoords; i++)
+    {
+        DWORD texCoordSize = (fvf >> (16 + i * 2)) & 0x3;
+        switch (texCoordSize)
+        {
+        case D3DFVF_TEXTUREFORMAT1:
+            size += 1 * sizeof(float);
+            break;
+        case D3DFVF_TEXTUREFORMAT2:
+            size += 2 * sizeof(float);
+            break;
+        case D3DFVF_TEXTUREFORMAT3:
+            size += 3 * sizeof(float);
+            break;
+        case D3DFVF_TEXTUREFORMAT4:
+            size += 4 * sizeof(float);
+            break;
+        }
+    }
+
+    return size;
+}
+
+
 static unsigned Get_FVF_Vertex_Size(unsigned FVF)
 {
-	return D3DXGetFVFVertexSize(FVF);
+	return DX9D3DXGetFVFVertexSize(FVF);
 }
+
 
 FVFInfoClass::FVFInfoClass(unsigned FVF_) 
 	:

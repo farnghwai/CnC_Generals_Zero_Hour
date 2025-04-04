@@ -103,6 +103,56 @@
 #pragma warning 665 9
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr; // Static variable to maintain context
+		return strtok_s(str, delim, &context);
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf	
+	#define strncpy safe_strncpy
+	#define sscanf safe_sscanf
+	#define strtok safe_strtok
+#endif
+
 
 INIEntry::~INIEntry(void) 
 {
@@ -437,7 +487,7 @@ int INIClass::Load(Straw & ffile)
 			char * ptr = strchr(buffer, ']');
 			if (ptr != NULL) *ptr = '\0';
 			strtrim(buffer);
-			INISection * secptr = W3DNEW INISection(strdup(buffer));
+			INISection * secptr = W3DNEW INISection(_strdup(buffer));
 			if (secptr == NULL) {
 				Clear();
 				return(false);
@@ -483,7 +533,7 @@ int INIClass::Load(Straw & ffile)
 					divider = " ";
 
 
-				INIEntry * entryptr = W3DNEW INIEntry(strdup(buffer), strdup(divider));
+				INIEntry * entryptr = W3DNEW INIEntry(_strdup(buffer), _strdup(divider));
 				if (entryptr == NULL) {
 					delete secptr;
 					Clear();
@@ -1349,7 +1399,7 @@ bool INIClass::Put_String(char const * section, char const * entry, char const *
 	INISection * secptr = Find_Section(section);
 
 	if (secptr == NULL) {
-		secptr = W3DNEW INISection(strdup(section));
+		secptr = W3DNEW INISection(_strdup(section));
 		if (secptr == NULL) return(false);
 		SectionList->Add_Tail(secptr);
 		SectionIndex->Add_Index(secptr->Index_ID(), secptr);
@@ -1375,7 +1425,7 @@ bool INIClass::Put_String(char const * section, char const * entry, char const *
 	**	Create and add the new entry.
 	*/
 	if (string != NULL && strlen(string) > 0) {
-		entryptr = W3DNEW INIEntry(strdup(entry), strdup(string));
+		entryptr = W3DNEW INIEntry(_strdup(entry), _strdup(string));
 
 		if (entryptr == NULL) {
 			return(false);
@@ -1509,7 +1559,7 @@ char *INIClass::Get_Alloc_String(char const * section, char const * entry, char 
 	}
 
 	if (defvalue == NULL) return NULL;
-	return(strdup(defvalue));
+	return(_strdup(defvalue));
 }
 
 int INIClass::Get_List_Index(char const * section, char const * entry, int const defvalue, char *list[])
@@ -1522,7 +1572,7 @@ int INIClass::Get_List_Index(char const * section, char const * entry, int const
 	}
 
 	for (int lp = 0; list[lp]; lp++) {
-		if (stricmp(entryptr->Value, list[lp]) == 0) {
+		if (_stricmp(entryptr->Value, list[lp]) == 0) {
 			return lp;
 		}
 		assert(lp < 1000);
@@ -1541,14 +1591,14 @@ int INIClass::Get_Int_Bitfield(char const * section, char const * entry, int def
 	// get the bitfield value for each piece.
 	// int count	= 0; (gth) initailized but not referenced...
 	int retval	= 0;
-	char *str	= strdup(entryptr->Value);
+	char *str	= _strdup(entryptr->Value);
 
    int lp; 
 	for (char *token = strtok(str, "|+"); token; token = strtok(NULL, "|+")) {
 		for (lp = 0; list[lp]; lp++) {
 			// if this list entry matches our string token then we need
 			// to set this bit.
-			if (stricmp(token, list[lp]) == 0) {
+			if (_stricmp(token, list[lp]) == 0) {
 				retval |= (1 << lp);
 				break;
 			}
@@ -1576,7 +1626,7 @@ int *	INIClass::Get_Alloc_Int_Array(char const * section, char const * entry, in
 	// count all the tokens in the string.  Each token should represent an
 	// integer number.
 	int count = 0;
-	char *str = strdup(entryptr->Value);
+	char *str = _strdup(entryptr->Value);
 	char *token;
 	for (token = strtok(str, " "); token; token = strtok(NULL, " ")) {
 		count++;
@@ -1587,7 +1637,7 @@ int *	INIClass::Get_Alloc_Int_Array(char const * section, char const * entry, in
 	// array to hold the tokens and parse out the actual values.
 	retval	= W3DNEWARRAY int[count+1];
 	count		= 0;
-	str		= strdup(entryptr->Value);
+	str		= _strdup(entryptr->Value);
 	for (token = strtok(str, " "); token; token = strtok(NULL, " ")) {
 		retval[count] = atoi(token);
 		count++;

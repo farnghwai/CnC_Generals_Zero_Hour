@@ -44,7 +44,6 @@
 #include "chunkio.h"
 #include "scene.h"
 
-
 //////////////////////////////////////////////////////////////////////////////////
 //	Global variables
 //////////////////////////////////////////////////////////////////////////////////
@@ -576,7 +575,8 @@ SoundRenderObjDefClass::Save_W3D (ChunkSaveClass &csave)
 	//
 	// Begin a chunk that identifies a sound render object
 	//
-	if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ) == TRUE) {
+	//if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ) == TRUE) {
+	if (csave.Begin_Chunk(W3D_CHUNK_SOUNDROBJ)) {
 		
 		//
 		// Attempt to save the different sections of the aggregate definition
@@ -675,15 +675,17 @@ SoundRenderObjDefClass::Write_Header (ChunkSaveClass &csave)
 	//
 	// Begin a chunk that identifies the aggregate
 	//
-	if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ_HEADER) == TRUE) {
-		
+	//if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ_HEADER) == TRUE) {
+	if (csave.Begin_Chunk(W3D_CHUNK_SOUNDROBJ_HEADER)) {
+
 		//
 		// Fill the header structure
 		//
 		W3dSoundRObjHeaderStruct header = { 0 };
 		header.Version	= W3D_CURRENT_AGGREGATE_VERSION;
 		header.Flags	= Flags;
-		::lstrcpyn (header.Name, (const char *)Name, sizeof (header.Name));
+		//::lstrcpyn (header.Name, (const char *)Name, sizeof (header.Name));
+		strncpy_s(header.Name, sizeof(header.Name), Name, _TRUNCATE); // [DX9]
 		header.Name[sizeof (header.Name) - 1] = 0;
 
 		//
@@ -714,8 +716,9 @@ SoundRenderObjDefClass::Write_Definition (ChunkSaveClass &csave)
 	//
 	// Save the definition to its own chunk
 	//
-	if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ_DEFINITION) == TRUE) {		
-		if (Definition.Save (csave)) {
+	//if (csave.Begin_Chunk (W3D_CHUNK_SOUNDROBJ_DEFINITION) == TRUE) {		
+	if (csave.Begin_Chunk(W3D_CHUNK_SOUNDROBJ_DEFINITION)) {
+			if (Definition.Save (csave)) {
 			retval = WW3D_ERROR_OK;
 		}
 		csave.End_Chunk ();

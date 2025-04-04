@@ -91,8 +91,10 @@
 	// additional overloads for 'placement new'
 	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
 	//inline void __cdecl operator delete						(void *, void *p)		{ }
-	inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
-	inline void __cdecl operator delete[]					(void *, void *p)		{ }
+	/*inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
+	inline void __cdecl operator delete[]					(void *, void *p)		{ }*/
+	inline void* __cdecl operator new[](size_t s, void* p); //TO-FIX sync with GameMemory.h
+	inline void __cdecl operator delete[](void*, void* p); //TO-FIX sync with GameMemory.h
 
 #endif
 

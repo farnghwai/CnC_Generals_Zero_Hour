@@ -59,7 +59,7 @@ class ChunkSaveClass;
 
 #define DYN_MAT8
 #ifdef DYN_MAT8
-class DynD3DMATERIAL8;
+class DynD3DMATERIAL9;
 #else
 struct _D3DMATERIAL8;
 #endif
@@ -244,7 +244,7 @@ private:
 	// We're using the pointer instead of the actual structure
 	// so we don't have to include the d3d header - HY
 #ifdef DYN_MAT8
-	DynD3DMATERIAL8 *			MaterialDyn;
+	DynD3DMATERIAL9 *			MaterialDyn;
 #else
 	_D3DMATERIAL8 *				MaterialOld;
 #endif

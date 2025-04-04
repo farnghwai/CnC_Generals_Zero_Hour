@@ -992,7 +992,17 @@ void PointGroupClass::Render(RenderInfoClass &rinfo)
 
 
 
-
+Matrix4 ConvertXMMatrixToMatrix4(const DirectX::XMMATRIX& xmm) {
+	DirectX::XMFLOAT4X4 mtx;
+	DirectX::XMStoreFloat4x4(&mtx, xmm);
+	Matrix4 mat(true);
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			mat[i][j] = xmm.r[i].m128_f32[j];
+		}
+	}
+	return mat;
+}
 
 
 
@@ -1207,8 +1217,10 @@ void PointGroupClass::Update_Arrays(
 					if (!Billboard) {
 						// If we're not billboarding, then the coordinate we have is in screen space.
 						Matrix4 rotMat;
-						D3DXMatrixRotationZ(&(D3DXMATRIX&) rotMat, ((float)point_orientation[i] / 255.0f * 2 * D3DX_PI));
-						
+						//[DX9]
+						//D3DXMatrixRotationZ(&(D3DXMATRIX&) rotMat, ((float)point_orientation[i] / 255.0f * 2 * D3DX_PI));
+						DirectX::XMMATRIX rotMatRaw = DirectX::XMMatrixRotationZ((float)point_orientation[i] / 255.0f * 2 * DirectX::XM_PI);
+						rotMat = ConvertXMMatrixToMatrix4(rotMatRaw);
 						Vector4 orientedVecX = rotMat * GroundMultiplierX;
 						Vector4 orientedVecY = rotMat * GroundMultiplierY;
 
@@ -1691,7 +1703,7 @@ void PointGroupClass::RenderVolumeParticle(RenderInfoClass &rinfo, unsigned int 
 
 
 	//// VOLUME_PARTICLE LOOP ///////////////
-	for ( int t = 0; t < depth; ++t )
+	for (unsigned int t = 0; t < depth; ++t )
 	{
 
 
