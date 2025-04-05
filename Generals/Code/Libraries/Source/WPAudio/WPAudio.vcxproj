@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Internal|Win32">
+      <Configuration>Internal</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName>WPAudio</SccProjectName>
+    <SccLocalPath>..\..</SccLocalPath>
+    <ProjectGuid>{9061A422-26C1-C5DD-B3B8-9C8B4C776EAD}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
+    <OutDir>.\Internal\</OutDir>
+    <IntDir>.\Internal\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_INTERNAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Internal\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Internal\WPAudio.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Internal\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Internal\</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Internal\WPAudio.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Internal\WPAudio.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug\WPAudio.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\WPAudio.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\WPAudio.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
+      <AdditionalIncludeDirectories>..\..\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_LIB;WIN32;NDEBUG;_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\WPAudio.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\WPAudio.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\WPAudio.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Asimp3\Mp3api.cpp" />
+    <ClCompile Include="Asimp3\Mp3dec.cpp" />
+    <ClCompile Include="AUD_Assert.cpp" />
+    <ClCompile Include="AUD_Attributes.cpp" />
+    <ClCompile Include="AUD_Cache.cpp" />
+    <ClCompile Include="AUD_Channel.cpp" />
+    <ClCompile Include="AUD_Device.cpp" />
+    <ClCompile Include="AUD_DSoundDriver.cpp" />
+    <ClCompile Include="AUD_Events.cpp" />
+    <ClCompile Include="AUD_Level.cpp" />
+    <ClCompile Include="AUD_List.cpp" />
+    <ClCompile Include="AUD_Lock.cpp" />
+    <ClCompile Include="AUD_Memory.cpp" />
+    <ClCompile Include="AUD_Profiler.cpp" />
+    <ClCompile Include="AUD_Source.cpp" />
+    <ClCompile Include="AUD_StreamBuffering.cpp" />
+    <ClCompile Include="AUD_Streamer.cpp" />
+    <ClCompile Include="AUD_Time.cpp" />
+    <ClCompile Include="AUD_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\WPAudio\Altypes.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Attributes.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Cache.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Channel.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Debug.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Defs.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Device.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Driver.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Errors.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Events.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Handle.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Level.h" />
+    <ClInclude Include="..\..\Include\WPAudio\List.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Lock.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Memory.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Profiler.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Search.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Source.h" />
+    <ClInclude Include="..\..\Include\WPAudio\StreamBuffering.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Streamer.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Thread.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Time.h" />
+    <ClInclude Include="..\..\Include\WPAudio\Win32.h" />
+    <ClInclude Include="Asimp3\Datatbl.h" />
+    <ClInclude Include="Asimp3\Imssapi.h" />
+    <ClInclude Include="Asimp3\Mp3dec.h" />
+    <ClInclude Include="Asimp3\Mss.h" />
+    <ClInclude Include="Asimp3\Mssasi.h" />
+    <ClInclude Include="Asimp3\Rib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Asimp3\Asimp3asm.asm">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /Fo$(OutDir)asi_x86.obj %(FullPath)  
+%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /DAMD /Fo$(OutDir)asi_amd.obj %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(OutDir)\asi_x86.obj;$(OutDir)\asi_amd.obj;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /Fo$(OutDir)asi_x86.obj %(FullPath)  
+%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /DAMD /Fo$(OutDir)asi_amd.obj %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(OutDir)\asi_x86.obj;$(OutDir)\asi_amd.obj;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /Fo$(OutDir)asi_x86.obj %(FullPath)  
+%(RootDir)%(Directory)\bin\ml /nologo /coff /Cp /Zm /c /W2 /Zi /DAMD /Fo$(OutDir)asi_amd.obj %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(OutDir)\asi_x86.obj;$(OutDir)\asi_amd.obj;%(Outputs)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
