@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 52% (14 / 27)
+Completion: 52% (16 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -25,7 +25,7 @@ pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
 textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
 WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
-ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Work-in-Progress | Converting to DirectX 9 and remove legacy DirectX dependencies
+ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Done | See note 5 and 6
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
 wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Done
@@ -53,6 +53,8 @@ GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
 2. Remove SafeDisk\CdaPfn.h control
 3. Attempt retrofit original DirectX library to newer version of DirectX library
 4. Library replacement:
-From | To
------|----
-hash_map | unordered_map
+- | From | To |
+  | -----|---- |
+  | hash_map | unordered_map |
+5. Converting to DirectX 9 and remove legacy DirectX dependencies
+6. Remove Sound library Miles Sound System "Asimp3" (WWAudio Project) without replacement

@@ -46,7 +46,7 @@
 #include "proto.h"
 #include "w3d_file.h"
 #include "w3derr.h"
-#include "audiblesound.h"
+//#include "audiblesound.h"
 
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -118,9 +118,9 @@ public:
 	//
 	//	SoundRenderObjClass specific
 	//
-	virtual void						Set_Sound (AudibleSoundDefinitionClass *definition);
-	virtual AudibleSoundClass *	Get_Sound (void) const;
-	virtual AudibleSoundClass *	Peek_Sound (void) const			{ return Sound; }
+	//virtual void						Set_Sound (AudibleSoundDefinitionClass *definition);
+	//virtual AudibleSoundClass *	Get_Sound (void) const;
+	//virtual AudibleSoundClass *	Peek_Sound (void) const			{ return Sound; }
 
 	//
 	//	Flag support
@@ -145,7 +145,7 @@ private:
 	///////////////////////////////////////////////////////////
 	bool						IsInitialized;	
 	StringClass				Name;
-	AudibleSoundClass *	Sound;
+	//AudibleSoundClass *	Sound;
 	uint32					Flags;
 };
 
@@ -212,7 +212,7 @@ private:
 	///////////////////////////////////////////////////////////
 	uint32								Version;
 	StringClass							Name;
-	AudibleSoundDefinitionClass 	Definition;
+	//AudibleSoundDefinitionClass 	Definition;
 	SoundRenderObjClass::FLAGS		Flags;
 };
 
