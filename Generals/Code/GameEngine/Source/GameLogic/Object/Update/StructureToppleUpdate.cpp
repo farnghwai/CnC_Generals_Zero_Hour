@@ -226,7 +226,7 @@ UpdateSleepTime StructureToppleUpdate::update( void )
 	// when it starts toppling over.
 	if (m_toppleState == TOPPLESTATE_WAITINGFORTOPPLESTART) {
 		UnsignedInt now = TheGameLogic->getFrame();
-		if (now >= m_nextBurstFrame) {
+		if (m_nextBurstFrame >= 0 && now >= (UnsignedInt)m_nextBurstFrame) {
 			doToppleDelayBurstFX();
 			// This uses a game client random value because the delay bursts are purely visual and aural effects.
 			m_nextBurstFrame = now + GameClientRandomValue(d->m_minToppleBurstDelay, d->m_maxToppleBurstDelay);
@@ -274,7 +274,7 @@ UpdateSleepTime StructureToppleUpdate::update( void )
 			m_toppleFrame = TheGameLogic->getFrame();
 		}
 
-		if (now >= m_nextBurstFrame) {
+		if (m_nextBurstFrame >= 0 && now >= (UnsignedInt)m_nextBurstFrame) {
 			doToppleDelayBurstFX();
 			// This uses a game client random value because the delay bursts are purely visual and aural effects.
 			m_nextBurstFrame = now + GameClientRandomValue(d->m_minToppleBurstDelay, d->m_maxToppleBurstDelay);
@@ -403,7 +403,8 @@ void StructureToppleUpdate::applyCrushingDamage(Real theta)
 	Real jcos;
 	Real jsin;
 //	Coord3D target;
-	for (Real j = m_lastCrushedLocation; j < maxDistance; j += WEAPON_SPACING_PERPENDICULAR) {
+	Real j = m_lastCrushedLocation;
+	for (; j < maxDistance; j += WEAPON_SPACING_PERPENDICULAR) {
 		jcos = j * Cos(toppleAngle);
 		jsin = j * Sin(toppleAngle);
 		doDamageLine(building, wt, jcos, jsin, facingWidth, toppleAngle);
@@ -559,7 +560,7 @@ void StructureToppleUpdate::doPhaseStuff(StructureTopplePhaseType stphase, const
 		{
 			idx = idxList[i];
 			const OCLVec& v = d->m_ocls[stphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 			const ObjectCreationList* ocl = v[idx];
 			ObjectCreationList::create(ocl, getObject(), target, NULL);
 		}

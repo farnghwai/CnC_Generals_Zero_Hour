@@ -55,6 +55,39 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define strcat safe_strcat
+	#define fopen safe_fopen
+	#define sscanf safe_sscanf
+#endif
+
 //-----------------------------------------------------------------------------
 void userMemoryManagerGetDmaParms(Int *numSubPools, const PoolInitRec **pParms)
 {
@@ -526,7 +559,7 @@ static PoolSizeRec sizes[] =
 	{ "Mapping", 128, 32 },
 	{ "OutputChunk", 32, 32 },
 	{ "InputChunk", 32, 32 },
-	{ "AnimateWindow", 32, 32 },
+	{ "AnimateWindowCC", 32, 32 },
 	{ "GameFont", 32, 32 },
 	{ "NetCommandRef", 256, 32 },
 	{ "GameMessageArgument", 128, 32 },
@@ -661,7 +694,7 @@ static PoolSizeRec sizes[] =
 	{ "SortingIndexBufferClass", 32, 32 },
 	{ "DX8VertexBufferClass", 128, 32 },
 	{ "SortingVertexBufferClass", 32, 32 },
-	{ "DynD3DMATERIAL8", 8192, 32 }, 
+	{ "DynD3DMATERIAL9", 8192, 32 }, 
 	{ "DynamicMatrix3D", 512, 32 },
 	{ "MeshGeometryClass", 32, 32 },
 	{ "DynamicMeshModel", 32, 32 },
@@ -738,7 +771,7 @@ void userMemoryManagerInitPools()
 			{
 				for (PoolSizeRec* p = sizes; p->name != NULL; ++p)
 				{
-					if (stricmp(p->name, poolName) == 0)
+					if (_stricmp(p->name, poolName) == 0)
 					{
 						// currently, these must be multiples of 4. so round up.
 						p->initial = roundUpMemBound(initial);

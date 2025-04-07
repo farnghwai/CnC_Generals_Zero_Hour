@@ -401,8 +401,10 @@ Bool Mouse::isClick(const ICoord2D *anchor, const ICoord2D *dest, UnsignedInt pr
 
 	// if the mouse hasn't moved further than the tolerance distance
 	// or the click took less than the tolerance duration
-	if (	abs(delta.x) > m_dragTolerance
-		||	abs(delta.y) > m_dragTolerance
+	int dx = abs(delta.x);
+	int dy = abs(delta.y);
+	if ( (dx >= 0 && (UnsignedInt)dx > m_dragTolerance)
+		||	(dy >= 0 && (UnsignedInt)dy > m_dragTolerance)
 		||	currentMouseClick - previousMouseClick > m_dragToleranceMS)
 	{
 		return FALSE;
@@ -679,7 +681,7 @@ void Mouse::createStreamMessages( void )
   if(m_tooltipDelay >= 0 )
      delay = m_tooltipDelay;
   
-	if( now - m_stillTime >= delay )
+	if(delay >= 0 && (now - m_stillTime >= (UnsignedInt)delay ))
 	{
 		if (!m_displayTooltip)
 		{
@@ -840,7 +842,7 @@ void Mouse::setCursorTooltip( UnicodeString tooltip, Int delay, const RGBColor *
 		{
 			widthInPixels = 120;
 		}
-		else if (widthInPixels > TheDisplay->getWidth())
+		else if ((UnsignedInt)widthInPixels > TheDisplay->getWidth())
 		{
 			widthInPixels = TheDisplay->getWidth();
 		}

@@ -146,6 +146,7 @@ void HeaderTemplateManager::init( void )
 	fname.format("Data\\%s\\HeaderTemplate.ini", GetRegistryLanguage().str());
 	OSVERSIONINFO	osvi;
 	osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	if (GetVersionEx(&osvi))
 	{	//check if we're running Win9x variant since they may need different fonts
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
@@ -156,6 +157,8 @@ void HeaderTemplateManager::init( void )
 				fname = tempName;
 		}
 	}
+	#pragma warning(default : 4996) //TO-FIX Restore back
+
 	ini.load( fname, INI_LOAD_OVERWRITE, NULL );
 	populateGameFonts();
 }

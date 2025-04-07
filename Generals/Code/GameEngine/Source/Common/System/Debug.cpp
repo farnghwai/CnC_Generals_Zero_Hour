@@ -60,6 +60,91 @@
 #include "GameClient/Mouse.h"
 #include "Common/StackDump.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	inline int safe_snprintf(char* buffer, size_t count, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_vsprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_asctime(const struct tm* timeptr) {
+		// asctime returns a string like "Www Mmm dd hh:mm:ss yyyy\n"
+		// This requires at least 26 characters (25 + null terminator)
+		static char buffer[26];
+
+		if (asctime_s(buffer, sizeof(buffer), timeptr) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	inline struct tm* safe_localtime(const time_t* timer) {
+		static struct tm result;
+		if (localtime_s(&result, timer) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return &result;
+	}
+
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+	#define fopen safe_fopen
+	#define sprintf safe_sprintf
+	#define _vsnprintf safe_vsnprintf
+	#define _snprintf safe_snprintf
+	#define vsprintf safe_vsprintf
+	#define asctime safe_asctime
+	#define localtime safe_localtime
+#endif
+
 // Horrible reference, but we really, really need to know if we are windowed.
 extern bool DX8Wrapper_IsWindowed;
 extern HWND ApplicationHWnd;

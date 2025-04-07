@@ -49,6 +49,20 @@ GameStateMap *TheGameStateMap = NULL;
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
+
 // METHODS ////////////////////////////////////////////////////////////////////////////////////////
 
 // ------------------------------------------------------------------------------------------------
@@ -484,7 +498,7 @@ void GameStateMap::clearScratchPadMaps( void )
 
 			// see if there is a ".map" at end of this filename
 			Char *c = strrchr( item.cFileName, '.' );
-			if( c && stricmp( c, ".map" ) == 0 )
+			if( c && _stricmp( c, ".map" ) == 0 )
 				fileToDelete.set( item.cFileName );  // we want to delete this one
 
 		}  // end if

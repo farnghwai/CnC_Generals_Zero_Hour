@@ -160,7 +160,7 @@ void PopulateReplayFileListbox(GameWindow *listbox)
 
 				// name
 				header.replayName.translate(asciistr);
-				for (Int tmp=0; tmp < TheRecorder->getReplayExtention().getLength(); ++tmp)
+				for (size_t tmp=0; tmp < TheRecorder->getReplayExtention().getLength(); ++tmp)
 					header.replayName.removeLastChar();
 
 				UnicodeString replayNameToShow = header.replayName;

@@ -945,7 +945,7 @@ void AIStateMachine::addToGoalPath( const Coord3D *pathPoint)
 /**
  * Return path position at index "i"
  */
-const Coord3D *AIStateMachine::getGoalPathPosition( Int i ) const
+const Coord3D *AIStateMachine::getGoalPathPosition( size_t i ) const
 {
 	if (i < 0 || i >= m_goalPath.size())
 		return NULL;

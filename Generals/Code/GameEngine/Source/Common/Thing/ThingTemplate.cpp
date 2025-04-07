@@ -76,6 +76,21 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strncpy safe_strncpy
+#endif
+
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
 const Int USE_EXP_VALUE_FOR_SKILL_VALUE = -999;
@@ -600,7 +615,7 @@ static void parseArbitraryFXIntoMap( INI* ini, void *instance, void* /* store */
 	const char* name = (const char*)userData;
 	const char* token = ini->getNextToken();
 	const FXList* fxl = TheFXListStore->findFXList(token);	// could be null!
-	DEBUG_ASSERTCRASH(fxl != NULL || stricmp(token, "None") == 0, ("FXList %s not found!\n",token));
+	DEBUG_ASSERTCRASH(fxl != NULL || _stricmp(token, "None") == 0, ("FXList %s not found!\n",token));
 	mapFX->insert(std::make_pair(AsciiString(name), fxl));	
 }
 
@@ -1114,7 +1129,8 @@ ThingTemplate::~ThingTemplate()
 //=============================================================================
 void ThingTemplate::resolveNames()
 {
-	Int i, j;
+	size_t i;
+	Int j;
 
 	for (i = 0; i < m_prereqInfo.size(); i++)
 	{
@@ -1169,6 +1185,7 @@ void ThingTemplate::initForLTA(const AsciiString& name)
 
 	char buffer[1024];
 	strncpy(buffer, name.str(), sizeof(buffer));
+	int i = 0;
 	for (int i=0; buffer[i]; i++) {
 		if (buffer[i] == '/') {
 			i++;
@@ -1432,7 +1449,7 @@ Int ThingTemplate::calcTimeToBuild( const Player* player) const
 
 //---------------------------------------------------------------------------------------ModuleInfo
 //-------------------------------------------------------------------------------------------------
-ModuleData* ModuleInfo::friend_getNthData(Int i)
+ModuleData* ModuleInfo::friend_getNthData(size_t i)
 {
 	if (i >= 0 && i < m_info.size())
 	{

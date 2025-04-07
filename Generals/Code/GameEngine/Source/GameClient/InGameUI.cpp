@@ -92,6 +92,17 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_vsnwprintf(wchar_t* buffer, size_t count, const wchar_t* format, va_list args) {
+		return _vsnwprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define _vsnwprintf safe_vsnwprintf
+#endif
 
 // ------------------------------------------------------------------------------------------------
 static const Real placementOpacity = 0.45f;
@@ -322,7 +333,7 @@ void InGameUI::xfer( Xfer *xfer )
 	if( version >= 2 )
 	{
 		// Saving the named timer infos and their friends so we get script timers back after we load
-		xfer->xferInt(&m_namedTimerLastFlashFrame);
+		xfer->xferUnsignedInt(&m_namedTimerLastFlashFrame);
 		xfer->xferBool(&m_namedTimerUsedFlashColor);
 		xfer->xferBool(&m_showNamedTimers);
 
@@ -714,67 +725,67 @@ const FieldParse InGameUI::s_fieldParseTable[] =
 	{ "MessageColor1",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_messageColor1 ) },
 	{ "MessageColor2",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_messageColor2 ) },
 	{ "MessagePosition",								INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_messagePosition ) },
-	{ "MessageFont",										INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_messageFont ) },
+	{ "MessageFont",									INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_messageFont ) },
 	{ "MessagePointSize",								INI::parseInt,					NULL,		offsetof( InGameUI, m_messagePointSize ) },
-	{ "MessageBold",										INI::parseBool,					NULL,		offsetof( InGameUI, m_messageBold ) },
-	{ "MessageDelayMS",									INI::parseInt,					NULL,		offsetof( InGameUI, m_messageDelayMS ) },
+	{ "MessageBold",									INI::parseBool,					NULL,		offsetof( InGameUI, m_messageBold ) },
+	{ "MessageDelayMS",									INI::parseUnsignedInt,					NULL,		offsetof( InGameUI, m_messageDelayMS ) },
 
-	{ "MilitaryCaptionColor",						INI::parseRGBAColorInt,	NULL,		offsetof( InGameUI, m_militaryCaptionColor ) },
-	{ "MilitaryCaptionPosition",				INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
+	{ "MilitaryCaptionColor",							INI::parseRGBAColorInt,	NULL,		offsetof( InGameUI, m_militaryCaptionColor ) },
+	{ "MilitaryCaptionPosition",						INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
 
-	{ "MilitaryCaptionTitleFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionTitleFont ) },
-	{ "MilitaryCaptionTitlePointSize",	INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionTitlePointSize ) },
-	{ "MilitaryCaptionTitleBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionTitleBold ) },
+	{ "MilitaryCaptionTitleFont",						INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionTitleFont ) },
+	{ "MilitaryCaptionTitlePointSize",					INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionTitlePointSize ) },
+	{ "MilitaryCaptionTitleBold",						INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionTitleBold ) },
 
-	{ "MilitaryCaptionFont",						INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionFont ) },
-	{ "MilitaryCaptionPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionPointSize ) },
-	{ "MilitaryCaptionBold",						INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionBold ) },
+	{ "MilitaryCaptionFont",							INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_militaryCaptionFont ) },
+	{ "MilitaryCaptionPointSize",						INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionPointSize ) },
+	{ "MilitaryCaptionBold",							INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionBold ) },
 
-	{ "MilitaryCaptionRandomizeTyping",	INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionRandomizeTyping ) },
-	{ "MilitaryCaptionSpeed",						INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionSpeed ) },
-	{ "MilitaryCaptionDelayMS",					INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionDelayMS ) },
+	{ "MilitaryCaptionRandomizeTyping",					INI::parseBool,					NULL,		offsetof( InGameUI, m_militaryCaptionRandomizeTyping ) },
+	{ "MilitaryCaptionSpeed",							INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionSpeed ) },
+	{ "MilitaryCaptionDelayMS",							INI::parseInt,					NULL,		offsetof( InGameUI, m_militaryCaptionDelayMS ) },
 
-	{ "MilitaryCaptionPosition",				INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
+	{ "MilitaryCaptionPosition",						INI::parseICoord2D,			NULL,		offsetof( InGameUI, m_militaryCaptionPosition ) },
 
 	{ "SuperweaponCountdownPosition",					INI::parseCoord2D,			NULL,		offsetof( InGameUI, m_superweaponPosition ) },
-	{ "SuperweaponCountdownFlashDuration",		INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_superweaponFlashDuration ) },
-	{ "SuperweaponCountdownFlashColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_superweaponFlashColor ) },
+	{ "SuperweaponCountdownFlashDuration",				INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_superweaponFlashDuration ) },
+	{ "SuperweaponCountdownFlashColor",					INI::parseColorInt,			NULL,		offsetof( InGameUI, m_superweaponFlashColor ) },
 
-	{ "SuperweaponCountdownNormalFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponNormalFont ) },
-	{ "SuperweaponCountdownNormalPointSize",	INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponNormalPointSize ) },
-	{ "SuperweaponCountdownNormalBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponNormalBold ) },
+	{ "SuperweaponCountdownNormalFont",					INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponNormalFont ) },
+	{ "SuperweaponCountdownNormalPointSize",			INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponNormalPointSize ) },
+	{ "SuperweaponCountdownNormalBold",					INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponNormalBold ) },
 
-	{ "SuperweaponCountdownReadyFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponReadyFont ) },
-	{ "SuperweaponCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponReadyPointSize ) },
-	{ "SuperweaponCountdownReadyBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponReadyBold ) },
+	{ "SuperweaponCountdownReadyFont",					INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_superweaponReadyFont ) },
+	{ "SuperweaponCountdownReadyPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI, m_superweaponReadyPointSize ) },
+	{ "SuperweaponCountdownReadyBold",					INI::parseBool,					NULL,		offsetof( InGameUI, m_superweaponReadyBold ) },
 
 	{ "NamedTimerCountdownPosition",					INI::parseCoord2D,			NULL,		offsetof( InGameUI, m_namedTimerPosition ) },
-	{ "NamedTimerCountdownFlashDuration",			INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_namedTimerFlashDuration ) },
-	{ "NamedTimerCountdownFlashColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerFlashColor ) },
+	{ "NamedTimerCountdownFlashDuration",				INI::parseDurationReal,	NULL,		offsetof( InGameUI, m_namedTimerFlashDuration ) },
+	{ "NamedTimerCountdownFlashColor",					INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerFlashColor ) },
 
-	{ "NamedTimerCountdownNormalFont",				INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_namedTimerNormalFont ) },
-	{ "NamedTimerCountdownNormalPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerNormalPointSize ) },
-	{ "NamedTimerCountdownNormalBold",				INI::parseBool,					NULL,		offsetof( InGameUI, m_namedTimerNormalBold ) },
-	{ "NamedTimerCountdownNormalColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerNormalColor ) },
+	{ "NamedTimerCountdownNormalFont",					INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_namedTimerNormalFont ) },
+	{ "NamedTimerCountdownNormalPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerNormalPointSize ) },
+	{ "NamedTimerCountdownNormalBold",					INI::parseBool,					NULL,		offsetof( InGameUI, m_namedTimerNormalBold ) },
+	{ "NamedTimerCountdownNormalColor",					INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerNormalColor ) },
 
 	{ "NamedTimerCountdownReadyFont",					INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_namedTimerReadyFont ) },
-	{ "NamedTimerCountdownReadyPointSize",		INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerReadyPointSize ) },
+	{ "NamedTimerCountdownReadyPointSize",				INI::parseInt,					NULL,		offsetof( InGameUI, m_namedTimerReadyPointSize ) },
 	{ "NamedTimerCountdownReadyBold",					INI::parseBool,					NULL,		offsetof( InGameUI, m_namedTimerReadyBold ) },
-	{ "NamedTimerCountdownReadyColor",				INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerReadyColor ) },
+	{ "NamedTimerCountdownReadyColor",					INI::parseColorInt,			NULL,		offsetof( InGameUI, m_namedTimerReadyColor ) },
 
-	{ "FloatingTextTimeOut",									INI::parseDurationUnsignedInt,		NULL,		offsetof( InGameUI, m_floatingTextTimeOut ) },
-	{ "FloatingTextMoveUpSpeed",							INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveUpSpeed ) },
-	{ "FloatingTextVanishRate",								INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveVanishRate ) },
+	{ "FloatingTextTimeOut",							INI::parseDurationUnsignedInt,		NULL,		offsetof( InGameUI, m_floatingTextTimeOut ) },
+	{ "FloatingTextMoveUpSpeed",						INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveUpSpeed ) },
+	{ "FloatingTextVanishRate",							INI::parseVelocityReal,	NULL,		offsetof( InGameUI, m_floatingTextMoveVanishRate ) },
 
 	{ "PopupMessageColor",								INI::parseColorInt,					NULL,		offsetof( InGameUI, m_popupMessageColor ) },
 	
-	{ "DrawableCaptionFont",									INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_drawableCaptionFont ) },
-	{ "DrawableCaptionPointSize",							INI::parseInt,					NULL,		offsetof( InGameUI, m_drawableCaptionPointSize ) },
-	{ "DrawableCaptionBold",									INI::parseBool,					NULL,		offsetof( InGameUI, m_drawableCaptionBold ) },
-	{ "DrawableCaptionColor",									INI::parseColorInt,			NULL,		offsetof( InGameUI, m_drawableCaptionColor ) },
+	{ "DrawableCaptionFont",							INI::parseAsciiString,	NULL,		offsetof( InGameUI, m_drawableCaptionFont ) },
+	{ "DrawableCaptionPointSize",						INI::parseInt,					NULL,		offsetof( InGameUI, m_drawableCaptionPointSize ) },
+	{ "DrawableCaptionBold",							INI::parseBool,					NULL,		offsetof( InGameUI, m_drawableCaptionBold ) },
+	{ "DrawableCaptionColor",							INI::parseColorInt,			NULL,		offsetof( InGameUI, m_drawableCaptionColor ) },
 
-	{ "DrawRMBScrollAnchor",									INI::parseBool,					NULL,		offsetof( InGameUI, m_drawRMBScrollAnchor ) },
-	{ "MoveRMBScrollAnchor",									INI::parseBool,					NULL,		offsetof( InGameUI, m_moveRMBScrollAnchor ) },
+	{ "DrawRMBScrollAnchor",							INI::parseBool,					NULL,		offsetof( InGameUI, m_drawRMBScrollAnchor ) },
+	{ "MoveRMBScrollAnchor",							INI::parseBool,					NULL,		offsetof( InGameUI, m_moveRMBScrollAnchor ) },
 
 	{ "AttackDamageAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_ATTACK_DAMAGE_AREA] ) },
 	{ "AttackScatterAreaRadiusCursor", RadiusDecalTemplate::parseRadiusDecalTemplate, NULL, offsetof( InGameUI, m_radiusCursors[RADIUSCURSOR_ATTACK_SCATTER_AREA] ) },
@@ -1555,7 +1566,7 @@ void InGameUI::update( void )
 	// frame
 	//
 	UnsignedInt currLogicFrame = TheGameLogic->getFrame();
-	const int messageTimeout = m_messageDelayMS / LOGICFRAMES_PER_SECOND / 1000;
+	const UnsignedInt messageTimeout = m_messageDelayMS / LOGICFRAMES_PER_SECOND / 1000;
 	UnsignedByte r, g, b, a;
 	Int amount;
 	for( i = MAX_UI_MESSAGES - 1; i >= 0; i-- )
@@ -3355,7 +3366,7 @@ void InGameUI::postDraw( void )
 		UnsignedByte r, g, b, a;
 		GameGetColorComponents( m_militarySubtitle->color, &r, &g, &b, &a );
 		dropColor = GameMakeColor( 0, 0, 0, a );
-		for(Int i = 0; i <= m_militarySubtitle->currentDisplayString; i++)
+		for(UnsignedInt i = 0; i <= m_militarySubtitle->currentDisplayString; i++)
 		{
 			m_militarySubtitle->displayStrings[i]->draw(pos.x,pos.y, m_militarySubtitle->color,dropColor );
 			Int height;
@@ -3481,7 +3492,7 @@ void InGameUI::postDraw( void )
 								{
 									if ( m_superweaponFlashDuration != 0.0f )
 									{
-										if ( TheGameLogic->getFrame() >= m_superweaponLastFlashFrame + (Int)(m_superweaponFlashDuration) )
+										if ( TheGameLogic->getFrame() >= m_superweaponLastFlashFrame + (UnsignedInt)(m_superweaponFlashDuration) )
 										{
 											m_superweaponUsedFlashColor = !m_superweaponUsedFlashColor;
 											m_superweaponLastFlashFrame = TheGameLogic->getFrame();
@@ -3923,7 +3934,7 @@ void InGameUI::removeMilitarySubtitle( void )
 	TheInGameUI->clearTooltipsDisabled();
 
 	// loop through and free up the display strings
-	for(Int i = 0; i <= m_militarySubtitle->currentDisplayString; i ++)
+	for(UnsignedInt i = 0; i <= m_militarySubtitle->currentDisplayString; i ++)
 	{
 		TheDisplayStringManager->freeDisplayString(m_militarySubtitle->displayStrings[i]);
 		m_militarySubtitle->displayStrings[i] = NULL;

@@ -5517,8 +5517,12 @@ static int cellValueProc(PartitionCell* cell, void* userData)
 		}
 	}
 
-	if ((val > parms->valueRequired && parms->greaterThan) || 
-			(val < parms->valueRequired && !parms->greaterThan)) {
+	if (parms->valueRequired >= 0 && 
+			(	
+				(val > (UnsignedInt)parms->valueRequired && parms->greaterThan) ||
+				(val < (UnsignedInt)parms->valueRequired && !parms->greaterThan)
+			)
+		) {
 		return 1;
 	}
 

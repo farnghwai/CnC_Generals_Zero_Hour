@@ -97,18 +97,18 @@ void TransportContainModuleData::buildFieldParse(MultiIniFieldParse& p)
 
 	static const FieldParse dataFieldParse[] = 
 	{
-		{ "Slots",	INI::parseInt,		NULL, offsetof( TransportContainModuleData, m_slotCapacity ) },
-		{ "ScatterNearbyOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_scatterNearbyOnExit ) },
-		{ "OrientLikeContainerOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_orientLikeContainerOnExit ) },
-		{ "KeepContainerVelocityOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_keepContainerVelocityOnExit ) },
-		{ "GoAggressiveOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_goAggressiveOnExit ) },
-		{ "ResetMoodCheckTimeOnExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_resetMoodCheckTimeOnExit ) },
-		{ "DestroyRidersWhoAreNotFreeToExit",	INI::parseBool,		NULL, offsetof( TransportContainModuleData, m_destroyRidersWhoAreNotFreeToExit ) },
-		{ "ExitBone",	INI::parseAsciiString,		NULL, offsetof( TransportContainModuleData, m_exitBone ) },
-		{ "ExitPitchRate",	INI::parseAngularVelocityReal,		NULL, offsetof( TransportContainModuleData, m_exitPitchRate ) },
-		{ "InitialPayload", parseInitialPayload, NULL, 0 },
-		{ "HealthRegen%PerSec", INI::parseReal, NULL, offsetof( TransportContainModuleData, m_healthRegen ) },
-		{ "ExitDelay",	INI::parseDurationUnsignedInt,		NULL, offsetof( TransportContainModuleData, m_exitDelay ) },
+		{ "Slots",								INI::parseUnsignedInt,			NULL, offsetof( TransportContainModuleData, m_slotCapacity ) },
+		{ "ScatterNearbyOnExit",				INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_scatterNearbyOnExit ) },
+		{ "OrientLikeContainerOnExit",			INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_orientLikeContainerOnExit ) },
+		{ "KeepContainerVelocityOnExit",		INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_keepContainerVelocityOnExit ) },
+		{ "GoAggressiveOnExit",					INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_goAggressiveOnExit ) },
+		{ "ResetMoodCheckTimeOnExit",			INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_resetMoodCheckTimeOnExit ) },
+		{ "DestroyRidersWhoAreNotFreeToExit",	INI::parseBool,					NULL, offsetof( TransportContainModuleData, m_destroyRidersWhoAreNotFreeToExit ) },
+		{ "ExitBone",							INI::parseAsciiString,			NULL, offsetof( TransportContainModuleData, m_exitBone ) },
+		{ "ExitPitchRate",						INI::parseAngularVelocityReal,	NULL, offsetof( TransportContainModuleData, m_exitPitchRate ) },
+		{ "InitialPayload",						parseInitialPayload,			NULL, 0 },
+		{ "HealthRegen%PerSec",					INI::parseReal,					NULL, offsetof( TransportContainModuleData, m_healthRegen ) },
+		{ "ExitDelay",							INI::parseDurationUnsignedInt,	NULL, offsetof( TransportContainModuleData, m_exitDelay ) },
 		{ 0, 0, 0, 0 }
 	};
   p.add(dataFieldParse);
@@ -120,7 +120,7 @@ void TransportContainModuleData::buildFieldParse(MultiIniFieldParse& p)
 
 //-------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------
-Int TransportContain::getContainMax( void ) const 
+Int TransportContain::getContainMax( void ) const
 { 
 	if (getTransportContainModuleData())
 		return getTransportContainModuleData()->m_slotCapacity;
@@ -198,7 +198,9 @@ Bool TransportContain::isValidContainerFor(const Object* rider, Bool checkCapaci
 
 	if (checkCapacity)
 	{
-		return (m_extraSlotsInUse + getContainCount() + transportSlotCount <= getContainMax());
+		int currentSlot = m_extraSlotsInUse + transportSlotCount;
+		int transportContainMax = getContainMax();
+		return (transportContainMax >= 0 && currentSlot >= 0 && ((UnsignedInt)currentSlot + getContainCount() <= (UnsignedInt)transportContainMax));
 	}
 	else
 	{
@@ -219,7 +221,8 @@ void TransportContain::onContaining( Object *rider )
 
 	DEBUG_ASSERTCRASH(transportSlotCount > 0, ("Hmm, this object isnt transportable"));
 	m_extraSlotsInUse += transportSlotCount - 1;
-	DEBUG_ASSERTCRASH(m_extraSlotsInUse >= 0 && m_extraSlotsInUse + getContainCount() <= getContainMax(), ("Hmm, bad slot count"));
+	Int transportContainMax = getContainMax();
+	DEBUG_ASSERTCRASH(transportContainMax < 0 || (m_extraSlotsInUse >= 0 && ((UnsignedInt)m_extraSlotsInUse + getContainCount() <= (UnsignedInt)transportContainMax)), ("Hmm, bad slot count"));
 
 	//
 	// when we go from holding nothing to holding something we have a model condition
@@ -287,7 +290,8 @@ void TransportContain::onRemoving( Object *rider )
 	Int transportSlotCount = rider->getTransportSlotCount();
 	DEBUG_ASSERTCRASH(transportSlotCount > 0, ("Hmm, this object isnt transportable"));
 	m_extraSlotsInUse -= transportSlotCount - 1;
-	DEBUG_ASSERTCRASH(m_extraSlotsInUse >= 0 && m_extraSlotsInUse + getContainCount() <= getContainMax(), ("Hmm, bad slot count"));
+	Int transportContainMax = getContainMax();
+	DEBUG_ASSERTCRASH(transportContainMax < 0 || (m_extraSlotsInUse >= 0 && ((UnsignedInt)m_extraSlotsInUse + getContainCount() <= (UnsignedInt)transportContainMax)), ("Hmm, bad slot count"));
 
 	// when we are empty again, clear the model condition for loaded
 	if( getContainCount() == 0 )

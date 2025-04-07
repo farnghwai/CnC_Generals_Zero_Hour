@@ -201,7 +201,7 @@ protected:
 
 	NetLocalStatus m_localStatus;															///< My local status as a player in this game.
 
-	Int m_runAhead;																						///< The current run ahead of the game.
+	UnsignedInt m_runAhead;																						///< The current run ahead of the game.
 	Int m_frameRate;
 	Int m_lastExecutionFrame;																	///< The highest frame number that a command could have been executed on.
 	Int m_lastFrameCompleted;

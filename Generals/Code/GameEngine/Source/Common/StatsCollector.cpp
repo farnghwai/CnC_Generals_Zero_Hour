@@ -62,6 +62,41 @@
 #include "GameClient/MapUtil.h"
 #include "GameNetwork/NetworkUtil.h"
 #include "GameNetwork/LANAPICallbacks.h"
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline char* safe_asctime(const struct tm* timeptr) {
+		// asctime returns a string like "Www Mmm dd hh:mm:ss yyyy\n"
+		// This requires at least 26 characters (25 + null terminator)
+		static char buffer[26];
+
+		if (asctime_s(buffer, sizeof(buffer), timeptr) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	inline struct tm* safe_localtime(const time_t* timer) {
+		static struct tm result;
+		if (localtime_s(&result, timer) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return &result;
+	}
+
+	#define fopen safe_fopen
+	#define asctime safe_asctime
+	#define localtime safe_localtime
+#endif
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -180,7 +215,8 @@ void StatsCollector::collectUnitCountStats( void )
 //=============================================================================
 void StatsCollector::update( void )
 {
-	if(m_lastUpdate + (TheGlobalData->m_playStats * LOGICFRAMES_PER_SECOND) > TheGameLogic->getFrame())
+	int lastUpdateStats = m_lastUpdate + (TheGlobalData->m_playStats * LOGICFRAMES_PER_SECOND);
+	if(lastUpdateStats >= 0 && (UnsignedInt)lastUpdateStats > TheGameLogic->getFrame())
 		return;
 
 	collectUnitCountStats();

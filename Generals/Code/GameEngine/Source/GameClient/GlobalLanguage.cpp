@@ -144,10 +144,12 @@ void GlobalLanguage::init( void )
 	AsciiString tempName;
 	tempName.format("Data\\%s\\Language9x.ini", GetRegistryLanguage().str());
 	bool isExist = TheFileSystem->doesFileExist(tempName.str());
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	if (GetVersionEx(&osvi)  &&  osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS  && isExist)
 	{	//check if we're running Win9x variant since they may need different fonts
 		fname = tempName;
 	}
+	#pragma warning(default : 4996) //TO-FIX Restore back
 
 	ini.load( fname, INI_LOAD_OVERWRITE, NULL );
 	StringListIt it = m_localFonts.begin();

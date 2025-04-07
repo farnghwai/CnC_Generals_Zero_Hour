@@ -46,7 +46,33 @@
 
 #include "Common/CriticalSection.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
 
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+	#define _vsnprintf safe_vsnprintf
+#endif
 // -----------------------------------------------------
 
 /*static*/ AsciiString AsciiString::TheEmptyString;
@@ -414,7 +440,7 @@ Bool AsciiString::startsWithNoCase(const char* p) const
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
-	return strnicmp(peek(), p, lenThat) == 0;
+	return _strnicmp(peek(), p, lenThat) == 0;
 }
 
 // -----------------------------------------------------
@@ -442,13 +468,13 @@ Bool AsciiString::endsWithNoCase(const char* p) const
 	if (lenThis < lenThat)
 		return false;	// that must be smaller than this
 
-	return strnicmp(peek() + lenThis - lenThat, p, lenThat) == 0;
+	return _strnicmp(peek() + lenThis - lenThat, p, lenThat) == 0;
 }
 
 //-----------------------------------------------------------------------------
 Bool AsciiString::isNone() const
 {
-	return m_data && stricmp(peek(), "None") == 0;
+	return m_data && _stricmp(peek(), "None") == 0;
 }
 
 //-----------------------------------------------------------------------------

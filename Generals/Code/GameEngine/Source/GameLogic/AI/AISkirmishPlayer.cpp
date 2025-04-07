@@ -257,9 +257,11 @@ void AISkirmishPlayer::processBaseBuilding( void )
 
 				m_readyToBuildStructure = false;
 				m_structureTimer = TheAI->getAiData()->m_structureSeconds*LOGICFRAMES_PER_SECOND;
-				if (m_player->getMoney()->countMoney() < TheAI->getAiData()->m_resourcesPoor) {
+				int resourcePoor = TheAI->getAiData()->m_resourcesPoor;
+				int resourceWealthy = TheAI->getAiData()->m_resourcesWealthy;
+				if (resourcePoor >= 0 && m_player->getMoney()->countMoney() < (UnsignedInt)resourcePoor) {
 					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresPoorMod;
-				}	else if (m_player->getMoney()->countMoney() > TheAI->getAiData()->m_resourcesWealthy) {
+				}	else if (resourceWealthy >= 0 && m_player->getMoney()->countMoney() > (UnsignedInt)resourceWealthy) {
 					m_structureTimer = m_structureTimer/TheAI->getAiData()->m_structuresWealthyMod;
 				}
 				m_frameLastBuildingBuilt = TheGameLogic->getFrame();

@@ -33,6 +33,20 @@
 #include "Common/Snapshot.h"
 #include "Common/GameMemory.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
+
 // PRIVATE TYPES //////////////////////////////////////////////////////////////////////////////////
 class XferBlockData : public MemoryPoolObject
 {
@@ -302,8 +316,8 @@ void XferSave::xferAsciiString( AsciiString *asciiStringData )
 	}  // end if
 	
 	// save length of string to follow
-	UnsignedByte len = asciiStringData->getLength();
-	xferUnsignedByte( &len );
+	UnsignedInt len = asciiStringData->getLength();
+	xferUnsignedInt( &len );
 
 	// save string data
 	if( len > 0 )

@@ -144,7 +144,7 @@ public:
 	/// @todo Rethink state parameter passing. Continuing in this fashion will have a pile of params in the machine (MSB)
 	void setGoalPath( const std::vector<Coord3D>* path );
 	void addToGoalPath( const Coord3D *pathPoint );
-	const Coord3D *getGoalPathPosition( Int i ) const;		///< return path position at index "i"
+	const Coord3D *getGoalPathPosition( size_t i ) const;		///< return path position at index "i"
 	Int getGoalPathSize() const { return m_goalPath.size(); }
 
 

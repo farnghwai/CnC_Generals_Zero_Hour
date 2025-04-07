@@ -63,6 +63,27 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline wchar_t* safe_wcscpy(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr; // Handle null pointers safely
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1; // Estimate required size
+		if (wcscpy_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+
+		return dest;
+	}
+
+	#define wcscpy safe_wcscpy	
+#endif
 
 //----------------------------------------------------------------------------
 //         Externals                                                     
@@ -841,7 +862,7 @@ Bool GameTextManager::getStringCount( const char *filename, Int& textCount )
 				m_buffer[ len+1] = 0;
 			readToEndOfQuote( file, &m_buffer[1], m_buffer2, m_buffer3, MAX_UITEXT_LENGTH );
 		}
-		else if( !stricmp( m_buffer, "END") )
+		else if( !_stricmp( m_buffer, "END") )
 		{
 			textCount++;
 		}
@@ -1052,7 +1073,7 @@ Bool GameTextManager::parseStringFile( const char *filename )
 
 		for ( Int i = 0; i < listCount; i++ )
 		{
-			if ( !stricmp ( m_stringInfo[i].label.str(), m_buffer ))
+			if ( !_stricmp ( m_stringInfo[i].label.str(), m_buffer ))
 			{
 				DEBUG_ASSERTCRASH ( FALSE, ("String label '%s' multiply defined!", m_buffer ));
 			}
@@ -1103,7 +1124,7 @@ Bool GameTextManager::parseStringFile( const char *filename )
 					readString = TRUE;
 				}
 			}
-			else if ( !stricmp ( m_buffer, "END" ))
+			else if ( !_stricmp ( m_buffer, "END" ))
 			{
 				break;
 			}
@@ -1183,7 +1204,7 @@ Bool GameTextManager::parseMapStringFile( const char *filename )
 
 		for ( Int i = 0; i < listCount; i++ )
 		{
-			if ( !stricmp ( m_mapStringInfo[i].label.str(), m_buffer ))
+			if ( !_stricmp ( m_mapStringInfo[i].label.str(), m_buffer ))
 			{
 				DEBUG_ASSERTCRASH ( FALSE, ("String label '%s' multiply defined!", m_buffer ));
 			}
@@ -1238,7 +1259,7 @@ Bool GameTextManager::parseMapStringFile( const char *filename )
 					readString = TRUE;
 				}
 			}
-			else if ( !stricmp ( m_buffer, "END" ))
+			else if ( !_stricmp ( m_buffer, "END" ))
 			{
 				break;
 			}
@@ -1402,5 +1423,5 @@ static int __cdecl compareLUT ( const void *i1,  const void*i2)
 	StringLookUp *lut1 = (StringLookUp*) i1;
 	StringLookUp *lut2 = (StringLookUp*) i2;
 
-	return stricmp( lut1->label->str(), lut2->label->str());
+	return _stricmp( lut1->label->str(), lut2->label->str());
 }

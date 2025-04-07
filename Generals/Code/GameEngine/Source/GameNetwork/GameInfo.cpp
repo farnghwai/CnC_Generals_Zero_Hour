@@ -51,6 +51,23 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sscanf safe_sscanf
+#endif
 
 GameInfo *TheGameInfo = NULL;
 
@@ -767,7 +784,7 @@ void GameInfo::adjustSlotsForMap()
 		// now go through and close the appropriate number of slots.
 		// note that no players are kicked in this process, we leave
 		// that up to the user.
-		for (i = 0; i < MAX_SLOTS; ++i)
+		for (Int i = 0; i < MAX_SLOTS; ++i)
 		{
 			// we have room for more players, if this slot is unoccupied, set it to open.
 			GameSlot *slot = getSlot(i);
@@ -979,7 +996,7 @@ static Int grabHexInt(const char *s)
 Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 {
 	// Parse game options
-	char *buf = strdup(options.str());
+	char *buf = _strdup(options.str());
 	char *bufPtr = buf;
 	char *strPos, *keyValPair;
 	GameSlot newSlot[MAX_SLOTS];
@@ -1073,7 +1090,7 @@ Bool ParseAsciiStringToGameInfo(GameInfo *game, AsciiString options)
 		{
 			sawSlotlist = true;
 			/// @TODO: Need to read in all the slot info... big mess right now.
-			char *rawSlotBuf = strdup(val.str());
+			char *rawSlotBuf = _strdup(val.str());
 			char *freeMe = NULL;
 			AsciiString rawSlot;
 //			Bool slotsOk = true;	//flag that lets us know whether or not the slot list is good.

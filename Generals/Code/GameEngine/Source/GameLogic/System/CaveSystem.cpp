@@ -65,7 +65,7 @@ void CaveSystem::update()
 {
 }
 
-Bool CaveSystem::canSwitchIndexToIndex( Int oldIndex, Int newIndex )
+Bool CaveSystem::canSwitchIndexToIndex( UnsignedInt oldIndex, UnsignedInt newIndex )
 {
 	// When I grant permission, you need to do it.  ie call Unregister and then re-register with the new number
 	TunnelTracker *oldTracker = NULL;
@@ -89,7 +89,7 @@ Bool CaveSystem::canSwitchIndexToIndex( Int oldIndex, Int newIndex )
 	return TRUE;
 }
 
-void CaveSystem::registerNewCave( Int theIndex )
+void CaveSystem::registerNewCave(UnsignedInt theIndex )
 {
 	Bool needToCreate = FALSE;
 	if( theIndex >= m_tunnelTrackerVector.size() )
@@ -111,14 +111,14 @@ void CaveSystem::registerNewCave( Int theIndex )
 		m_tunnelTrackerVector[theIndex] = newInstance(TunnelTracker);
 }
 
-void CaveSystem::unregisterCave( Int theIndex )
+void CaveSystem::unregisterCave(UnsignedInt theIndex )
 {
 	// Doesn't need to do a thing.  ContainModule logic knows how to say goodbye, and a TunnelTracker
 	// knows how to exist while having no entry points.
 	theIndex;
 }
 
-TunnelTracker *CaveSystem::getTunnelTrackerForCaveIndex( Int theIndex )
+TunnelTracker *CaveSystem::getTunnelTrackerForCaveIndex(UnsignedInt theIndex )
 {
 	TunnelTracker *theTracker = NULL;
 	if( theIndex < m_tunnelTrackerVector.size() )
@@ -145,8 +145,8 @@ void CaveSystem::xfer( Xfer *xfer )
 	xfer->xferVersion( &version, currentVersion );
 
 	// tunnel tracker size and data
-	UnsignedShort count = m_tunnelTrackerVector.size();
-	xfer->xferUnsignedShort( &count );
+	UnsignedInt count = m_tunnelTrackerVector.size();
+	xfer->xferUnsignedInt( &count );
 	TunnelTracker *tracker;
 	if( xfer->getXferMode() == XFER_SAVE )
 	{

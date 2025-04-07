@@ -35,6 +35,20 @@
 #include "GameNetwork/GameInfo.h"
 #include "GameNetwork/NetworkInterface.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+
+	inline char* safe_itoa(int value, char* buffer, int radix) {
+		if (_itoa_s(value, buffer, _MAX_PATH, radix) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	#define itoa safe_itoa
+#endif
+
 char *DisconnectMenu::m_playerNameTextControlNames[] = {
 	"DisconnectScreen.wnd:StaticPlayer1Name",
 	"DisconnectScreen.wnd:StaticPlayer2Name",

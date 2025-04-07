@@ -316,7 +316,7 @@ void SlowDeathBehavior::beginSlowDeath(const DamageInfo *damageInfo)
 		{
 			// we don't need to wake up immediately, but only when the first of these
 			// counters wants to trigger....
-			Int whenToWakeTime = m_sinkFrame;
+			UnsignedInt whenToWakeTime = m_sinkFrame;
 			if (whenToWakeTime > m_destructionFrame) 
 				whenToWakeTime = m_destructionFrame;
 			if (whenToWakeTime > m_midpointFrame) 
@@ -349,7 +349,7 @@ void SlowDeathBehavior::doPhaseStuff(SlowDeathPhaseType sdphase)
 	{
 		idx = GameLogicRandomValue(0, listSize-1);
 		const FXListVec& v = d->m_fx[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 		const FXList* fxl = v[idx];
 		FXList::doFXObj(fxl, getObject(), NULL);
 	}
@@ -359,7 +359,7 @@ void SlowDeathBehavior::doPhaseStuff(SlowDeathPhaseType sdphase)
 	{
 		idx = GameLogicRandomValue(0, listSize-1);
 		const OCLVec& v = d->m_ocls[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 		const ObjectCreationList* ocl = v[idx];
 		ObjectCreationList::create(ocl, getObject(), NULL);
 	}
@@ -369,7 +369,7 @@ void SlowDeathBehavior::doPhaseStuff(SlowDeathPhaseType sdphase)
 	{
 		idx = GameLogicRandomValue(0, listSize-1);
 		const WeaponTemplateVec& v = d->m_weapons[sdphase];
-		DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+		DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 		const WeaponTemplate* wt = v[idx];
 		if (wt)
 		{
@@ -509,7 +509,7 @@ void SlowDeathBehavior::onDie( const DamageInfo *damageInfo )
 	// this returns a value from 1...total, inclusive
 	Int roll = GameLogicRandomValue(1, total);
 
-	for (/* UpdateModuleInterface** */ update = getObject()->getBehaviorModules(); *update; ++update)
+	for (/* UpdateModuleInterface** */ BehaviorModule** update = getObject()->getBehaviorModules(); *update; ++update)
 	{
 		SlowDeathBehaviorInterface* sdu = (*update)->getSlowDeathBehaviorInterface();
 		if (sdu != NULL && sdu->isDieApplicable(damageInfo))

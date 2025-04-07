@@ -66,7 +66,7 @@ static Bool scrollDir[4] = { false, false, false, false };
 
 Int SCROLL_AMT = 100;
 
-static const Int edgeScrollSize = 3;
+static const UnsignedInt edgeScrollSize = 3;
 
 static Mouse::MouseCursor prevCursor = Mouse::ARROW;
 
@@ -301,16 +301,30 @@ GameMessageDisposition LookAtTranslator::translateGameMessage(const GameMessage 
 
 			if (!TheGlobalData->m_windowed)
 			{
+				int cPx = m_currentPos.x;
+				int cPy = m_currentPos.y;
 				if (m_isScrolling)
 				{
-					if ( m_scrollType == SCROLL_SCREENEDGE && (m_currentPos.x >= edgeScrollSize && m_currentPos.y >= edgeScrollSize && m_currentPos.y < height-edgeScrollSize && m_currentPos.x < width-edgeScrollSize) )
+
+					if ( m_scrollType == SCROLL_SCREENEDGE && 
+						(
+							(cPx >= 0 && (UnsignedInt)cPx >= edgeScrollSize) &&
+							(cPy >= 0 && (UnsignedInt)cPy >= edgeScrollSize) &&
+							(cPy >= 0 && (UnsignedInt)cPy < height-edgeScrollSize) &&
+							(cPx >= 0 && (UnsignedInt)cPx < width-edgeScrollSize)
+						)
+					  )
 					{
 						stopScrolling();
 					}
 				}
 				else
 				{
-					if ( m_currentPos.x < edgeScrollSize || m_currentPos.y < edgeScrollSize || m_currentPos.y >= height-edgeScrollSize || m_currentPos.x >= width-edgeScrollSize )
+					if ((cPx >= 0 && (UnsignedInt)cPx < edgeScrollSize) ||
+						(cPy >= 0 && (UnsignedInt)cPy < edgeScrollSize) ||
+						(cPy >= 0 && (UnsignedInt)cPy >= height-edgeScrollSize) ||
+						(cPx >= 0 && (UnsignedInt)cPx >= width-edgeScrollSize)
+					   )
 					{
 						setScrolling(SCROLL_SCREENEDGE);
 					}
@@ -453,19 +467,19 @@ GameMessageDisposition LookAtTranslator::translateGameMessage(const GameMessage 
 					{
 						UnsignedInt height = TheDisplay->getHeight();
 						UnsignedInt width  = TheDisplay->getWidth();
-						if (m_currentPos.y < edgeScrollSize)
+						if (m_currentPos.y >= 0 && (UnsignedInt)m_currentPos.y < edgeScrollSize)
 						{
 							offset.y -= TheGlobalData->m_verticalScrollSpeedFactor * SCROLL_AMT * TheGlobalData->m_keyboardScrollFactor;
 						}
-						if (m_currentPos.y >= height-edgeScrollSize)
+						if (m_currentPos.y >= 0 && (UnsignedInt)m_currentPos.y >= height-edgeScrollSize)
 						{
 							offset.y += TheGlobalData->m_verticalScrollSpeedFactor * SCROLL_AMT * TheGlobalData->m_keyboardScrollFactor;
 						}
-						if (m_currentPos.x < edgeScrollSize)
+						if (m_currentPos.x >= 0 && (UnsignedInt)m_currentPos.x < edgeScrollSize)
 						{
 							offset.x -= TheGlobalData->m_horizontalScrollSpeedFactor * SCROLL_AMT * TheGlobalData->m_keyboardScrollFactor;
 						}
-						if (m_currentPos.x >= width-edgeScrollSize)
+						if (m_currentPos.x >= 0 && (UnsignedInt)m_currentPos.x >= width-edgeScrollSize)
 						{
 							offset.x += TheGlobalData->m_horizontalScrollSpeedFactor * SCROLL_AMT * TheGlobalData->m_keyboardScrollFactor;
 						}

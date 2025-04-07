@@ -62,6 +62,22 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf	
+#endif
+
 // These are for debugger window
 static int st_LastCurrentFrame;
 static int st_CurrentFrame;
@@ -5870,7 +5886,7 @@ void ScriptEngine::setPriorityThing( ScriptAction *pAction )
 	{
 		// Found a list by this name, so we have a bunch of things
 
-		for( Int typeIndex = 0; typeIndex < types->getListSize(); typeIndex ++ )
+		for( UnsignedInt typeIndex = 0; typeIndex < types->getListSize(); typeIndex ++ )
 		{
 			AsciiString thisTypeName = types->getNthInList(typeIndex);
 			const ThingTemplate *thisType = TheThingFactory->findTemplate(thisTypeName);
@@ -7819,8 +7835,8 @@ static void xferListAsciiString( Xfer *xfer, ListAsciiString *list )
 	xfer->xferVersion( &version, currentVersion );
 
 	// size of list
-	UnsignedShort count = list->size();
-	xfer->xferUnsignedShort( &count );
+	UnsignedInt count = list->size();
+	xfer->xferUnsignedInt( &count );
 
 	// list data
 	AsciiString string;
@@ -7882,8 +7898,8 @@ static void xferListAsciiStringUINT( Xfer *xfer, ListAsciiStringUINT *list )
 	xfer->xferVersion( &version, currentVersion );
 
 	// size of list
-	UnsignedShort count = list->size();
-	xfer->xferUnsignedShort( &count );
+	UnsignedInt count = list->size();
+	xfer->xferUnsignedInt( &count );
 
 	// list data
 	AsciiString string;
@@ -7957,8 +7973,8 @@ static void xferListAsciiStringObjectID( Xfer *xfer, ListAsciiStringObjectID *li
 	xfer->xferVersion( &version, currentVersion );
 
 	// size of list
-	UnsignedShort count = list->size();
-	xfer->xferUnsignedShort( &count );
+	UnsignedInt count = list->size();
+	xfer->xferUnsignedInt( &count );
 
 	// list data
 	AsciiString string;
@@ -8032,8 +8048,8 @@ static void xferListAsciiStringCoord3D( Xfer *xfer, ListAsciiStringCoord3D *list
 	xfer->xferVersion( &version, currentVersion );
 
 	// size of list
-	UnsignedShort count = list->size();
-	xfer->xferUnsignedShort( &count );
+	UnsignedInt count = list->size();
+	xfer->xferUnsignedInt( &count );
 
 	// list data
 	AsciiString string;
@@ -8119,8 +8135,8 @@ void ScriptEngine::xfer( Xfer *xfer )
 	xfer->xferVersion( &version, currentVersion );
 
 	// sequential script count and data
-	UnsignedShort sequentialScriptCount = m_sequentialScripts.size();
-	xfer->xferUnsignedShort( &sequentialScriptCount );
+	UnsignedInt sequentialScriptCount = m_sequentialScripts.size();
+	xfer->xferUnsignedInt( &sequentialScriptCount );
 	SequentialScript *sequentialScript;
 	if( xfer->getXferMode() == XFER_SAVE )
 	{
@@ -8245,8 +8261,8 @@ void ScriptEngine::xfer( Xfer *xfer )
 	xfer->xferInt( &m_closeWindowTimer );
 
 	// named objects
-	UnsignedShort namedObjectsCount = m_namedObjects.size();
-	xfer->xferUnsignedShort( &namedObjectsCount );
+	UnsignedInt namedObjectsCount = m_namedObjects.size();
+	xfer->xferUnsignedInt( &namedObjectsCount );
 	AsciiString namedObjectName;
 	Object *obj;
 	ObjectID objectID;
@@ -8435,8 +8451,8 @@ void ScriptEngine::xfer( Xfer *xfer )
 	{
 
 		// number of entries in named reveals
-		UnsignedShort namedRevealCount = m_namedReveals.size();
-		xfer->xferUnsignedShort( &namedRevealCount );
+		UnsignedInt namedRevealCount = m_namedReveals.size();
+		xfer->xferUnsignedInt( &namedRevealCount );
 
 		// named reveal data
 		if( xfer->getXferMode() == XFER_SAVE )
@@ -8499,8 +8515,8 @@ void ScriptEngine::xfer( Xfer *xfer )
 		}  // end else, load
 
 		// all object type lists size
-		UnsignedShort allObjectTypesCount = m_allObjectTypeLists.size();
-		xfer->xferUnsignedShort( &allObjectTypesCount );
+		UnsignedInt allObjectTypesCount = m_allObjectTypeLists.size();
+		xfer->xferUnsignedInt( &allObjectTypesCount );
 
 		// all object type lists data
 		if( xfer->getXferMode() == XFER_SAVE )

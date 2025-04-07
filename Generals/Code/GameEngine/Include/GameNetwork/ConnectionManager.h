@@ -59,7 +59,7 @@ public:
 
 	// End SubsystemInterface functions
 
-	void updateRunAhead(Int oldRunAhead, Int frameRate, Bool didSelfSlug, Int nextExecutionFrame);	///< Update the run ahead value.  If we are the current packet router, issue the command.
+	void updateRunAhead(UnsignedInt oldRunAhead, Int frameRate, Bool didSelfSlug, Int nextExecutionFrame);	///< Update the run ahead value.  If we are the current packet router, issue the command.
 
 	void attachTransport(Transport *transport);
 

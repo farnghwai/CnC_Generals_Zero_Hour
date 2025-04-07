@@ -32,6 +32,25 @@
 
 #ifdef DEBUG_LOGGING
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define fopen safe_fopen
+	#define _vsnprintf safe_vsnprintf
+#endif
+
 LogClass::LogClass(const char *fname)
 {
 	char buffer[ _MAX_PATH ];

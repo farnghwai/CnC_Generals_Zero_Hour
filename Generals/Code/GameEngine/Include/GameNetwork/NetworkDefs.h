@@ -42,7 +42,7 @@ extern Int MIN_RUNAHEAD;
 // FRAME_DATA_LENGTH needs to be MAX_FRAMES_AHEAD+1 because a player on a different
 // computer can send commands for a frame that is one beyond twice the max runahead.
 extern Int FRAME_DATA_LENGTH;
-extern Int FRAMES_TO_KEEP;
+extern UnsignedInt FRAMES_TO_KEEP;
 
 // This is the connection numbering: 1-8 are for players, 9 is a broadcast con.
 enum ConnectionNumbers

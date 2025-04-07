@@ -411,8 +411,10 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 				delta.x = abs(pixel.x - m_selectFeedbackAnchor.x);
 				delta.y = abs(pixel.y - m_selectFeedbackAnchor.y);
 
+				int dx = delta.x;
+				int dy = delta.y;
 				// if mouse has moved while left button is down, begin drag selection
-				if (delta.x > TheMouse->m_dragTolerance || delta.y > TheMouse->m_dragTolerance)
+				if ((dx >= 0 && (UnsignedInt)dx > TheMouse->m_dragTolerance) || (dy >= 0  && (UnsignedInt)dy > TheMouse->m_dragTolerance))
 				{
 					if (m_dragSelecting == false)
 					{
@@ -905,9 +907,11 @@ GameMessageDisposition SelectionTranslator::translateGameMessage(const GameMessa
 			delta.y = m_deselectFeedbackAnchor.y - pixel.y;
 
 			Bool isClick = TRUE;
+			int dx = abs(delta.x);
+			int dy = abs(delta.y);
 			if (isClick && 
-					abs(delta.x) > TheMouse->m_dragTolerance || 
-					abs(delta.y) > TheMouse->m_dragTolerance)
+					(dx >= 0 && (UnsignedInt)dx > TheMouse->m_dragTolerance) ||
+					(dy >= 0 && (UnsignedInt)dy > TheMouse->m_dragTolerance))
 			{
 				isClick = FALSE;
 			}

@@ -89,7 +89,7 @@ void DisconnectManager::init() {
 		}
 	}
 
-	for (i = 0; i < MAX_SLOTS; ++i) {
+	for (int i = 0; i < MAX_SLOTS; ++i) {
 		m_disconnectFrames[i] = 0;
 		m_disconnectFramesReceived[i] = FALSE;
 	}
@@ -136,13 +136,13 @@ void DisconnectManager::update(ConnectionManager *conMgr) {
 				if (ThePinger)
 				{
 					//use next ping server
-					static int serverIndex = 0;
+					static size_t serverIndex = 0;
 					serverIndex++;
 					if( serverIndex >= TheGameSpyConfig->getPingServers().size() )
 						serverIndex = 0;  //wrap back to first ping server
 
 					std::list<AsciiString>::iterator it = TheGameSpyConfig->getPingServers().begin();
-					for( int i = 0;  i < serverIndex;  i++ )
+					for( size_t i = 0;  i < serverIndex;  i++ )
 						it++;
 
 					PingRequest req;

@@ -96,7 +96,7 @@ DockUpdate::DockUpdate( Thing *thing, const ModuleData* moduleData ) : UpdateMod
 		m_approachPositionReached.resize(DEFAULT_APPROACH_VECTOR_SIZE);
 	}
 
-	for( Int vectorIndex = 0; vectorIndex < m_approachPositions.size(); ++vectorIndex )
+	for( size_t vectorIndex = 0; vectorIndex < m_approachPositions.size(); ++vectorIndex )
 	{
 		// Whatever size we are, init everything.
 		m_approachPositions[vectorIndex].zero();
@@ -118,7 +118,7 @@ Bool DockUpdate::isClearToApproach( Object const* docker ) const
 
 	ObjectID dockerID = docker->getID();
 
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == INVALID_ID )
 		{
@@ -146,7 +146,7 @@ Bool DockUpdate::reserveApproachPosition( Object* docker, Coord3D *position, Int
 
 	ObjectID dockerID = docker->getID();
 
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -174,7 +174,7 @@ Bool DockUpdate::reserveApproachPosition( Object* docker, Coord3D *position, Int
 
 		loadDockPositions();// refresh this new one
 
-		positionIndex = m_approachPositionOwners.size() - 1;// The new last spot
+		size_t positionIndex = m_approachPositionOwners.size() - 1;// The new last spot
 		m_approachPositionOwners[positionIndex] = dockerID;
 		*position = computeApproachPosition( positionIndex, docker );
 		*index = positionIndex;
@@ -314,7 +314,7 @@ void DockUpdate::getExitPosition( Object* docker, Coord3D *position )
 void DockUpdate::onApproachReached( Object* docker )
 {
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -334,7 +334,7 @@ void DockUpdate::onEnterReached( Object* docker )
 	m_dockerInside = TRUE;
 
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -380,7 +380,7 @@ void DockUpdate::onExitReached( Object* docker )
 void DockUpdate::cancelDock( Object* docker )
 {
 	ObjectID dockerID = docker->getID();
-	for( Int positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
+	for( size_t positionIndex = 0; positionIndex < m_approachPositionOwners.size(); ++positionIndex )
 	{
 		if( m_approachPositionOwners[positionIndex] == dockerID )
 		{
@@ -417,7 +417,7 @@ UpdateSleepTime DockUpdate::update()
 	if( m_activeDocker == INVALID_ID  &&  !m_dockCrippled )
 	{
 		// if setDockCrippled has been called, I will never give enterance permission.
-		for( Int positionIndex = 0; positionIndex < m_approachPositionReached.size(); ++positionIndex )
+		for( size_t positionIndex = 0; positionIndex < m_approachPositionReached.size(); ++positionIndex )
 		{
 			if( m_approachPositionReached[positionIndex] )
 			{
@@ -580,7 +580,7 @@ void DockUpdate::xfer( Xfer *xfer )
 	vectorSize = m_approachPositionOwners.size();
 	xfer->xferInt( &vectorSize );
 	m_approachPositionOwners.resize(vectorSize);
-	for( vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
+	for(Int vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
 	{
 		xfer->xferObjectID( &m_approachPositionOwners[vectorIndex] );
 	}
@@ -589,7 +589,7 @@ void DockUpdate::xfer( Xfer *xfer )
 	vectorSize = m_approachPositionReached.size();
 	xfer->xferInt( &vectorSize );
 	m_approachPositionReached.resize(vectorSize);
-	for( vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
+	for(Int vectorIndex = 0; vectorIndex < vectorSize; ++vectorIndex )
 	{
 		// Vector of Bool gets packed as bitfield internally
 		Bool unpack = m_approachPositionReached[vectorIndex];

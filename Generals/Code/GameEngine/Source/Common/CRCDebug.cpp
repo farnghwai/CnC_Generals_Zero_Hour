@@ -40,6 +40,34 @@
 
 #ifdef DEBUG_CRC
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define fopen safe_fopen
+	#define sprintf safe_sprintf
+	#define _vsnprintf safe_vsnprintf
+#endif
+
 static const Int MaxStrings = 64000;
 
 static char DebugStrings[MaxStrings][1024];
@@ -50,7 +78,7 @@ static Int numDebugStrings = 0;
 //static Int numDumpStrings = 0;
 
 #define IS_FRAME_OK_TO_LOG TheGameLogic->isInGame() && !TheGameLogic->isInShellGame() && !TheDebugIgnoreSyncErrors && \
-	TheCRCFirstFrameToLog >= 0 && TheCRCFirstFrameToLog <= TheGameLogic->getFrame() \
+	TheCRCFirstFrameToLog >= 0 && (UnsignedInt)TheCRCFirstFrameToLog <= TheGameLogic->getFrame() \
 	&& TheGameLogic->getFrame() <= TheCRCLastFrameToLog
 
 CRCVerification::CRCVerification()

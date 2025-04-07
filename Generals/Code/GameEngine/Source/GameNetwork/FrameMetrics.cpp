@@ -72,11 +72,11 @@ void FrameMetrics::init() {
 	m_averageLatency = (Real)0.2;
 	m_minimumCushion = -1;
 
-	for (Int i = 0; i < TheGlobalData->m_networkFPSHistoryLength; ++i) {
+	for (UnsignedInt i = 0; i < TheGlobalData->m_networkFPSHistoryLength; ++i) {
 		m_fpsList[i] = 30.0;
 	}
 	m_fpsListIndex = 0;
-	for (i = 0; i < TheGlobalData->m_networkLatencyHistoryLength; ++i) {
+	for (UnsignedInt i = 0; i < TheGlobalData->m_networkLatencyHistoryLength; ++i) {
 		m_latencyList[i] = (Real)0.2;
 	}
 	m_cushionIndex = 0;

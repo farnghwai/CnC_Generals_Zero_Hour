@@ -369,12 +369,12 @@ void WeaponTemplate::reset( void )
 
 	const char* token = ini->getNextTokenOrNull(ini->getSepsColon());
 
-	if( stricmp(token, MIN_LABEL) == 0 )
+	if( _stricmp(token, MIN_LABEL) == 0 )
 	{
 		// Two entry min/max
 		self->m_minDelayBetweenShots = INI::scanInt(ini->getNextToken(ini->getSepsColon()));
 		token = ini->getNextTokenOrNull(ini->getSepsColon());
-		if( stricmp(token, MAX_LABEL) != 0 )
+		if( _stricmp(token, MAX_LABEL) != 0 )
 		{
 			// Messed up double entry
 			self->m_maxDelayBetweenShots = self->m_minDelayBetweenShots;
@@ -1302,7 +1302,7 @@ WeaponStore::~WeaponStore()
 {
 	deleteAllDelayedDamage();
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		if (wt)
@@ -1346,7 +1346,7 @@ void WeaponStore::createAndFireTempWeapon(const WeaponTemplate* wt, const Object
 //-------------------------------------------------------------------------------------------------
 const WeaponTemplate *WeaponStore::findWeaponTemplate( AsciiString name ) const 
 { 
-	if (stricmp(name.str(), "None") == 0)
+	if (_stricmp(name.str(), "None") == 0)
 		return NULL;
 	const WeaponTemplate * wt = findWeaponTemplatePrivate( TheNameKeyGenerator->nameToKey( name ) );
 	DEBUG_ASSERTCRASH(wt != NULL, ("Weapon %s not found!\n",name.str()));
@@ -1357,7 +1357,7 @@ const WeaponTemplate *WeaponStore::findWeaponTemplate( AsciiString name ) const
 WeaponTemplate *WeaponStore::findWeaponTemplatePrivate( NameKeyType key ) const
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 		if( m_weaponTemplateVector[ i ]->getNameKey() == key )
 			return m_weaponTemplateVector[i];
 
@@ -1405,7 +1405,7 @@ void WeaponStore::update()
 		if (curFrame >= ddi->m_delayDamageFrame)
 		{
 			// we never do projectile-detonation-damage via this code path.
-			const isProjectileDetonation = false;
+			const bool isProjectileDetonation = false;
 			ddi->m_delayedWeapon->dealDamageInternal(ddi->m_delaySourceID, ddi->m_delayIntendedVictimID, &ddi->m_delayDamagePos, ddi->m_bonus, isProjectileDetonation);
 			ddi = m_weaponDDI.erase(ddi);
 		}
@@ -1426,7 +1426,7 @@ void WeaponStore::deleteAllDelayedDamage()
 void WeaponStore::resetWeaponTemplates( void )
 {
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		wt->reset();
@@ -1438,7 +1438,7 @@ void WeaponStore::resetWeaponTemplates( void )
 void WeaponStore::reset()
 {
 	// clean up any overriddes.
-	for (Int i = 0; i < m_weaponTemplateVector.size(); ++i)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); ++i)
 	{
 		WeaponTemplate *wt = m_weaponTemplateVector[i];
 		if (wt->isOverride()) 
@@ -1475,7 +1475,7 @@ void WeaponStore::postProcessLoad()
 		return;
 	}
 
-	for (Int i = 0; i < m_weaponTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_weaponTemplateVector.size(); i++)
 	{
 		WeaponTemplate* wt = m_weaponTemplateVector[i];
 		if (wt)
@@ -1649,7 +1649,7 @@ void Weapon::setClipPercentFull(Real percent, Bool allowReduction)
 	if (m_template->getClipSize() == 0)
 		return;
 
-	Int ammo = REAL_TO_INT_FLOOR(m_template->getClipSize() * percent);
+	UnsignedInt ammo = REAL_TO_INT_FLOOR(m_template->getClipSize() * percent);
 	if (ammo > m_ammoInClip || (allowReduction && ammo < m_ammoInClip))
 	{
 		m_ammoInClip = ammo;
@@ -3001,8 +3001,8 @@ void Weapon::crc( Xfer *xfer )
 #endif // DEBUG_CRC
 
 	// scatter targets unused
-	UnsignedShort scatterCount = m_scatterTargetsUnused.size();
-	xfer->xferUnsignedShort( &scatterCount );
+	UnsignedInt scatterCount = m_scatterTargetsUnused.size();
+	xfer->xferUnsignedInt( &scatterCount );
 #ifdef DEBUG_CRC
 	if (doLogging)
 	{
@@ -3128,8 +3128,8 @@ void Weapon::xfer( Xfer *xfer )
 	xfer->xferInt( &m_numShotsForCurBarrel );
 
 	// scatter targets unused
-	UnsignedShort scatterCount = m_scatterTargetsUnused.size();
-	xfer->xferUnsignedShort( &scatterCount );
+	UnsignedInt scatterCount = m_scatterTargetsUnused.size();
+	xfer->xferUnsignedInt( &scatterCount );
 	Int intData;
 	if( xfer->getXferMode() == XFER_SAVE )	
 	{

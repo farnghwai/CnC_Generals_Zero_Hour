@@ -27,7 +27,7 @@
 #include "Common/BezierSegment.h"
 #include "Common/BezFwdIterator.h"
 
-#include <D3DX8Math.h>
+#include <DirectXMath.h>
 
 //-------------------------------------------------------------------------------------------------
 BezierSegment::BezierSegment()
@@ -102,18 +102,24 @@ void BezierSegment::evaluateBezSegmentAtT(Real tValue, Coord3D *outResult) const
 	if (!outResult)
 		return;
 
-	D3DXVECTOR4	tVec(tValue * tValue * tValue, tValue * tValue, tValue, 1);
+	DirectX::XMFLOAT4 tVec_f(tValue * tValue * tValue, tValue * tValue, tValue, 1.0f);
+	DirectX::XMVECTOR tVec = DirectX::XMLoadFloat4(&tVec_f);
 
-	D3DXVECTOR4 xCoords(m_controlPoints[0].x, m_controlPoints[1].x, m_controlPoints[2].x, m_controlPoints[3].x);
-	D3DXVECTOR4 yCoords(m_controlPoints[0].y, m_controlPoints[1].y, m_controlPoints[2].y, m_controlPoints[3].y);
-	D3DXVECTOR4 zCoords(m_controlPoints[0].z, m_controlPoints[1].z, m_controlPoints[2].z, m_controlPoints[3].z);
+	DirectX::XMFLOAT4 xCoords_f(m_controlPoints[0].x, m_controlPoints[1].x, m_controlPoints[2].x, m_controlPoints[3].x);
+	DirectX::XMVECTOR xCoords = DirectX::XMLoadFloat4(&xCoords_f);
+	DirectX::XMFLOAT4 yCoords_f(m_controlPoints[0].y, m_controlPoints[1].y, m_controlPoints[2].y, m_controlPoints[3].y);
+	DirectX::XMVECTOR yCoords = DirectX::XMLoadFloat4(&yCoords_f);
+	DirectX::XMFLOAT4 zCoords_f(m_controlPoints[0].z, m_controlPoints[1].z, m_controlPoints[2].z, m_controlPoints[3].z);
+	DirectX::XMVECTOR zCoords = DirectX::XMLoadFloat4(&zCoords_f);
 
-	D3DXVECTOR4 tResult;
-	D3DXVec4Transform(&tResult, &tVec, &BezierSegment::s_bezBasisMatrix);
+	DirectX::XMVECTOR transformed_vec;
+	transformed_vec = DirectX::XMVector4Transform(tVec, BezierSegment::s_bezBasisMatrix);
+	DirectX::XMFLOAT4 tResult;
+	DirectX::XMStoreFloat4(&tResult, transformed_vec);
 	
-	outResult->x = D3DXVec4Dot(&xCoords, &tResult);
-	outResult->y = D3DXVec4Dot(&yCoords, &tResult);
-	outResult->z = D3DXVec4Dot(&zCoords, &tResult);
+	outResult->x = DirectX::XMVectorGetX(DirectX::XMVector4Dot(xCoords, transformed_vec));
+	outResult->y = DirectX::XMVectorGetX(DirectX::XMVector4Dot(yCoords, transformed_vec));
+	outResult->z = DirectX::XMVectorGetX(DirectX::XMVector4Dot(zCoords, transformed_vec));
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -238,7 +244,7 @@ void BezierSegment::splitSegmentAtT(Real tValue, BezierSegment &outSeg1, BezierS
 
 //-------------------------------------------------------------------------------------------------
 // The Basis Matrix for a bezier segment
-const D3DXMATRIX BezierSegment::s_bezBasisMatrix(
+const DirectX::XMMATRIX BezierSegment::s_bezBasisMatrix(
 	-1.0f,  3.0f, -3.0f,  1.0f,
 	 3.0f, -6.0f,  3.0f,  0.0f,
 	-3.0f,  3.0f,  0.0f,  0.0f,

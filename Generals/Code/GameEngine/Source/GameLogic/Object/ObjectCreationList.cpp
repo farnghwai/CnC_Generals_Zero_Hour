@@ -310,7 +310,7 @@ public:
 			CWy = dx * s + dy * c + dy;
 		}
 		
-		for( Int formationIndex = 0; formationIndex < m_formationSize; formationIndex++ )
+		for( UnsignedInt formationIndex = 0; formationIndex < m_formationSize; formationIndex++ )
 		{
 			Coord3D offset;
 			offset.zero();
@@ -1456,7 +1456,7 @@ ObjectCreationListStore::~ObjectCreationListStore()
 //-------------------------------------------------------------------------------------------------
 const ObjectCreationList *ObjectCreationListStore::findObjectCreationList(const char* name) const
 {
-	if (stricmp(name, "None") == 0)
+	if (_stricmp(name, "None") == 0)
 		return NULL;
 
   ObjectCreationListMap::const_iterator it = m_ocls.find(NAMEKEY(name));

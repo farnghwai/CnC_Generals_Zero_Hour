@@ -47,6 +47,20 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
+
 #define PROFILE_ERROR_LIMIT	0.94f	//fraction of profiled result needed to get a match.  Allows some room for error/fluctuation.
 
 //Hack to get access to a static method on the W3DDevice side. -MW
@@ -422,7 +436,7 @@ void INI::parseStaticGameLODLevel( INI* ini, void * , void *store, const void*)
 {
 	const char *tok=ini->getNextToken();
 	for (Int i=0; i<STATIC_GAME_LOD_COUNT; i++)
-		if( stricmp(tok, StaticGameLODNames[i]) == 0 )
+		if( _stricmp(tok, StaticGameLODNames[i]) == 0 )
 		{	*(StaticGameLODLevel*)store = (StaticGameLODLevel)i;
 			return;
 		}
@@ -614,7 +628,7 @@ void INI::parseDynamicGameLODLevel( INI* ini, void * , void *store, const void*)
 {
 	const char *tok=ini->getNextToken();
 	for (Int i=0; i<DYNAMIC_GAME_LOD_COUNT; i++)
-		if( stricmp(tok, DynamicGameLODNames[i]) == 0 )
+		if( _stricmp(tok, DynamicGameLODNames[i]) == 0 )
 		{	*(DynamicGameLODLevel*)store = (DynamicGameLODLevel)i;
 			return;
 		}

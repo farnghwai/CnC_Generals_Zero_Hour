@@ -44,6 +44,45 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	wchar_t* safe_wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) {
+		if (wcsncpy_s(dest, count, src, _TRUNCATE) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define strncpy safe_strncpy
+	#define fopen safe_fopen
+	#define wcsncpy safe_wcsncpy
+#endif
+
 static const UnsignedShort lobbyPort = 8086; ///< This is the UDP port used by all LANAPI communication
 
 AsciiString GetMessageTypeString(UnsignedInt type);

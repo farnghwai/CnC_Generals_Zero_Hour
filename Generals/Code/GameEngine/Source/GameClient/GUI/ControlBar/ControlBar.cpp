@@ -481,7 +481,7 @@ void CommandButton::parseCommand( INI* ini, void *instance, void *store, const v
 	for( i = 0; TheGuiCommandNames[ i ]; i++ )
 	{
 
-		if( stricmp( TheGuiCommandNames[ i ], token ) == 0 )
+		if( _stricmp( TheGuiCommandNames[ i ], token ) == 0 )
 		{
 
 			GUICommandType *command = (GUICommandType *)store;
@@ -3131,7 +3131,7 @@ void ControlBar::initSpecialPowershortcutBar( Player *player)
 	parentName = layoutName;
 	parentName.concat(":ButtonParent%d");
 	m_currentlyUsedSpecialPowersButtons = MIN(pt->getSpecialPowerShortcutButtonCount(), MAX_SPECIAL_POWER_SHORTCUTS);
-	for( i = 0; i < m_currentlyUsedSpecialPowersButtons; i++ )
+	for(Int i = 0; i < m_currentlyUsedSpecialPowersButtons; i++ )
 	{
 		windowName.format( tempName, i+1 );
 		id = TheNameKeyGenerator->nameToKey( windowName.str() );
@@ -3219,7 +3219,7 @@ void ControlBar::populateSpecialPowerShortcut( Player *player)
 							//button specifying a vector of sciences in the command button.
 							Int bestIndex = -1;
 							ScienceType science;
-							for( Int scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
+							for( size_t scienceIndex = 0; scienceIndex < commandButton->getScienceVec().size(); ++scienceIndex )
 							{
 								science = commandButton->getScienceVec()[ scienceIndex ];
 								

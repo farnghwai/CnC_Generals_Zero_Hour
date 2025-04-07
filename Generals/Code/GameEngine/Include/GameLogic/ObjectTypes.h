@@ -78,7 +78,7 @@ public:
 	UnsignedInt getListSize(void) const { return m_objectTypes.size(); }
 	
 	// I'd like to loop through, please.
-	AsciiString getNthInList( Int index ) const { return (index < getListSize()) ? m_objectTypes[index] : AsciiString::TheEmptyString; }
+	AsciiString getNthInList(UnsignedInt index ) const { return (index < getListSize()) ? m_objectTypes[index] : AsciiString::TheEmptyString; }
 
 	// Prep two arrays for usage with Player::countObjectsByThingTemplate
 	Int prepForPlayerCounting( std::vector<const ThingTemplate *>& templates, std::vector<Int>& counts);

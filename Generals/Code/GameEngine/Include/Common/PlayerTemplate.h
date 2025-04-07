@@ -197,7 +197,7 @@ public:
 
 	static void parsePlayerTemplateDefinition( INI* ini );
 
-	const PlayerTemplate* getNthPlayerTemplate(Int i) const;
+	const PlayerTemplate* getNthPlayerTemplate(size_t i) const;
 	const PlayerTemplate* findPlayerTemplate(NameKeyType namekey) const;
 	inline Int getPlayerTemplateCount() const { return m_playerTemplates.size(); }
 

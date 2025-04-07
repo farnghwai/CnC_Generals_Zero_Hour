@@ -1866,6 +1866,9 @@
     <ClCompile Include="Source\Precompiled\PreRTS.cpp">
       <Filter>Source Files\Precompiled</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Common\GameMemory.cpp">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\Common\ActionManager.h">

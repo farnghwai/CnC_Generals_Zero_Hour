@@ -233,33 +233,33 @@ protected:
 	void pruneDeadWanters();
 
 	ContainedItemsList	m_containList;						///< the list of contained objects
-	UnsignedInt					m_containListSize;							///< size of contained list
+	UnsignedInt			m_containListSize;							///< size of contained list
 private:
 
 	typedef std::map< ObjectID, ObjectEnterExitType, std::less<ObjectID> > ObjectEnterExitMap;
 
 	ObjectEnterExitMap	m_objectEnterExitInfo;
-	UnsignedInt					m_stealthUnitsContained;				///< number of stealth units that can't be seen by enemy players.
-	Int									m_whichExitPath; ///< Cycles from 1 to n and is used only in modules whose data has numberOfExitPaths > 1.
-	UnsignedInt					m_doorCloseCountdown;						///< When should I shut my door.
+	UnsignedInt			m_stealthUnitsContained;				///< number of stealth units that can't be seen by enemy players.
+	Int					m_whichExitPath; ///< Cycles from 1 to n and is used only in modules whose data has numberOfExitPaths > 1.
+	UnsignedInt			m_doorCloseCountdown;						///< When should I shut my door.
 
-	std::list<ObjectID>	m_xferContainIDList;		///< for loading m_containList from a save game
-	PlayerMaskType			m_playerEnteredMask;					///< Mask of player that entered last, if any.
-	UnsignedInt					m_lastUnloadSoundFrame;					///< last frame we did an un-loading sound
-	UnsignedInt					m_lastLoadSoundFrame;						///< last frame we did a loading sound
+	std::list<ObjectID>	m_xferContainIDList;				///< for loading m_containList from a save game
+	PlayerMaskType		m_playerEnteredMask;				///< Mask of player that entered last, if any.
+	UnsignedInt			m_lastUnloadSoundFrame;				///< last frame we did an un-loading sound
+	UnsignedInt			m_lastLoadSoundFrame;				///< last frame we did a loading sound
 
 /// @todo srj -- move this to a lazily-allocated subobject
 	enum { MAX_FIRE_POINTS = 32 };
-	ModelConditionFlags	m_conditionState;				///< The Drawables current behavior state	
-	Matrix3D						m_firePoints[ MAX_FIRE_POINTS ];
-	Int									m_firePointStart;												///< start firepoint index to use when building becomes occupied
-	Int									m_firePointNext;												///< next index to place objects at
-	Int									m_firePointSize;												///< how many entries in m_firePoint are valid
-	Bool								m_noFirePointsInArt;										///< TRUE when no fire point bones exist in the art
+	ModelConditionFlags	m_conditionState;					///< The Drawables current behavior state	
+	Matrix3D			m_firePoints[ MAX_FIRE_POINTS ];
+	Int					m_firePointStart;					///< start firepoint index to use when building becomes occupied
+	Int					m_firePointNext;					///< next index to place objects at
+	Int					m_firePointSize;					///< how many entries in m_firePoint are valid
+	Bool				m_noFirePointsInArt;				///< TRUE when no fire point bones exist in the art
 
-	Coord3D							m_rallyPoint;												///< Where units should move to after they have reached the "natural" rally point
-	Bool								m_rallyPointExists;										///< Only move to the rally point if this is true
-	Bool								m_loadSoundsEnabled;								///< Don't serialize -- used for disabling sounds during payload creation.
+	Coord3D				m_rallyPoint;						///< Where units should move to after they have reached the "natural" rally point
+	Bool				m_rallyPointExists;					///< Only move to the rally point if this is true
+	Bool				m_loadSoundsEnabled;				///< Don't serialize -- used for disabling sounds during payload creation.
 
 };
 

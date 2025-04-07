@@ -33,6 +33,54 @@
 #include "Common/StackDump.h"
 #include "Common/Debug.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline void safe_splitpath(const char* path, char* drive, char* dir, char* fname, char* ext) {
+		// Define buffer sizes based on _MAX constants from <cstdlib>
+		const size_t DRIVE_SIZE = _MAX_DRIVE;
+		const size_t DIR_SIZE = _MAX_DIR;
+		const size_t FNAME_SIZE = _MAX_FNAME;
+		const size_t EXT_SIZE = _MAX_EXT;
+
+		// Call _splitpath_s with the correct buffer sizes
+		_splitpath_s(path,
+			drive, drive ? DRIVE_SIZE : 0,
+			dir, dir ? DIR_SIZE : 0,
+			fname, fname ? FNAME_SIZE : 0,
+			ext, ext ? EXT_SIZE : 0);
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf	
+	#define strcat safe_strcat
+	#define _splitpath safe_splitpath  
+#endif
 
 //*****************************************************************************
 //	Prototypes
@@ -559,7 +607,8 @@ void DumpExceptionInfo( unsigned int u, EXCEPTION_POINTERS* e_info )
 	/*
 	** Match the exception type with the error string and print it out
 	*/
-	for ( int i=0 ; _codes[i] != 0xffffffff ; i++ )
+	int i = 0;
+	for (  ; _codes[i] != 0xffffffff ; i++ )
 	{
 		if ( _codes[i] == e_info->ExceptionRecord->ExceptionCode )
 		{

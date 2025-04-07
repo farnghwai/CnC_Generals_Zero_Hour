@@ -1296,7 +1296,8 @@ CanMakeType BuildAssistant::canMakeUnit( Object *builder, const ThingTemplate *w
 	// make sure we have enough money to build this
 	Player *player = builder->getControllingPlayer();
 	Money *money = player->getMoney();
-	if( whatToBuild->calcCostToBuild( player ) > money->countMoney() )
+	int costToBuild = whatToBuild->calcCostToBuild(player);
+	if(costToBuild >=0 && (UnsignedInt)costToBuild > money->countMoney() )
 		return CANMAKE_NO_MONEY;
 
 	// make sure we're not maxed out for this type of unit.
@@ -1306,7 +1307,7 @@ CanMakeType BuildAssistant::canMakeUnit( Object *builder, const ThingTemplate *w
 		const Bool ignoreUnderConstruction = FALSE;// Most people don't want to count under construction, but I totally do
 		Int existingCount;
 		player->countObjectsByThingTemplate(1, &whatToBuild, ignoreDead, &existingCount, ignoreUnderConstruction);
-		if (existingCount >= whatToBuild->getMaxSimultaneousOfType())
+		if (existingCount >=0 && (UnsignedInt)existingCount >= whatToBuild->getMaxSimultaneousOfType())
 			return CANMAKE_MAXED_OUT_FOR_PLAYER;
 
 		// also check objects that are in production

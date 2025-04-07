@@ -360,7 +360,7 @@ const Video* VideoPlayer::getVideo( AsciiString movieTitle )
 //============================================================================
 // VideoPlayer::getVideo
 //============================================================================
-const Video* VideoPlayer::getVideo( Int index )
+const Video* VideoPlayer::getVideo( size_t index )
 {
 	if (index < 0 || index >= mVideosAvailableForPlay.size()) {
 		return NULL;

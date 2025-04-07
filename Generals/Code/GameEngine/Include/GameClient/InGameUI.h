@@ -252,12 +252,12 @@ public:
 	FloatingTextData(void);
 	//~FloatingTextData(void);
 
-	Color						m_color;														///< It's current color
+	Color				m_color;														///< It's current color
 	UnicodeString		m_text;											///< the text we're displaying
-	DisplayString*	m_dString;									///< The display string
-	Coord3D					m_pos3D;													///< the 3d position in game coords
-	Int							m_frameTimeOut;												///< when we want this thing to disappear
-	Int							m_frameCount;													///< how many frames have we been displaying text?
+	DisplayString*		m_dString;									///< The display string
+	Coord3D				m_pos3D;													///< the 3d position in game coords
+	UnsignedInt			m_frameTimeOut;												///< when we want this thing to disappear
+	Int					m_frameCount;													///< how many frames have we been displaying text?
 };
 
 typedef std::list<FloatingTextData *> FloatingTextList;
@@ -672,159 +672,159 @@ protected:
 	// Protected Data THAT IS SAVED/LOADED ----------------------------------------------------------
 	// ----------------------------------------------------------------------------------------------
 
-	Bool												m_superweaponHiddenByScript;
-	Bool												m_inputEnabled;		/// sort of
+	Bool										m_superweaponHiddenByScript;
+	Bool										m_inputEnabled;		/// sort of
 
 	// ----------------------------------------------------------------------------------------------
 	// Protected Data -------------------------------------------------------------------------------
 	// ----------------------------------------------------------------------------------------------
 
-	std::list<WindowLayout *>		m_windowLayouts;
+	std::list<WindowLayout *>					m_windowLayouts;
 	AsciiString									m_currentlyPlayingMovie;											///< Used to push updates to TheScriptEngine
 	DrawableList								m_selectedDrawables;													///< A list of all selected drawables.
 	DrawableList								m_selectedLocalDrawables;											///< A list of all selected drawables owned by the local player
-	Bool												m_isDragSelecting;														///< If TRUE, an area selection is in progress
-	IRegion2D										m_dragSelectRegion;														///< if isDragSelecting is TRUE, this contains select region
-	Bool												m_displayedMaxWarning;                        ///< keeps the warning from being shown over and over
-	MoveHintStruct							m_moveHint[ MAX_MOVE_HINTS ];
-	Int													m_nextMoveHint;
-	const CommandButton *				m_pendingGUICommand;										///< GUI command that needs additional interaction from the user
+	Bool										m_isDragSelecting;														///< If TRUE, an area selection is in progress
+	IRegion2D									m_dragSelectRegion;														///< if isDragSelecting is TRUE, this contains select region
+	Bool										m_displayedMaxWarning;                        ///< keeps the warning from being shown over and over
+	MoveHintStruct								m_moveHint[ MAX_MOVE_HINTS ];
+	Int											m_nextMoveHint;
+	const CommandButton *						m_pendingGUICommand;										///< GUI command that needs additional interaction from the user
 	BuildProgress								m_buildProgress[ MAX_BUILD_PROGRESS ];	///< progress for building units
-	const ThingTemplate *				m_pendingPlaceType;											///< type of built thing we're trying to place
-	ObjectID										m_pendingPlaceSourceObjectID;						///< source object of the thing constructing the item
+	const ThingTemplate *						m_pendingPlaceType;											///< type of built thing we're trying to place
+	ObjectID									m_pendingPlaceSourceObjectID;						///< source object of the thing constructing the item
 	Drawable **									m_placeIcon;														///< array for drawables to appear at the cursor when building in the world
-	Bool												m_placeAnchorInProgress;								///< is place angle interface for placement active
-	ICoord2D										m_placeAnchorStart;											///< place angle anchor start
-	ICoord2D										m_placeAnchorEnd;												///< place angle anchor end
-	Int													m_selectCount;													///< Number of objects currently "selected"
-	Int													m_maxSelectCount;												///< Max number of objects to select
+	Bool										m_placeAnchorInProgress;								///< is place angle interface for placement active
+	ICoord2D									m_placeAnchorStart;											///< place angle anchor start
+	ICoord2D									m_placeAnchorEnd;												///< place angle anchor end
+	Int											m_selectCount;													///< Number of objects currently "selected"
+	Int											m_maxSelectCount;												///< Max number of objects to select
 	UnsignedInt									m_frameSelectionChanged;								///< Frame when the selection last changed.
 
 
 	// Video playback data
 	VideoBuffer*								m_videoBuffer;			///< video playback buffer
-	VideoStreamInterface*				m_videoStream;			///< Video stream;
+	VideoStreamInterface*						m_videoStream;			///< Video stream;
 
 	// Video playback data
 	VideoBuffer*								m_cameoVideoBuffer;///< video playback buffer
-	VideoStreamInterface*				m_cameoVideoStream;///< Video stream;
+	VideoStreamInterface*						m_cameoVideoStream;///< Video stream;
 
 	// message data
-	UIMessage										m_uiMessages[ MAX_UI_MESSAGES ];/**< messages to display to the user, the
+	UIMessage									m_uiMessages[ MAX_UI_MESSAGES ];/**< messages to display to the user, the
 																						array is organized with newer messages at
 																						index 0, and increasing to older ones */
 	// superweapon timer data
-	SuperweaponMap							m_superweapons[MAX_PLAYER_COUNT];
-	Coord2D											m_superweaponPosition;
-	Real												m_superweaponFlashDuration;
+	SuperweaponMap								m_superweapons[MAX_PLAYER_COUNT];
+	Coord2D										m_superweaponPosition;
+	Real										m_superweaponFlashDuration;
 	
 	// superweapon timer font info
 	AsciiString									m_superweaponNormalFont;
-	Int													m_superweaponNormalPointSize;
-	Bool												m_superweaponNormalBold;
+	Int											m_superweaponNormalPointSize;
+	Bool										m_superweaponNormalBold;
 	AsciiString									m_superweaponReadyFont;
-	Int													m_superweaponReadyPointSize;
-	Bool												m_superweaponReadyBold;
+	Int											m_superweaponReadyPointSize;
+	Bool										m_superweaponReadyBold;
 
-	Int													m_superweaponLastFlashFrame;										///< for flashing the text when the weapon is ready
-	Color												m_superweaponFlashColor;
-	Bool												m_superweaponUsedFlashColor;
+	UnsignedInt											m_superweaponLastFlashFrame;										///< for flashing the text when the weapon is ready
+	Color										m_superweaponFlashColor;
+	Bool										m_superweaponUsedFlashColor;
 
 	NamedTimerMap								m_namedTimers;
-	Coord2D											m_namedTimerPosition;
-	Real												m_namedTimerFlashDuration;
-	Int													m_namedTimerLastFlashFrame;
-	Color												m_namedTimerFlashColor;
-	Bool												m_namedTimerUsedFlashColor;
-	Bool												m_showNamedTimers;
+	Coord2D										m_namedTimerPosition;
+	Real										m_namedTimerFlashDuration;
+	UnsignedInt									m_namedTimerLastFlashFrame;
+	Color										m_namedTimerFlashColor;
+	Bool										m_namedTimerUsedFlashColor;
+	Bool										m_showNamedTimers;
 
 	AsciiString									m_namedTimerNormalFont;
-	Int													m_namedTimerNormalPointSize;
-	Bool												m_namedTimerNormalBold;
-	Color												m_namedTimerNormalColor;
+	Int											m_namedTimerNormalPointSize;
+	Bool										m_namedTimerNormalBold;
+	Color										m_namedTimerNormalColor;
 	AsciiString									m_namedTimerReadyFont;
-	Int													m_namedTimerReadyPointSize;
-	Bool												m_namedTimerReadyBold;
-	Color												m_namedTimerReadyColor;
+	Int											m_namedTimerReadyPointSize;
+	Bool										m_namedTimerReadyBold;
+	Color										m_namedTimerReadyColor;
 
 	// Drawable caption data
 	AsciiString									m_drawableCaptionFont;
-	Int													m_drawableCaptionPointSize;
-	Bool												m_drawableCaptionBold;
-	Color												m_drawableCaptionColor;
+	Int											m_drawableCaptionPointSize;
+	Bool										m_drawableCaptionBold;
+	Color										m_drawableCaptionColor;
 
 	UnsignedInt									m_tooltipsDisabledUntil;
 
 	// Military Subtitle data
-	MilitarySubtitleData *			m_militarySubtitle;		///< The pointer to subtitle class, if it's present then draw it.
-	Bool												m_isScrolling;
-	Bool												m_isSelecting;
-	MouseMode										m_mouseMode;
-	Int													m_mouseModeCursor;
+	MilitarySubtitleData *						m_militarySubtitle;		///< The pointer to subtitle class, if it's present then draw it.
+	Bool										m_isScrolling;
+	Bool										m_isSelecting;
+	MouseMode									m_mouseMode;
+	Int											m_mouseModeCursor;
 	DrawableID									m_mousedOverDrawableID;
-	Coord2D											m_scrollAmt;
-	Bool												m_isQuitMenuVisible;
-	Bool												m_messagesOn;
+	Coord2D										m_scrollAmt;
+	Bool										m_isQuitMenuVisible;
+	Bool										m_messagesOn;
 
-	Color												m_messageColor1;
-	Color												m_messageColor2;
-	ICoord2D										m_messagePosition;
+	Color										m_messageColor1;
+	Color										m_messageColor2;
+	ICoord2D									m_messagePosition;
 	AsciiString									m_messageFont;
-	Int													m_messagePointSize;
-	Bool												m_messageBold;
-	Int													m_messageDelayMS;
+	Int											m_messagePointSize;
+	Bool										m_messageBold;
+	UnsignedInt									m_messageDelayMS;
 
 	RGBAColorInt								m_militaryCaptionColor;				///< color for the military-style caption
-	ICoord2D										m_militaryCaptionPosition;					///< position for the military-style caption
+	ICoord2D									m_militaryCaptionPosition;					///< position for the military-style caption
 
 	AsciiString									m_militaryCaptionTitleFont;
-	Int													m_militaryCaptionTitlePointSize;
-	Bool												m_militaryCaptionTitleBold;
+	Int											m_militaryCaptionTitlePointSize;
+	Bool										m_militaryCaptionTitleBold;
 
 	AsciiString									m_militaryCaptionFont;
-	Int													m_militaryCaptionPointSize;
-	Bool												m_militaryCaptionBold;
+	Int											m_militaryCaptionPointSize;
+	Bool										m_militaryCaptionBold;
 
-	Bool												m_militaryCaptionRandomizeTyping;
-	Int													m_militaryCaptionDelayMS;
-	Int													m_militaryCaptionSpeed;
+	Bool										m_militaryCaptionRandomizeTyping;
+	Int											m_militaryCaptionDelayMS;
+	Int											m_militaryCaptionSpeed;
 
-	RadiusDecalTemplate					m_radiusCursors[RADIUSCURSOR_COUNT];
+	RadiusDecalTemplate							m_radiusCursors[RADIUSCURSOR_COUNT];
 	RadiusDecal									m_curRadiusCursor;
-	RadiusCursorType						m_curRcType;
+	RadiusCursorType							m_curRcType;
 
 	//Floating Text Data
-	FloatingTextList						m_floatingTextList;				///< Our list of floating text
+	FloatingTextList							m_floatingTextList;				///< Our list of floating text
 	UnsignedInt									m_floatingTextTimeOut;									///< Ini value of our floating text timeout
-	Real												m_floatingTextMoveUpSpeed;							///< INI value of our Move up speed
-	Real												m_floatingTextMoveVanishRate;					///< INI value of our move vanish rate
+	Real										m_floatingTextMoveUpSpeed;							///< INI value of our Move up speed
+	Real										m_floatingTextMoveVanishRate;					///< INI value of our move vanish rate
 
-	PopupMessageData *					m_popupMessageData;
-	Color												m_popupMessageColor;
+	PopupMessageData *							m_popupMessageData;
+	Color										m_popupMessageColor;
 	
- 	Bool												m_waypointMode;			///< are we in waypoint plotting mode?
-	Bool												m_forceAttackMode;		///< are we in force attack mode?
-	Bool												m_forceMoveToMode;		///< are we in force move mode?
-	Bool												m_attackMoveToMode;	///< are we in attack move mode?
-	Bool												m_preferSelection;		///< the shift key has been depressed.
+ 	Bool										m_waypointMode;			///< are we in waypoint plotting mode?
+	Bool										m_forceAttackMode;		///< are we in force attack mode?
+	Bool										m_forceMoveToMode;		///< are we in force move mode?
+	Bool										m_attackMoveToMode;	///< are we in attack move mode?
+	Bool										m_preferSelection;		///< the shift key has been depressed.
 
-	Bool												m_cameraRotatingLeft; 
-	Bool 												m_cameraRotatingRight;
-	Bool 												m_cameraZoomingIn;
-	Bool 												m_cameraZoomingOut;
+	Bool										m_cameraRotatingLeft; 
+	Bool 										m_cameraRotatingRight;
+	Bool 										m_cameraZoomingIn;
+	Bool 										m_cameraZoomingOut;
 	
-	Bool												m_drawRMBScrollAnchor;
-	Bool												m_moveRMBScrollAnchor;
-	Bool												m_clientQuiet;         ///< When the user clicks exit,restart, etc. this is set true 
-																												///< to skip some client sounds/fx during shutdown
+	Bool										m_drawRMBScrollAnchor;
+	Bool										m_moveRMBScrollAnchor;
+	Bool										m_clientQuiet;         ///< When the user clicks exit,restart, etc. this is set true 
+																											///< to skip some client sounds/fx during shutdown
 
 	// World Animation Data
-	WorldAnimationList					m_worldAnimationList;		///< the list of world animations
+	WorldAnimationList							m_worldAnimationList;		///< the list of world animations
 
 	// Idle worker animation
 	ObjectList									m_idleWorkers[MAX_PLAYER_COUNT];
 	GameWindow *								m_idleWorkerWin;
-	Int													m_currentIdleWorkerDisplay;
+	Int											m_currentIdleWorkerDisplay;
 
 	DrawableID									m_soloNexusSelectedDrawableID;  ///< The drawable of the nexus, if only one angry mob is selected, otherwise, null
 

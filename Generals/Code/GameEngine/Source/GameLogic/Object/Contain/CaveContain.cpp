@@ -396,7 +396,7 @@ void CaveContain::xfer( Xfer *xfer )
 	xfer->xferBool( &m_needToRunOnBuildComplete );
 
 	// cave index
-	xfer->xferInt( &m_caveIndex );
+	xfer->xferUnsignedInt( &m_caveIndex );
 
 	// original team
 	TeamID teamID = m_originalTeam ? m_originalTeam->getID() : TEAM_ID_INVALID;

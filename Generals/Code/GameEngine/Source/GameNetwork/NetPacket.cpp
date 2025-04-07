@@ -38,6 +38,21 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+#endif
+
 // This function assumes that all of the fields are either of default value or are
 // present in the raw data.
 NetCommandRef * NetPacket::ConstructNetCommandMsgFromRawData(UnsignedByte *data, UnsignedShort dataLength) {
@@ -1675,7 +1690,7 @@ void NetPacket::FillBufferWithFileMessage(UnsignedByte *buffer, NetCommandRef *m
 	++offset;
 
 	AsciiString filename = cmdMsg->getPortableFilename();	// PORTABLE
-	for (Int i = 0; i < filename.getLength(); ++i) {
+	for (size_t i = 0; i < filename.getLength(); ++i) {
 		buffer[offset] = filename.getCharAt(i);
 		++offset;
 	}
@@ -1724,7 +1739,7 @@ void NetPacket::FillBufferWithFileAnnounceMessage(UnsignedByte *buffer, NetComma
 	++offset;
 
 	AsciiString filename = cmdMsg->getPortableFilename();	// PORTABLE
-	for (Int i = 0; i < filename.getLength(); ++i) {
+	for (size_t i = 0; i < filename.getLength(); ++i) {
 		buffer[offset] = filename.getCharAt(i);
 		++offset;
 	}
@@ -5239,7 +5254,7 @@ NetCommandMsg * NetPacket::readGameMessage(UnsignedByte *data, Int &i)
 		lasttype = parserArgType->getType();
 		argsLeftForType = parserArgType->getArgCount();
 	}
-	for (j = 0; j < totalArgCount; ++j) {
+	for (Int j = 0; j < totalArgCount; ++j) {
 		readGameMessageArgumentFromPacket(lasttype, msg, data, i);
 
 		--argsLeftForType;

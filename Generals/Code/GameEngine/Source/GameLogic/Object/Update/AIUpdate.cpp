@@ -180,7 +180,7 @@ const LocomotorTemplateVector* AIUpdateModuleData::findLocomotorTemplateVector(L
 	self->m_locomotorTemplates[set].clear();
 	for (const char* locoName = ini->getNextToken(); locoName; locoName = ini->getNextTokenOrNull())
 	{
-		if (!*locoName || !stricmp(locoName, "None"))
+		if (!*locoName || !_stricmp(locoName, "None"))
 			continue;
 
 		NameKeyType locoKey = NAMEKEY(locoName);
@@ -835,7 +835,7 @@ Bool AIUpdateInterface::chooseLocomotorSetExplicit(LocomotorSetType wst)
 	{
 		m_locomotorSet.clear();
 		m_curLocomotor = NULL;
-		for (Int i = 0; i < set->size(); ++i)
+		for (size_t i = 0; i < set->size(); ++i)
 		{
 			const LocomotorTemplate* lt = set->at(i);
 			if (lt)
@@ -1073,7 +1073,7 @@ UpdateSleepTime AIUpdateInterface::update( void )
 		else
 		{
 			UnsignedInt sleepForPathDelta = m_queueForPathFrame - now;
-			if (sleepForPathDelta < subMachineSleep)
+			if (sleepForPathDelta < (UnsignedInt)subMachineSleep)
 				subMachineSleep = UPDATE_SLEEP(sleepForPathDelta);
 		}
 	}
@@ -4104,7 +4104,7 @@ UnsignedInt AIUpdateInterface::getMoodMatrixValue( void ) const
 		switch (getAttitude())
 		{
 			case AI_SLEEP:			returnVal |= MM_Mood_Sleep; break;
-			case AI_PASSIVE:		returnVal |= MM_Mood_Passive; break;
+			case AI_PASSIVE_CC:		returnVal |= MM_Mood_Passive; break;
 			case AI_NORMAL:			returnVal |= MM_Mood_Normal; break;
 			case AI_ALERT:			returnVal |= MM_Mood_Alert; break;
 			case AI_AGGRESSIVE:	returnVal |= MM_Mood_Aggressive; break;

@@ -67,6 +67,36 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define strcpy safe_strcpy
+	#define strncpy safe_strncpy
+	#define fopen safe_fopen
+#endif
+
 //-------------------------------------------------------------------------------
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
 static char *mapExtension = ".map";
@@ -577,7 +607,7 @@ Bool MapCache::loadUserMaps()
 		{
 			AsciiString endingStr;
 			AsciiString fname = s+1;
-			for (Int i=0; i<strlen(mapExtension); ++i)
+			for (size_t i=0; i<strlen(mapExtension); ++i)
 				fname.removeLastChar();
 
 			endingStr.format("%s\\%s%s", fname.str(), fname.str(), mapExtension);
@@ -1083,7 +1113,7 @@ Image *getMapPreviewImage( AsciiString mapName )
 
 	AsciiString portableName = TheGameState->realMapPathToPortableMapPath(name);
 	tempName.set(AsciiString::TheEmptyString);
-	for(Int i = 0; i < portableName.getLength(); ++i)
+	for(size_t i = 0; i < portableName.getLength(); ++i)
 	{
 		char c = portableName.getCharAt(i);
 		if (c == '\\' || c == ':')

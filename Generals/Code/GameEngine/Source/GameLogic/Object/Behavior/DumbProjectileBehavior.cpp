@@ -578,7 +578,7 @@ UpdateSleepTime DumbProjectileBehavior::update()
 		return UPDATE_SLEEP_NONE;
 	}
 
-	if( m_currentFlightPathStep >= m_flightPath.size() )
+	if(m_currentFlightPathStep >= 0 && (UnsignedInt)m_currentFlightPathStep >= m_flightPath.size() )
 	{
 		// No more steps to use. Would go out of bounds on vector, so have to do something.
 		// We could allow physics to take over and make us fall, but the point of this whole task
@@ -678,7 +678,7 @@ UpdateSleepTime DumbProjectileBehavior::update()
 void DumbProjectileBehavior::displayFlightPath()
 {
 	extern void addIcon(const Coord3D *pos, Real width, Int numFramesDuration, RGBColor color);
-	for( Int pointIndex = 0; pointIndex < m_flightPath.size(); ++pointIndex )
+	for( size_t pointIndex = 0; pointIndex < m_flightPath.size(); ++pointIndex )
 	{
 		addIcon(&m_flightPath[pointIndex], TheGlobalData->m_debugProjectileTileWidth, 
 										TheGlobalData->m_debugProjectileTileDuration, 

@@ -223,7 +223,7 @@ SpecialPowerStore::~SpecialPowerStore( void )
 {
 
 	// delete all templates
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		m_specialPowerTemplates[ i ]->deleteInstance();
 
 	// erase the list
@@ -240,7 +240,7 @@ SpecialPowerTemplate* SpecialPowerStore::findSpecialPowerTemplatePrivate( AsciiS
 {
 
 	// search the template list for matching name
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		if( m_specialPowerTemplates[ i ]->getName() == name )
 			return m_specialPowerTemplates[ i ];
 
@@ -255,7 +255,7 @@ const SpecialPowerTemplate *SpecialPowerStore::findSpecialPowerTemplateByID( Uns
 {
 
 	// search the template list for matching name
-	for( Int i = 0; i < m_specialPowerTemplates.size(); ++i )
+	for( size_t i = 0; i < m_specialPowerTemplates.size(); ++i )
 		if( m_specialPowerTemplates[ i ]->getID() == id )
 			return m_specialPowerTemplates[ i ];
 

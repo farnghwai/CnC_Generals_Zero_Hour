@@ -318,7 +318,7 @@ void StructureCollapseUpdate::doPhaseStuff(StructureCollapsePhaseType scphase, c
 		{
 			idx = idxList[i];
 			const FXVec& v = d->m_fxs[scphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 			const FXList* fxl = v[idx];
 			FXList::doFXPos(fxl, target);
 		}
@@ -333,7 +333,7 @@ void StructureCollapseUpdate::doPhaseStuff(StructureCollapsePhaseType scphase, c
 		{
 			idx = idxList[i];
 			const OCLVec& v = d->m_ocls[scphase];
-			DEBUG_ASSERTCRASH(idx>=0&&idx<v.size(),("bad idx"));
+			DEBUG_ASSERTCRASH(idx>=0 && (UnsignedInt)idx<v.size(),("bad idx"));
 			const ObjectCreationList* ocl = v[idx];
 			ObjectCreationList::create(ocl, getObject(), target, NULL);
 		}

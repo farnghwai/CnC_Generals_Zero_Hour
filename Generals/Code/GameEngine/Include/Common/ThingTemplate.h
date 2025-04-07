@@ -289,14 +289,14 @@ public:
 #if defined(_DEBUG) || defined(_INTERNAL)
 	Bool containsPartialName(const char* n) const
 	{
-		for (int i = 0; i < m_info.size(); i++)
+		for (size_t i = 0; i < m_info.size(); i++)
 			if (strstr(m_info[i].first.str(), n) != NULL)
 				return true;
 		return false;
 	}
 #endif
 
-	AsciiString getNthName(Int i) const
+	AsciiString getNthName(size_t i) const
 	{
 		if (i >= 0 && i < m_info.size())
 		{
@@ -305,7 +305,7 @@ public:
 		return AsciiString::TheEmptyString;
 	}
 
-	AsciiString getNthTag(Int i) const
+	AsciiString getNthTag(size_t i) const
 	{
 		if (i >= 0 && i < m_info.size())
 		{
@@ -314,7 +314,7 @@ public:
 		return AsciiString::TheEmptyString;
 	}
 
-	const ModuleData* getNthData(Int i) const
+	const ModuleData* getNthData(size_t i) const
 	{
 		if (i >= 0 && i < m_info.size())
 		{
@@ -324,7 +324,7 @@ public:
 	}
 
 	// for use only by ThingTemplate::friend_getAIModuleInfo
-	ModuleData* friend_getNthData(Int i);
+	ModuleData* friend_getNthData(size_t i);
 
 	void clear() 
 	{ 
@@ -333,7 +333,7 @@ public:
 
 	void setCopiedFromDefault(Bool v)
 	{
-		for (int i = 0; i < m_info.size(); i++)
+		for (size_t i = 0; i < m_info.size(); i++)
 			m_info[i].copiedFromDefault = v;
 	}
 

@@ -63,6 +63,19 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+
+	inline char* safe_itoa(int value, char* buffer, int radix) {
+		if (_itoa_s(value, buffer, _MAX_PATH, radix) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	#define itoa safe_itoa
+#endif
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // PUBLIC FUNCTIONS ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1483,8 +1496,8 @@ void OpenContain::xfer( Xfer *xfer )
 	xfer->xferBool( &m_rallyPointExists );
 
 	// enter exit map info
-	UnsignedShort enterExitCount = m_objectEnterExitInfo.size();
-	xfer->xferUnsignedShort( &enterExitCount );
+	size_t enterExitCount = m_objectEnterExitInfo.size();
+	xfer->xferUnsignedInt( &enterExitCount );
 	ObjectEnterExitType enterExitType;
 	if( xfer->getXferMode() == XFER_SAVE )
 	{
@@ -1517,7 +1530,7 @@ void OpenContain::xfer( Xfer *xfer )
 		}  // end if
 
 		// read all data items
-		for( UnsignedShort i = 0; i < enterExitCount; ++i )
+		for( size_t i = 0; i < enterExitCount; ++i )
 		{
 
 			// object id

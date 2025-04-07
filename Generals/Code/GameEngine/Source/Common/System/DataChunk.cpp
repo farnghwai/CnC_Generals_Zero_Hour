@@ -38,6 +38,20 @@
 // If verbose, lots of debug logging.
 #define not_VERBOSE
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
+
 CachedFileInputStream::CachedFileInputStream(void):m_buffer(NULL),m_size(0)
 {
 }
@@ -135,7 +149,7 @@ UnsignedInt CachedFileInputStream::tell(void)
 Bool CachedFileInputStream::absoluteSeek(UnsignedInt pos)
 {
 	if (pos<0) return false;
-	if (pos>m_size) {
+	if (pos>(UnsignedInt)m_size) {
 		pos=m_size;
 	}
 	m_pos=pos;
@@ -356,8 +370,8 @@ void DataChunkOutput::writeArrayOfBytes(char *ptr, Int len)
 
 void DataChunkOutput::writeAsciiString( const AsciiString& theString ) 
 { 
-	UnsignedShort len = theString.getLength();
-	::fwrite( (const char *)&len, sizeof(UnsignedShort) , 1, m_tmp_file );
+	UnsignedInt len = theString.getLength();
+	::fwrite( (const char *)&len, sizeof(UnsignedInt) , 1, m_tmp_file );
 	::fwrite( theString.str(), len , 1, m_tmp_file ); 
 }
 

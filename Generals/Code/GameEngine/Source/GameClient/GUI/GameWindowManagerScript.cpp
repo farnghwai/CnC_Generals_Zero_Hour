@@ -72,6 +72,48 @@
 #include "GameClient/GameText.h"
 #include "GameClient/HeaderTemplate.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr; // Static variable to maintain context
+		return strtok_s(str, delim, &context);
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf	
+	#define sscanf safe_sscanf
+	#define strtok safe_strtok
+#endif
+
 // DEFINES ////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -205,7 +247,7 @@ static Bool parseBitFlag( const char *flagString, UnsignedInt *bits,
 	for( i = 0, c = flagList; *c; i++, c++ )
 	{
 
-		if( !stricmp( *c, flagString ) )
+		if( !_stricmp( *c, flagString ) )
 		{
 			*bits |= (1 << i);
 			return TRUE;
@@ -839,7 +881,7 @@ static Bool parseListboxData( char *token, WinInstanceData *instData,
 
 	// "SCROLLIFATEND" (optional)
 	c = strtok( NULL, seps );  // label
-	if ( !stricmp(c, "ScrollIfAtEnd") )
+	if ( !_stricmp(c, "ScrollIfAtEnd") )
 	{
 		c = strtok( NULL, seps );  // value
 		scanBool( c, listData->scrollIfAtEnd );

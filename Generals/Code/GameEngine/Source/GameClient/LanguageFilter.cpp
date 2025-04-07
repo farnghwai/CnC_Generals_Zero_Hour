@@ -35,6 +35,28 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline wchar_t* safe_wcscpy(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr; // Handle null pointers safely
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1; // Estimate required size
+		if (wcscpy_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+
+		return dest;
+	}
+
+	#define wcscpy safe_wcscpy	
+#endif
+
 
 LanguageFilter *TheLanguageFilter = NULL;
 

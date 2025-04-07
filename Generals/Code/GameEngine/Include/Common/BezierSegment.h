@@ -31,7 +31,8 @@
 #ifndef __BEZIERSEGMENT_H__
 #define __BEZIERSEGMENT_H__
 
-#include <D3DX8Math.h>
+//#include <D3DX8Math.h>
+#include <DirectXMath.h>
 #include "Common/STLTypeDefs.h"
 
 #define USUAL_TOLERANCE 1.0f
@@ -39,7 +40,7 @@
 class BezierSegment
 {
 	protected:
-		static const D3DXMATRIX s_bezBasisMatrix;
+		static const DirectX::XMMATRIX s_bezBasisMatrix;
 		Coord3D m_controlPoints[4];
 
 	public:	// Constructors

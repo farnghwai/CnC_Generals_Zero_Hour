@@ -319,7 +319,7 @@ const PlayerTemplate* PlayerTemplateStore::findPlayerTemplate(NameKeyType nameke
 }
 
 //-----------------------------------------------------------------------------
-const PlayerTemplate* PlayerTemplateStore::getNthPlayerTemplate(Int i) const
+const PlayerTemplate* PlayerTemplateStore::getNthPlayerTemplate(size_t i) const
 {
 	if (i >= 0 && i < m_playerTemplates.size())
 		return &m_playerTemplates[i];

@@ -375,8 +375,8 @@ void Xfer::xferSTLObjectIDList( std::list< ObjectID > *objectIDListData )
 	xferVersion( &version, currentVersion );
 
 	// xfer the count of the list
-	UnsignedShort listCount = objectIDListData->size();
-	xferUnsignedShort( &listCount );
+	UnsignedInt listCount = objectIDListData->size();
+	xferUnsignedInt( &listCount );
 	
 	// xfer list data
 	ObjectID objectID;
@@ -441,8 +441,8 @@ void Xfer::xferSTLIntList( std::list< Int > *intListData )
 	xferVersion( &version, currentVersion );
 
 	// xfer the count of the list
-	UnsignedShort listCount = intListData->size();
-	xferUnsignedShort( &listCount );
+	UnsignedInt listCount = intListData->size();
+	xferUnsignedInt( &listCount );
 	
 	// xfer list data
 	Int intData;
@@ -555,8 +555,8 @@ void Xfer::xferScienceVec( ScienceVec *scienceVec )
 	xferVersion( &version, currentVersion );
 
 	// count of vector
-	UnsignedShort count = scienceVec->size();
-	xferUnsignedShort( &count );
+	UnsignedInt count = scienceVec->size();
+	xferUnsignedInt( &count );
 
 	if( getXferMode() == XFER_SAVE )
 	{

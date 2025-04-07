@@ -298,7 +298,7 @@ class VideoPlayer : public VideoPlayerInterface
 		virtual void	removeVideo( Video* videoToRemove );		///< Remove a video to the list of videos we can play
 		virtual Int getNumVideos( void );											///< Retrieve info about the number of videos currently listed
 		virtual const Video* getVideo( AsciiString movieTitle );	///< Retrieve info about a movie based on internal name
-		virtual const Video* getVideo( Int index );						///< Retrieve info about a movie based on index
+		virtual const Video* getVideo( size_t index );						///< Retrieve info about a movie based on index
 		virtual const FieldParse *getFieldParse( void ) const { return m_videoFieldParseTable; }		///< Return the field parse info
 
 		virtual void notifyVideoPlayerOfNewProvider( Bool nowHasValid ) { }

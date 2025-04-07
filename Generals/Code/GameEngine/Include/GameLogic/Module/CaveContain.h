@@ -121,7 +121,7 @@ protected:
 	void changeTeamOnAllConnectedCaves( Team *newTeam, Bool setOriginalTeams );	///< When one gets captured, all connected ones get captured.  DistributedGarrison.
 
 	Bool m_needToRunOnBuildComplete; 
-	Int m_caveIndex;
+	UnsignedInt m_caveIndex;
 
 	Team *m_originalTeam;												///< our original team before we were garrisoned
 

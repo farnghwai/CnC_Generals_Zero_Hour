@@ -249,7 +249,7 @@ public:
     Int i = 0;
 	  for(const char** name = s_bitNameList; *name; ++name, ++i )
 	  {
-		  if( stricmp( *name, token ) == 0 )
+		  if( _stricmp( *name, token ) == 0 )
 		  {
         return i;
 		  }

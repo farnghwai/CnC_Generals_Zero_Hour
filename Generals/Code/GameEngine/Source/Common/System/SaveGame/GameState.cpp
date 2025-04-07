@@ -65,6 +65,21 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+#endif
+
 // PUBLIC DATA ////////////////////////////////////////////////////////////////////////////////////
 GameState *TheGameState = NULL;
 
@@ -210,13 +225,14 @@ GameState::SnapshotBlock *GameState::findBlockInfoByToken( AsciiString token, Sn
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal) 
+UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal)
 {
 	// setup date buffer for local region date format
 	#define DATE_BUFFER_SIZE 256
 	OSVERSIONINFO	osvi;
 	osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
 	UnicodeString displayDateBuffer;
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	if (GetVersionEx(&osvi))
 	{	//check if we're running Win9x variant since they may need different characters
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
@@ -231,6 +247,8 @@ UnicodeString getUnicodeDateBuffer(SYSTEMTIME timeVal)
 			return displayDateBuffer;
 		}	
 	}
+	#pragma warning(default : 4996) //TO-FIX Restore back
+
 	wchar_t dateBuffer[ DATE_BUFFER_SIZE ];
 	GetDateFormatW( LOCALE_SYSTEM_DEFAULT,
 								 DATE_SHORTDATE,
@@ -248,6 +266,7 @@ UnicodeString getUnicodeTimeBuffer(SYSTEMTIME timeVal)
 	UnicodeString displayTimeBuffer;
 	OSVERSIONINFO	osvi;
 	osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	if (GetVersionEx(&osvi))
 	{	//check if we're running Win9x variant since they may need different characters
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
@@ -262,6 +281,8 @@ UnicodeString getUnicodeTimeBuffer(SYSTEMTIME timeVal)
 			return displayTimeBuffer;
 		}
 	}
+	#pragma warning(default : 4996) //TO-FIX Restore back
+
 	// setup time buffer for local region time format
 	#define TIME_BUFFER_SIZE 256
 	wchar_t timeBuffer[ TIME_BUFFER_SIZE ];
@@ -413,7 +434,7 @@ static void findHighFileNumber( AsciiString filename, void *userData )
 
 	// strip off the extension at the end of the filename
 	AsciiString nameOnly = filename;
-	for( Int count = 0; count < strlen( SAVE_GAME_EXTENSION ); count++ )
+	for( size_t count = 0; count < strlen( SAVE_GAME_EXTENSION ); count++ )
 		nameOnly.removeLastChar();
 	
 	// convert filename (which is only numbers) to a number
@@ -789,7 +810,7 @@ Bool GameState::isInSaveDirectory(const AsciiString& path) const
 // ------------------------------------------------------------------------------------------------
 AsciiString GameState::getMapLeafName(const AsciiString& in) const
 {
-	char* p = strrchr(in.str(), '\\');
+	const char* p = strrchr(in.str(), '\\');
 	if (p)
 	{
 		//
@@ -1023,7 +1044,7 @@ void GameState::getSaveGameInfoFromFile( AsciiString filename, SaveGameInfo *sav
 			blockSize = xferLoad.beginBlock();
 
 			// is this the block of game info data
-			if( stricmp( token.str(), GAME_STATE_BLOCK_STRING ) == 0 )
+			if( _stricmp( token.str(), GAME_STATE_BLOCK_STRING ) == 0 )
 			{
 				GameState tempGameState;
 
@@ -1288,7 +1309,7 @@ void GameState::iterateSaveFiles( IterateSaveFileCallback callback, void *userDa
 
 			// see if there is a ".sav" at end of this filename
 			Char *c = strrchr( item.cFileName, '.' );
-			if( c && stricmp( c, ".sav" ) == 0 )
+			if( c && _stricmp( c, ".sav" ) == 0 )
 			{
 
 				// construction asciistring filename

@@ -52,6 +52,46 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline wchar_t* safe_wcscpy(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr; // Handle null pointers safely
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1; // Estimate required size
+		if (wcscpy_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+
+		return dest;
+	}
+
+	inline int safe_vsnwprintf(wchar_t* buffer, size_t count, const wchar_t* format, va_list args) {
+		return _vsnwprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	wchar_t* safe_wcscat(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr;
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1;
+		if (wcscat_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	#define wcscpy safe_wcscpy
+	#define _vsnwprintf safe_vsnwprintf
+	#define wcscat safe_wcscat
+#endif
+
 // -----------------------------------------------------
 
 /*static*/ UnicodeString UnicodeString::TheEmptyString;

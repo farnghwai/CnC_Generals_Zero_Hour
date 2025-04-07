@@ -154,8 +154,8 @@ void ObjectTypes::xfer(Xfer *xfer)
 	xfer->xferAsciiString( &m_listName );
 
 	// size of object types vector
-	UnsignedShort objectTypesCount = m_objectTypes.size();
-	xfer->xferUnsignedShort( &objectTypesCount );
+	UnsignedInt objectTypesCount = m_objectTypes.size();
+	xfer->xferUnsignedInt( &objectTypesCount );
 
 	// object types data
 	if( xfer->getXferMode() == XFER_SAVE )
@@ -186,7 +186,7 @@ void ObjectTypes::xfer(Xfer *xfer)
 
 		// read all data
 		AsciiString typeName;
-		for( UnsignedShort i = 0; i < objectTypesCount; ++i )
+		for( size_t i = 0; i < objectTypesCount; ++i )
 		{
 
 			// read name

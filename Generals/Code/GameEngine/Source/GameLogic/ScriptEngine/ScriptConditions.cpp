@@ -939,14 +939,15 @@ Bool ScriptConditions::evaluatePlayerHasCredits(Parameter *pCreditsParm, Paramet
 	}
 	
 	if (pPlayer && pPlayer->getMoney()) {
+		int pCreditInt = pCreditsParm->getInt();
 		switch (pComparisonParm->getInt())
 		{
-			case Parameter::LESS_THAN :			return (pCreditsParm->getInt() < pPlayer->getMoney()->countMoney()); break;
-			case Parameter::LESS_EQUAL :		return (pCreditsParm->getInt() <= pPlayer->getMoney()->countMoney()); break;
-			case Parameter::EQUAL :					return (pCreditsParm->getInt() == pPlayer->getMoney()->countMoney()); break;
-			case Parameter::GREATER_EQUAL :	return (pCreditsParm->getInt() >= pPlayer->getMoney()->countMoney()); break;
-			case Parameter::GREATER :				return (pCreditsParm->getInt() > pPlayer->getMoney()->countMoney()); break;
-			case Parameter::NOT_EQUAL :			return (pCreditsParm->getInt() != pPlayer->getMoney()->countMoney()); break;
+			case Parameter::LESS_THAN :		return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt < pPlayer->getMoney()->countMoney())); break;
+			case Parameter::LESS_EQUAL :	return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt <= pPlayer->getMoney()->countMoney())); break;
+			case Parameter::EQUAL :			return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt == pPlayer->getMoney()->countMoney())); break;
+			case Parameter::GREATER_EQUAL :	return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt >= pPlayer->getMoney()->countMoney())); break;
+			case Parameter::GREATER :		return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt > pPlayer->getMoney()->countMoney())); break;
+			case Parameter::NOT_EQUAL :		return (pCreditInt >= 0 && ((UnsignedInt)pCreditInt != pPlayer->getMoney()->countMoney())); break;
 		}
 	}
 
@@ -1804,10 +1805,10 @@ Bool ScriptConditions::evaluatePlayerHasComparisonValueExcessPower(Parameter *pP
 Bool ScriptConditions::evaluateSkirmishSpecialPowerIsReady(Parameter *pSkirmishPlayerParm, Parameter *pPower)
 {
 	if (pPower->getInt() == -1) return false;
-	if (pPower->getInt()>0 && pPower->getInt()>TheGameLogic->getFrame()) {
+	if (pPower->getInt()>0 && (UnsignedInt)pPower->getInt()>TheGameLogic->getFrame()) {
 		return false;
 	}
-	Int nextFrame = TheGameLogic->getFrame() + 10*LOGICFRAMES_PER_SECOND;
+	UnsignedInt nextFrame = TheGameLogic->getFrame() + 10*LOGICFRAMES_PER_SECOND;
 	const SpecialPowerTemplate *power = TheSpecialPowerStore->findSpecialPowerTemplate(pPower->getString());
 	if (power==NULL) {
 		pPower->friend_setInt(-1); // flag as never true.

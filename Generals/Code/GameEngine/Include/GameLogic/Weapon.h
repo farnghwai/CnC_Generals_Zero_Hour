@@ -416,7 +416,7 @@ public:
 	inline WeaponReloadType getReloadType() const { return m_reloadType; }
 	inline WeaponPrefireType getPrefireType() const { return m_prefireType; }
 	inline Bool getAutoReloadsClip() const { return m_reloadType == AUTO_RELOAD; }
-	inline Int getClipSize() const { return m_clipSize; }
+	inline UnsignedInt getClipSize() const { return m_clipSize; }
 	inline Int getContinuousFireOneShotsNeeded() const { return m_continuousFireOneShotsNeeded; }
 	inline Int getContinuousFireTwoShotsNeeded() const { return m_continuousFireTwoShotsNeeded; }
 	inline UnsignedInt getContinuousFireCoastFrames() const { return m_continuousFireCoastFrames; }
@@ -501,7 +501,7 @@ private:
 	AudioEventRTS m_fireSound;							///< weapon is fired sound
 	UnsignedInt m_fireSoundLoopTime;				///< if nonzero, num frames for looping of fire sound
 	WeaponBonusSet* m_extraBonus;						///< optional extra per-weapon bonus
-	Int m_clipSize;													///< number of 'shots' in a clip
+	UnsignedInt m_clipSize;													///< number of 'shots' in a clip
 	Int m_clipReloadTime;										///< when 'clip' is empty, how long it takes to reload (frames)
 	Int m_minDelayBetweenShots;							///< min time allowed between firing single shots (frames)
 	Int m_maxDelayBetweenShots;							///< max time allowed between firing single shots (frames)

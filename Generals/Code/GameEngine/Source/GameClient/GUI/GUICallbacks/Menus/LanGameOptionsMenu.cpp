@@ -196,7 +196,8 @@ static void playerTooltip(GameWindow *window,
 													UnsignedInt mouse)
 {
 	Int idx = -1;
-	for (Int i=0; i<MAX_SLOTS; ++i)
+	Int i = 0;
+	for (i=0; i<MAX_SLOTS; ++i)
 	{
 		if (window && window == GadgetComboBoxGetEditBox(comboBoxPlayer[i]))
 		{
@@ -305,7 +306,7 @@ void StartPressed(void)
 			}
 		}
 	}
-	if (numRandom + teams.size() < TheGlobalData->m_netMinPlayers)
+	if (TheGlobalData->m_netMinPlayers >= 0 && (numRandom + teams.size() < (UnsignedInt)TheGlobalData->m_netMinPlayers))
 	{
 		if (TheLAN->AmIHost())
 		{

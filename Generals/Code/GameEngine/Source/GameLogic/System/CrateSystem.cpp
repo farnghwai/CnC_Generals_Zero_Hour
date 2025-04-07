@@ -34,6 +34,24 @@
 #include "GameLogic/CrateSystem.h"
 #include "Common/BitFlagsIO.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sscanf safe_sscanf
+#endif
+
 CrateSystem *TheCrateSystem = NULL;
 
 CrateSystem::CrateSystem()
@@ -152,7 +170,7 @@ CrateTemplate *CrateSystem::newCrateTemplateOverride( CrateTemplate *crateToOver
 const CrateTemplate *CrateSystem::findCrateTemplate(AsciiString name) const
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_crateTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_crateTemplateVector.size(); i++)
 		if(m_crateTemplateVector[i]->getName() == name) {
 			CrateTemplateOverride overridable(m_crateTemplateVector[i]);
 			return overridable;
@@ -165,7 +183,7 @@ const CrateTemplate *CrateSystem::findCrateTemplate(AsciiString name) const
 CrateTemplate *CrateSystem::friend_findCrateTemplate(AsciiString name)
 {
 	// search weapon list for name
-	for (Int i = 0; i < m_crateTemplateVector.size(); i++)
+	for (size_t i = 0; i < m_crateTemplateVector.size(); i++)
 		if(m_crateTemplateVector[i]->getName() == name) {
 			CrateTemplateOverride overridable(m_crateTemplateVector[i]);
 			return const_cast<CrateTemplate*>((const CrateTemplate *)overridable);

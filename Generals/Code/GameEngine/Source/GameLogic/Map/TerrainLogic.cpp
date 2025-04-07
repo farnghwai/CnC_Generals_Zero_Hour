@@ -1183,19 +1183,19 @@ void TerrainLogic::enableWaterGrid( Bool enable )
 			//
 			AsciiString strippedMapNameOnly;
 			AsciiString strippedCompareMapNameOnly;
-			char *c;
+			//char *c;
 
 			// create stripped map name
-			c = strrchr( TheGlobalData->m_mapName.str(), '\\' );
+			const char* c = strrchr( TheGlobalData->m_mapName.str(), '\\' );
 			if( c )
 				strippedMapNameOnly.set( c );
 			else
 				strippedMapNameOnly = TheGlobalData->m_mapName;
 
 			// create stripped compare name
-			c = strrchr( TheGlobalData->m_vertexWaterAvailableMaps[ i ].str(), '\\' );
-			if( c )
-				strippedCompareMapNameOnly.set( c );
+			const char* c2 = strrchr( TheGlobalData->m_vertexWaterAvailableMaps[ i ].str(), '\\' );
+			if( c2 )
+				strippedCompareMapNameOnly.set( c2 );
 			else
 				strippedCompareMapNameOnly = TheGlobalData->m_vertexWaterAvailableMaps[ i ];
 
@@ -2561,7 +2561,7 @@ void TerrainLogic::findAxisAlignedBoundingRect( const WaterHandle *water, Region
 
 void TerrainLogic::setActiveBoundary(Int newActiveBoundary)
 {
-	if (newActiveBoundary < 0 || newActiveBoundary >= m_boundaries.size()) {
+	if (newActiveBoundary < 0 || (size_t)newActiveBoundary >= m_boundaries.size()) {
 		// probably should DEBUG_ASSERT here
 		return;
 	}
@@ -2884,7 +2884,7 @@ void TerrainLogic::xfer( Xfer *xfer )
 		xfer->xferInt( &m_numWaterToUpdate );
 
 		// water update entry data
-		for( UnsignedInt i = 0; i < m_numWaterToUpdate; ++i )
+		for(Int i = 0; i < m_numWaterToUpdate; ++i )
 		{
 
 			// water handle
