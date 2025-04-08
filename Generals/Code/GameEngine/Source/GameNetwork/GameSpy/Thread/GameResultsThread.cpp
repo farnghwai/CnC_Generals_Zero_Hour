@@ -36,6 +36,7 @@
 
 #include "Common/StackDump.h"
 #include "Common/SubsystemInterface.h"
+#include <ws2tcpip.h>
 
 #ifdef _MSC_VER
 	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
@@ -265,27 +266,45 @@ void GameResultsThreadClass::Thread_Function()
 			UnsignedInt IP = 0xFFFFFFFF;
 			if (isdigit(hostnameBuffer[0]))
 			{
-				IP = inet_addr(hostnameBuffer);
-				in_addr hostNode;
-				hostNode.s_addr = IP;
-				DEBUG_LOG(("sending game results to %s - IP = %s\n", hostnameBuffer, inet_ntoa(hostNode) ));
+				struct in_addr addr;
+
+				int result = InetPton(AF_INET, hostnameBuffer, &addr);
+				if (result != 1) {
+					// Handle error: result == 0 means invalid address format, 
+					// result == -1 means system error
+					DEBUG_LOG(("sending game results to %s - host lookup failed\n", hostnameBuffer));
+				}
+				else
+				{ 
+					IP = addr.s_addr;
+
+					char ipstr[INET_ADDRSTRLEN];
+					InetNtop(AF_INET, &addr, ipstr, sizeof(ipstr));
+					DEBUG_LOG(("sending game results to %s - IP = %s\n", hostnameBuffer, ipstr));
+				}
 			}
 			else
 			{
-				HOSTENT *hostStruct;
-				in_addr *hostNode;
-				hostStruct = gethostbyname(hostnameBuffer);
-				if (hostStruct == NULL)
-				{
+				char ipstr[INET_ADDRSTRLEN];
+				struct addrinfo hints;
+				struct addrinfo* res = NULL;
+				ZeroMemory(&hints, sizeof(hints));
+
+				hints.ai_family = AF_INET;
+				hints.ai_socktype = 0;
+
+				int status = getaddrinfo(hostnameBuffer, NULL, &hints, &res);
+				if (status != 0 || res == NULL) {
 					DEBUG_LOG(("sending game results to %s - host lookup failed\n", hostnameBuffer));
-					
-					// Even though this failed to resolve IP, still need to send a
-					//   callback.
-					IP = 0xFFFFFFFF;   // flag for IP resolve failed
 				}
-				hostNode = (in_addr *) hostStruct->h_addr;
-				IP = hostNode->s_addr;
-				DEBUG_LOG(("sending game results to %s IP = %s\n", hostnameBuffer, inet_ntoa(*hostNode) ));
+				else {
+					struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+					IP = ipv4->sin_addr.s_addr;
+
+					InetNtop(AF_INET, &ipv4->sin_addr, ipstr, sizeof(ipstr));
+					DEBUG_LOG(("sending game results to %s IP = %s\n", hostnameBuffer, ipstr));
+				}
+				freeaddrinfo(res);
 			}
 
 			int result = sendGameResults( IP, req.port, req.results );

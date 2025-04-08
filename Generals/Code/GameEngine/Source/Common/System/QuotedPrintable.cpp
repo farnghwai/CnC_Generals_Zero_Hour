@@ -114,52 +114,60 @@ AsciiString AsciiStringToQuotedPrintable(AsciiString original)
 // Convert ascii quoted-printable strings into unicode strings
 UnicodeString QuotedPrintableToUnicodeString(AsciiString original)
 {
-	static unsigned short dest[1024];
-	int i=0;
+	//static unsigned short dest[1024];
+	//int i=0;
 
-	unsigned char *c = (unsigned char *)dest;
-	const unsigned char *src = (const unsigned char *)original.str();
+	//unsigned char *c = (unsigned char *)dest;
+	//const unsigned char *src = (const unsigned char *)original.str();
 
-	while (*src && i<1023)
-	{
-		if (*src == MAGIC_CHAR)
-		{
-			if (src[1] == '\0')
-			{
-				// string ends with MAGIC_CHAR
-				break;
-			}
-			*c = hexDigitToInt(src[1]);
-			src++;
-			if (src[1] != '\0')
-			{
-				*c = *c<<4;
-				*c = *c | hexDigitToInt(src[1]);
-				src++;
-			}
-		}
-		else
-		{
-			*c = *src;
-		}
-		src++;
-		c++;
-	}
+	//while (*src && i<1023)
+	//{
+	//	if (*src == MAGIC_CHAR)
+	//	{
+	//		if (src[1] == '\0')
+	//		{
+	//			// string ends with MAGIC_CHAR
+	//			break;
+	//		}
+	//		*c = hexDigitToInt(src[1]);
+	//		src++;
+	//		if (src[1] != '\0')
+	//		{
+	//			*c = *c<<4;
+	//			*c = *c | hexDigitToInt(src[1]);
+	//			src++;
+	//		}
+	//	}
+	//	else
+	//	{
+	//		*c = *src;
+	//	}
+	//	src++;
+	//	c++;
+	//}
 
-	// Fixup odd-length strings
-	if ((c-(unsigned char *)dest)%2)
-	{
-		// OK
-	}
-	else
-	{
-		*c = '\0';
-		c++;
-	}
+	//// Fixup odd-length strings
+	//if ((c-(unsigned char *)dest)%2)
+	//{
+	//	// OK
+	//}
+	//else
+	//{
+	//	*c = '\0';
+	//	c++;
+	//}
 
-	*c = 0;
+	//*c = 0;
 
-	UnicodeString out(dest);
+	//UnicodeString out(dest);
+	
+	//[DX9] by Gemini Code Assist 8 April 2025
+	AsciiString decodedAscii = QuotedPrintableToAsciiString(original);
+
+	// 2. Create a UnicodeString and translate the AsciiString into it
+	UnicodeString out;
+	out.translate(decodedAscii); // Use the provided translation method
+
 	return out;
 }
 

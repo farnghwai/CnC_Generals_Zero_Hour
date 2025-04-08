@@ -26,6 +26,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "GameNetwork/NetworkUtil.h"
+#include <ws2tcpip.h>
 
 Int MAX_FRAMES_AHEAD = 128;
 Int MIN_RUNAHEAD = 10;
@@ -78,9 +79,6 @@ void dumpBufferToLog(const void *vBuf, Int len, const char *fname, Int line)
  */
 UnsignedInt ResolveIP(AsciiString host)
 {
-  struct hostent *hostStruct;
-  struct in_addr *hostNode;
-
   if (host.getLength() == 0)
   {
 	  DEBUG_LOG(("ResolveIP(): Can't resolve NULL\n"));
@@ -90,18 +88,40 @@ UnsignedInt ResolveIP(AsciiString host)
   // String such as "127.0.0.1"
   if (isdigit(host.getCharAt(0)))
   {
-    return ( ntohl(inet_addr(host.str())) );
+	struct in_addr addr;
+	int result = InetPton(AF_INET, host.str(), &addr);
+	if (result != 1) {
+		// Handle error: result == 0 means invalid address format, 
+		// result == -1 means system error
+		DEBUG_LOG(("Invalid IP address format or conversion failed %s.\n", host.str()));
+		return 0;
+	}
+
+	UnsignedInt ip_network_order = addr.s_addr;
+	UnsignedInt ip_host_order = ntohl(ip_network_order);
+    return (ip_host_order);
   }
 
   // String such as "localhost"
-  hostStruct = gethostbyname(host.str());
-  if (hostStruct == NULL)
-  {
+  struct addrinfo hints;
+  struct addrinfo* res = NULL;
+  ZeroMemory(&hints, sizeof(hints));
+
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = 0;
+
+  int status = getaddrinfo(host.str(), NULL, &hints, &res);
+  if (status != 0 || res == NULL) {
 	  DEBUG_LOG(("ResolveIP(): Can't resolve %s\n", host.str()));
-	  return 0;
+	  return (0);
   }
-  hostNode = (struct in_addr *) hostStruct->h_addr;
-  return ( ntohl(hostNode->s_addr) );
+
+  struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+  UnsignedInt ip_network_order = ipv4->sin_addr.s_addr;
+  UnsignedInt ip_host_order = ntohl(ip_network_order);
+  freeaddrinfo(res);
+
+  return (ip_host_order);
 }
 
 /**

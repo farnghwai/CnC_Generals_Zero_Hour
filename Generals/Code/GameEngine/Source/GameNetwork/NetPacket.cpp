@@ -5583,8 +5583,14 @@ NetCommandMsg * NetPacket::readDisconnectChatMessage(UnsignedByte *data, Int &i)
 	i += length * sizeof(UnsignedShort);
 	text[length] = 0;
 
+	wchar_t wideText[256];
+	for (int j = 0; j < length; ++j) {
+		wideText[j] = static_cast<wchar_t>(text[j]);
+	}
+	wideText[length] = L'\0'; // Null-terminate the wchar_t array
+
 	UnicodeString unitext;
-	unitext.set(text);
+	unitext.set(wideText);
 
 	//DEBUG_LOG_LEVEL(DEBUG_LEVEL_NET, ("NetPacket::readDisconnectChatMessage - read message, message is %ls\n", unitext.str()));
 
@@ -5609,9 +5615,15 @@ NetCommandMsg * NetPacket::readChatMessage(UnsignedByte *data, Int &i) {
 	memcpy(&playerMask, data + i, sizeof(Int));
 	i += sizeof(Int);
 
+	// Convert UnsignedShort array to wchar_t*
+	wchar_t wideText[256];
+	for (int j = 0; j < length; ++j) {
+		wideText[j] = static_cast<wchar_t>(text[j]);
+	}
+	wideText[length] = L'\0'; // Null-terminate the wchar_t array
 
 	UnicodeString unitext;
-	unitext.set(text);
+	unitext.set(wideText);
 
 	//DEBUG_LOG_LEVEL(DEBUG_LEVEL_NET, ("NetPacket::readChatMessage - read message, message is %ls\n", unitext.str()));
 

@@ -25,6 +25,7 @@
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
 #include "GameNetwork/IPEnumeration.h"
+#include <ws2tcpip.h>
 
 IPEnumeration::IPEnumeration( void )
 {
@@ -80,48 +81,35 @@ EnumeratedIP * IPEnumeration::getAddresses( void )
 	}
 	DEBUG_LOG(("Hostname is '%s'\n", hostname));
 	
-	// get host information from the host name
-	HOSTENT* hostEnt = gethostbyname(hostname);
-	if (hostEnt == NULL)
-	{
-		DEBUG_LOG(("Failed call to gethostnyname; WSAGetLastError returned %d\n", WSAGetLastError()));
+	// get address information from the host name
+	struct addrinfo hints;
+	struct addrinfo* res = NULL;
+	struct addrinfo* ptr = NULL;
+	ZeroMemory(&hints, sizeof(hints));
+	
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = 0;
+
+	int status = getaddrinfo(hostname, NULL, &hints, &res);
+	if (status != 0 || res == NULL) {
+		DEBUG_LOG(("getaddrinfo error: %s\n", gai_strerror(status)));
 		return NULL;
 	}
-	
-	// sanity-check the length of the IP adress
-	if (hostEnt->h_length != 4)
-	{
-		DEBUG_LOG(("gethostbyname returns oddly-sized IP addresses!\n"));
-		return NULL;
-	}
-	
-	// construct a list of addresses
-	int numAddresses = 0;
-	char *entry;
-	while ( (entry = hostEnt->h_addr_list[numAddresses++]) != 0 )
-	{
-		EnumeratedIP *newIP = newInstance(EnumeratedIP);
 
-		AsciiString str;
-		str.format("%d.%d.%d.%d", (unsigned char)entry[0], (unsigned char)entry[1], (unsigned char)entry[2], (unsigned char)entry[3]);
+	for (ptr = res; ptr != NULL; ptr = ptr->ai_next)
+	{
+		struct sockaddr_in* ipv4 = (struct sockaddr_in*)ptr->ai_addr;
+		char ipstr[INET_ADDRSTRLEN];
+		InetNtop(AF_INET, &ipv4->sin_addr, ipstr, sizeof(ipstr));
 
-		UnsignedInt testIP = *((UnsignedInt *)entry);
+		EnumeratedIP* newIP = newInstance(EnumeratedIP);
+		UnsignedInt testIP = ipv4->sin_addr.s_addr;
 		UnsignedInt ip = ntohl(testIP);
 
-		/*
-		ip = *entry++;
-		ip <<= 8;
-		ip += *entry++;
-		ip <<= 8;
-		ip += *entry++;
-		ip <<= 8;
-		ip += *entry++;
-		*/
+		newIP->setIPstring(ipstr);
+		newIP->setIP(testIP);
 
-		newIP->setIPstring(str);
-		newIP->setIP(ip);
-
-		DEBUG_LOG(("IP: 0x%8.8X / 0x%8.8X (%s)\n", testIP, ip, str.str()));
+		DEBUG_LOG(("IP: 0x%8.8X / 0x%8.8X (%s)\n", testIP, ip, ipstr));
 
 		// Add the IP to the list in ascending order
 		if (!m_IPlist)
@@ -148,6 +136,8 @@ EnumeratedIP * IPEnumeration::getAddresses( void )
 			}
 		}
 	}
+
+	freeaddrinfo(res);
 
 	return m_IPlist;
 }

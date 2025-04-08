@@ -34,6 +34,7 @@
 #include "Common/GameEngine.h"
 //#include "GameNetwork/NetworkInterface.h"
 #include "GameNetwork/udp.h"
+#include <ws2tcpip.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -147,20 +148,40 @@ UDP::~UDP()
 
 Int UDP::Bind(const char *Host,UnsignedShort port)
 {
-  char hostName[100];
-  struct hostent *hostStruct;
-  struct in_addr *hostNode;
+  struct in_addr addr;
 
-  if (isdigit(Host[0]))
-    return ( Bind( ntohl(inet_addr(Host)), port) );
+  if (isdigit(Host[0])) {
+	  int result = InetPton(AF_INET, Host, &addr);
+	  if (result != 1) {
+		  // Handle error: result == 0 means invalid address format, 
+		  // result == -1 means system error
+		  fprintf(stderr, "Invalid IP address format or conversion failed.\n");
+		  return (0);
+	  }
+	  UnsignedInt ip_network_order = addr.s_addr;
+	  UnsignedInt ip_host_order = ntohl(ip_network_order);
+	  return (Bind(ip_host_order, port));
+  }
 
-  strcpy(hostName, Host);
+  struct addrinfo hints;
+  struct addrinfo *res = NULL;
+  ZeroMemory(&hints, sizeof(hints));
 
-  hostStruct = gethostbyname(Host);
-  if (hostStruct == NULL)
-    return (0);
-  hostNode = (struct in_addr *) hostStruct->h_addr;
-  return ( Bind(ntohl(hostNode->s_addr),port) );
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = 0;
+
+  int status = getaddrinfo(Host, NULL, &hints, &res);
+  if (status != 0 || res == NULL) {
+	  fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+	  return (0);
+  }
+
+  struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+  UnsignedInt ip_network_order = ipv4->sin_addr.s_addr;
+  UnsignedInt ip_host_order = ntohl(ip_network_order);
+  freeaddrinfo(res);
+
+  return ( Bind(ip_host_order,port) );
 }
 
 // You must call bind, implicit binding is for sissies

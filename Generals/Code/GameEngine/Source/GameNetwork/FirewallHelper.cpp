@@ -55,6 +55,7 @@
 #include "GameNetwork/udp.h"
 #include "GameNetwork/NetworkDefs.h"
 #include "GameNetwork/GameSpy/GSConfig.h"
+#include <ws2tcpip.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -681,7 +682,7 @@ Bool FirewallHelperClass::detectionBeginUpdate() {
 
 	m_timeoutStart = timeGetTime();
 	m_timeoutLength = 5000;
-	DEBUG_LOG(("About to call gethostbyname for the mangler address\n"));
+	DEBUG_LOG(("About to call getaddrinfo for the mangler address\n"));
 	int namenum = 0;
 
 	do {
@@ -711,10 +712,17 @@ Bool FirewallHelperClass::detectionBeginUpdate() {
 		*/
 		char temp_name[256];
 		strcpy(temp_name, mangler_name_ptr);
-		struct hostent *host_info = gethostbyname(temp_name);
 
-		if (!host_info) {
-			DEBUG_LOG(("gethostbyname failed! Error code %d\n", WSAGetLastError()));
+		struct addrinfo hints;
+		struct addrinfo* res = NULL;
+		ZeroMemory(&hints, sizeof(hints));
+
+		hints.ai_family = AF_INET;
+		hints.ai_socktype = 0;
+
+		int status = getaddrinfo(temp_name, NULL, &hints, &res);
+		if (status != 0 || res == NULL) {
+			DEBUG_LOG(("getaddrinfo error: %s\n", gai_strerror(status)));
 			break;
 		}
 
@@ -722,21 +730,28 @@ Bool FirewallHelperClass::detectionBeginUpdate() {
 		** See if we already have that address in the list.
 		*/
 		Bool found = FALSE;
-		for (Int i=0 ; i<m_numManglers; i++) {
-			if (memcmp(mangler_addresses[i], &host_info->h_addr_list[0][0], 4) == 0) {
+		for (Int i = 0; i < m_numManglers; i++) {
+			struct sockaddr_in* sa = (struct sockaddr_in*)&mangler_addresses[i];
+			if (sa->sin_addr.s_addr == ((struct sockaddr_in*)(res->ai_addr))->sin_addr.s_addr) {
 				found = TRUE;
 				break;
 			}
 		}
+
 		/*
 		** Add the address in if we didn't find it.
 		*/
 		if (!found) {
 			Int m = m_numManglers++;
-			memcpy(&mangler_addresses[m][0], &host_info->h_addr_list[0][0], 4);
-			ntohl((UnsignedInt)mangler_addresses[m]);
+		
+			struct sockaddr_in* sa = (struct sockaddr_in*)res->ai_addr;
+			mangler_addresses[m][0] = sa->sin_addr.s_addr & 0xFF;
+			mangler_addresses[m][1] = (sa->sin_addr.s_addr >> 8) & 0xFF;
+			mangler_addresses[m][2] = (sa->sin_addr.s_addr >> 16) & 0xFF;
+			mangler_addresses[m][3] = (sa->sin_addr.s_addr >> 24) & 0xFF;
 			DEBUG_LOG(("Found mangler address at %d.%d.%d.%d\n", mangler_addresses[m][0], mangler_addresses[m][1], mangler_addresses[m][2], mangler_addresses[m][3]));
 		}
+		freeaddrinfo(res);
 
 	} while ((m_numManglers < MAX_NUM_MANGLERS) && ((timeGetTime() - m_timeoutStart) < m_timeoutLength));
 
