@@ -661,7 +661,7 @@ static void populateBattleHonors(const PSPlayerStats& stats, Int battleHonors, I
 Int GetFavoriteSide( const PSPlayerStats& stats )
 {
 	PerGeneralMap::const_iterator it;
-	Int numGames = 0;
+	UnsignedInt numGames = 0;
 	Int favorite = 0;
 	for(it =stats.games.begin(); it != stats.games.end(); ++it)
 	{
@@ -673,7 +673,7 @@ Int GetFavoriteSide( const PSPlayerStats& stats )
 	}
 	if(numGames == 0)
 		return -1;
-	else if( stats.gamesAsRandom >= numGames )
+	else if(stats.gamesAsRandom >= 0 && (UnsignedInt)stats.gamesAsRandom >= numGames )
 		return 0;
 
 	return favorite;
@@ -864,7 +864,7 @@ void PopulatePlayerInfoWindows( AsciiString parentWindowName )
 		Int favorite = 0;
 		for(it =stats.games.begin(); it != stats.games.end(); ++it)
 		{
-			if(it->second >= numGames)
+			if(numGames >= 0 && it->second >= (UnsignedInt)numGames)
 			{
 				numGames = it->second;
 				favorite = it->first;
@@ -1081,7 +1081,7 @@ void HandlePersistentStorageResponses( void )
 						Int favorite = 0;
 						for(it =resp.player.games.begin(); it != resp.player.games.end(); ++it)
 						{
-							if(it->second >= numGames)
+							if(numGames >=0 && it->second >= (UnsignedInt)numGames)
 							{
 								numGames = it->second;
 								favorite = it->first;
@@ -1135,7 +1135,7 @@ void HandlePersistentStorageResponses( void )
 							Int favorite = 0;
 							for(it = resp.player.games.begin(); it != resp.player.games.end(); ++it)
 							{
-								if(it->second >= numGames)
+								if(numGames>=0 && it->second >= (UnsignedInt)numGames)
 								{
 									numGames = it->second;
 									favorite = it->first;
@@ -1236,6 +1236,7 @@ void GameSpyPlayerInfoOverlayInit( WindowLayout *layout, void *userData )
 
 	OSVERSIONINFO	osvi;
 	osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+	#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 	if (GetVersionEx(&osvi))
 	{	//check if we're running Win9x variant since they may need different fonts
 		if (osvi.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
@@ -1246,6 +1247,7 @@ void GameSpyPlayerInfoOverlayInit( WindowLayout *layout, void *userData )
 				checkBoxNonAsianFont->winEnable(FALSE);
 		}
 	}
+	#pragma warning(default : 4996) //TO-FIX Restore back
 
 	//TheWindowManager->winSetModal(parent);
 } // GameSpyPlayerInfoOverlayInit

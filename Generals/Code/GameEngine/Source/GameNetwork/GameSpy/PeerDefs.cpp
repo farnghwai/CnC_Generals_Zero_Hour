@@ -58,7 +58,7 @@ void deleteNotificationBox( void );
 
 bool AsciiComparator::operator()(AsciiString s1, AsciiString s2) const
 {
-	return stricmp(s1.str(), s2.str()) < 0;
+	return _stricmp(s1.str(), s2.str()) < 0;
 }
 
 GameSpyInfo::GameSpyInfo()
@@ -183,10 +183,10 @@ void GameSpyInfo::setGameOptions( void )
 	req.peerRequestType = PeerRequest::PEERREQUEST_SETGAMEOPTIONS;
 	req.options = GameInfoToAsciiString(&m_localStagingRoom).str();
 
-	Int i;
+	//Int i;
 	AsciiString mapName = TheGameState->realMapPathToPortableMapPath(m_localStagingRoom.getMap());
 	AsciiString newMapName;
-	for (i=0; i<mapName.getLength(); ++i)
+	for (size_t i=0; i<mapName.getLength(); ++i)
 	{
 		char c = mapName.getCharAt(i);
 		if (c != '\\')
@@ -204,7 +204,7 @@ void GameSpyInfo::setGameOptions( void )
 	req.gameOptions.numObservers = 0;
 	Int numOpenSlots = 0;
 	AsciiString playerInfo = "";
-	for (i=0; i<MAX_SLOTS; ++i)
+	for (Int i=0; i<MAX_SLOTS; ++i)
 	{
 		Int wins = 0, losses = 0, profileID = 0;
 		GameSpyGameSlot *slot = TheGameSpyGame->getGameSpySlot(i);
@@ -274,7 +274,7 @@ void GameSpyInfo::setGameOptions( void )
 	req.UTM.isStagingRoom = TRUE;
 	req.id = "Pings/";
 	AsciiString pings;
-	for (i=0; i<MAX_SLOTS; ++i)
+	for (Int i=0; i<MAX_SLOTS; ++i)
 	{
 		if (i!=0)
 			pings.concat(",");
@@ -357,7 +357,7 @@ void GameSpyInfo::addGroupRoom( GameSpyGroupRoom room )
 		groupLabel.format("GUI:%s", room.m_name.str());
 		room.m_translatedName = TheGameText->fetch(groupLabel);
 		m_groupRooms[room.m_groupID] = room;
-		if ( !stricmp("quickmatch", room.m_name.str()) )
+		if ( !_stricmp("quickmatch", room.m_name.str()) )
 		{
 			DEBUG_LOG(("Group room %d (%s) is the QuickMatch room\n", room.m_groupID, room.m_name.str()));
 			TheGameSpyConfig->setQMChannel(room.m_groupID);

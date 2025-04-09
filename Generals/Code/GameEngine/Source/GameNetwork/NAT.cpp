@@ -41,11 +41,30 @@
 #include "GameNetwork/GameSpy/PeerDefs.h"
 #include "GameNetwork/GameSpy/PersistentStorageThread.h"
 #include "GameNetwork/GameSpy/GSConfig.h"
+#include <ws2tcpip.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sscanf safe_sscanf
 #endif
 
 /*
@@ -317,7 +336,7 @@ NATConnectionState NAT::connectionUpdate() {
 
 	// check to see if its time to send out our keepalives.
 	if (timeGetTime() >= m_nextKeepaliveTime) {
-		for (Int node = 0; node < m_numNodes; ++node) {
+		for (UnsignedInt node = 0; node < m_numNodes; ++node) {
 			if (m_myConnections[node] == TRUE) {
 				// we've made this connection, send a keepalive.
 				Int slotIndex = m_connectionNodes[node].m_slotIndex;
@@ -501,7 +520,7 @@ void NAT::establishConnectionPaths() {
 	m_connectionPairIndex = m_numNodes - 2;
 	Bool connectionAssigned[MAX_SLOTS];
 
-	for (i = 0; i < MAX_SLOTS; ++i) {
+	for (Int i = 0; i < MAX_SLOTS; ++i) {
 		m_connectionNodes[i].m_slotIndex = -1;
 		connectionAssigned[i] = FALSE;
 		m_sourcePorts[i] = 0;
@@ -520,7 +539,7 @@ void NAT::establishConnectionPaths() {
 	DEBUG_LOG(("NAT::establishConnectionPaths - about to set up the node list\n"));
 	DEBUG_LOG(("NAT::establishConnectionPaths - doing the netgear stuff\n"));
 	UnsignedInt otherNetgearNum = -1;
-	for (i = 0; i < MAX_SLOTS; ++i) {
+	for (Int i = 0; i < MAX_SLOTS; ++i) {
 		if ((m_slotList != NULL) && (m_slotList[i] != NULL)) {
 			if ((m_slotList[i]->getNATBehavior() & FirewallHelperClass::FIREWALL_TYPE_NETGEAR_BUG) != 0) {
 				if (otherNetgearNum == -1) {
@@ -553,7 +572,7 @@ void NAT::establishConnectionPaths() {
 
 	// fill in the rest of the nodes with the remaining slots.
 	DEBUG_LOG(("NAT::establishConnectionPaths - doing the non-Netgear nodes\n"));
-	for (i = 0; i < MAX_SLOTS; ++i) {
+	for (Int i = 0; i < MAX_SLOTS; ++i) {
 		if (connectionAssigned[i] == TRUE) {
 			continue;
 		}
@@ -576,13 +595,13 @@ void NAT::establishConnectionPaths() {
 
 // sanity check
 #if defined(_DEBUG) || defined(_INTERNAL)
-	for (i = 0; i < m_numNodes; ++i) {
+	for (UnsignedInt i = 0; i < m_numNodes; ++i) {
 		DEBUG_ASSERTCRASH(connectionAssigned[i] == TRUE, ("connection number %d not assigned", i));
 	}
 #endif
 
 	// find the local node number.
-	for (i = 0; i < m_numNodes; ++i) {
+	for (UnsignedInt i = 0; i < m_numNodes; ++i) {
 		if (m_connectionNodes[i].m_slotIndex == TheGameSpyGame->getLocalSlotNum()) {
 			m_localNodeNumber = i;
 			DEBUG_LOG(("NAT::establishConnectionPaths - local node is %d\n", m_localNodeNumber));
@@ -592,7 +611,7 @@ void NAT::establishConnectionPaths() {
 
 	// set up the names in the connection window.
 	Int playerNum = 0;
-	for (i = 0; i < MAX_SLOTS; ++i) {
+	for (Int i = 0; i < MAX_SLOTS; ++i) {
 		while ((i < MAX_SLOTS) && (m_slotList[i] != NULL) && !(m_slotList[i]->isHuman())) {
 			++i;
 		}
@@ -666,7 +685,7 @@ void NAT::doThisConnectionRound() {
 	m_beenProbed = FALSE;
 	m_numRetries = 0;
 
-	for (i = 0; i < m_numNodes; ++i) {
+	for (UnsignedInt i = 0; i < m_numNodes; ++i) {
 		Int targetNodeNumber = m_connectionPairs[m_connectionPairIndex][m_connectionRound][i];
 		DEBUG_LOG(("NAT::doThisConnectionRound - node %d needs to connect to node %d\n", i, targetNodeNumber));
 		if (targetNodeNumber != -1) {
@@ -811,19 +830,31 @@ void NAT::sendMangledSourcePort() {
 	// get the address of the mangler we need to talk to.
 	Char manglerName[256];
 	FirewallHelperClass::getManglerName(1, manglerName);
-	DEBUG_LOG(("NAT::sendMangledSourcePort - about to call gethostbyname for mangler at %s\n", manglerName));
-	struct hostent *hostInfo = gethostbyname(manglerName);
+	DEBUG_LOG(("NAT::sendMangledSourcePort - about to call getaddrinfo for mangler at %s\n", manglerName));
+	
+	struct addrinfo hints;
+	struct addrinfo* res = NULL;
+	ZeroMemory(&hints, sizeof(hints));
 
-	if (hostInfo == NULL) {
-		DEBUG_LOG(("NAT::sendMangledSourcePort - gethostbyname failed for mangler address %s\n", manglerName));
-		// can't find the mangler, we're screwed so just send the source port.
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = 0;
+
+	int status = getaddrinfo(manglerName, NULL, &hints, &res);
+	if (status != 0 || res == NULL) {
+		DEBUG_LOG(("NAT::sendMangledSourcePort - getaddrinfo failed for mangler address %s\n", manglerName));
+		freeaddrinfo(res);
 		sendMangledPortNumberToTarget(sourcePort, targetSlot);
 		m_sourcePorts[m_targetNodeNumber] = sourcePort;
 		setConnectionState(m_localNodeNumber, NATCONNECTIONSTATE_WAITINGFORMANGLEDPORT);
 		return;
 	}
 
-	memcpy(&m_manglerAddress, &(hostInfo->h_addr_list[0][0]), 4);
+	struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+	struct in_addr ipv4_address = ipv4->sin_addr;
+
+	memcpy(&m_manglerAddress, &ipv4_address, sizeof(struct in_addr));
+	freeaddrinfo(res);
+
 	m_manglerAddress = ntohl(m_manglerAddress);
 	DEBUG_LOG(("NAT::sendMangledSourcePort - mangler %s address is %d.%d.%d.%d\n", manglerName, 
 							m_manglerAddress >> 24, (m_manglerAddress >> 16) & 0xff, (m_manglerAddress >> 8) & 0xff, m_manglerAddress & 0xff));
@@ -948,7 +979,7 @@ Bool NAT::allConnectionsDone() {
 
 Bool NAT::allConnectionsDoneThisRound() {
 	Bool retval = TRUE;
-	for (Int i = 0; (i < m_numNodes) && (retval == TRUE); ++i) {
+	for (UnsignedInt i = 0; (i < m_numNodes) && (retval == TRUE); ++i) {
 		if ((m_connectionStates[i] != NATCONNECTIONSTATE_DONE) && (m_connectionStates[i] != NATCONNECTIONSTATE_FAILED)) {
 			retval = FALSE;
 		}
@@ -1234,7 +1265,7 @@ void NAT::processGlobalMessage(Int slotNum, const char *options) {
 		if (m_connectionPairs[m_connectionPairIndex][m_connectionRound][node] == sendingNode) {
 //			Int node = atoi(ptr + strlen("CONNDONE"));
 			DEBUG_LOG(("NAT::processGlobalMessage - got a CONNDONE message for node %d\n", node));
-			if ((node >= 0) && (node <= m_numNodes)) {
+			if ((node >= 0) && ((UnsignedInt)node <= m_numNodes)) {
 				DEBUG_LOG(("NAT::processGlobalMessage - node %d's connection is complete, setting connection state to done\n", node));
 				setConnectionState(node, NATCONNECTIONSTATE_DONE);
 			}
@@ -1246,7 +1277,7 @@ void NAT::processGlobalMessage(Int slotNum, const char *options) {
 		// we should get the node number of the player who's connection failed from the options
 		// and mark that down as part of the connectionStates.
 		Int node = atoi(ptr + strlen("CONNFAILED"));
-		if ((node >= 0) && (node < m_numNodes)) {
+		if ((node >= 0) && ((UnsignedInt)node < m_numNodes)) {
 			DEBUG_LOG(("NAT::processGlobalMessage - node %d's connection failed, setting connection state to failed\n", node));
 			setConnectionState(node, NATCONNECTIONSTATE_FAILED);
 		}
@@ -1271,7 +1302,7 @@ void NAT::processGlobalMessage(Int slotNum, const char *options) {
 		DEBUG_LOG(("NAT::processGlobalMessage - got port message from node %d, port: %d, internal address: %d.%d.%d.%d\n", node, port,
 								addr >> 24, (addr >> 16) & 0xff, (addr >> 8) & 0xff, addr & 0xff));
 
-		if ((node >= 0) && (node < m_numNodes)) {
+		if ((node >= 0) && ((UnsignedInt)node < m_numNodes)) {
 			if (port < 1024) {
 				// it has to be less than 65535 cause its a short duh.
 				DEBUG_ASSERTCRASH(port >= 1024, ("Was passed an invalid port number"));
@@ -1305,7 +1336,8 @@ void NAT::setConnectionState(Int nodeNumber, NATConnectionState state) {
 	// find the menu slot of the target node.
 	Int slotIndex = m_connectionNodes[m_targetNodeNumber].m_slotIndex;
 	Int slot = 0;
-	for (Int i = 0; i < MAX_SLOTS; ++i) {
+	Int i;
+	for (i = 0; i < MAX_SLOTS; ++i) {
 		if (m_slotList[i] != NULL) {
 			if (m_slotList[i]->isHuman()) {
 				if (i != m_connectionNodes[m_localNodeNumber].m_slotIndex) {

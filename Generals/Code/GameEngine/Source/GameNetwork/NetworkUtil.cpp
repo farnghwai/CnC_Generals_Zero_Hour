@@ -113,6 +113,7 @@ UnsignedInt ResolveIP(AsciiString host)
   int status = getaddrinfo(host.str(), NULL, &hints, &res);
   if (status != 0 || res == NULL) {
 	  DEBUG_LOG(("ResolveIP(): Can't resolve %s\n", host.str()));
+	  freeaddrinfo(res);
 	  return (0);
   }
 

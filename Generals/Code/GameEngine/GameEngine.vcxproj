@@ -200,7 +200,6 @@
     <ClCompile Include="Source\Common\GameEngine.cpp" />
     <ClCompile Include="Source\Common\GameLOD.cpp" />
     <ClCompile Include="Source\Common\GameMain.cpp" />
-    <ClCompile Include="Source\Common\GameMemory.cpp" />
     <ClCompile Include="Source\Common\GlobalData.cpp" />
     <ClCompile Include="Source\Common\INI\INI.cpp" />
     <ClCompile Include="Source\Common\INI\INIAiData.cpp" />
@@ -1261,6 +1260,7 @@
     <ClInclude Include="Include\GameNetwork\GameSpy\BuddyDefs.h" />
     <ClInclude Include="Include\GameNetwork\GameSpy\BuddyThread.h" />
     <ClInclude Include="Include\GameNetwork\GameSpy\GameResultsThread.h" />
+    <ClInclude Include="Include\GameNetwork\GameSpy\GPCommonTemp.h" />
     <ClInclude Include="Include\GameNetwork\GameSpy\GSConfig.h" />
     <ClInclude Include="Include\GameNetwork\GameSpy\LadderDefs.h" />
     <ClInclude Include="Include\GameNetwork\GameSpy\LobbyUtils.h" />

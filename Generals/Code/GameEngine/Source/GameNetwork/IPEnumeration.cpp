@@ -93,6 +93,7 @@ EnumeratedIP * IPEnumeration::getAddresses( void )
 	int status = getaddrinfo(hostname, NULL, &hints, &res);
 	if (status != 0 || res == NULL) {
 		DEBUG_LOG(("getaddrinfo error: %s\n", gai_strerror(status)));
+		freeaddrinfo(res);
 		return NULL;
 	}
 

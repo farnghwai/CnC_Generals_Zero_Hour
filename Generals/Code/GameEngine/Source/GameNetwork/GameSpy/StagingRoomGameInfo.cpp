@@ -47,6 +47,7 @@
 #include "GameNetwork/GameSpyOverlay.h"
 #include "GameNetwork/NAT.h"
 #include "GameNetwork/NetworkInterface.h"
+#include <ws2tcpip.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -55,6 +56,30 @@
 #endif
 
 // GameSpyGameSlot -------------------------------------------
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+#endif
+
 
 GameSpyGameSlot::GameSpyGameSlot()
 {
@@ -148,7 +173,7 @@ Bool GetLocalChatConnectionAddress(AsciiString serverName, UnsignedShort serverP
 	AsnObjectIdentifier first_supported_region;
 	std::vector<ConnInfoStruct> connectionVector;
 	int last_field;
-	int index;
+	size_t index;
 	AsnInteger error_status;
 	AsnInteger error_index;
 	int conn_entry_type_index;
@@ -181,20 +206,32 @@ Bool GetLocalChatConnectionAddress(AsciiString serverName, UnsignedShort serverP
 	/*
 	** Get the address of the chat server.
 	*/
-	DEBUG_LOG( ("About to call gethostbyname\n"));
-	struct hostent *host_info = gethostbyname(serverName.str());
+	DEBUG_LOG( ("About to call getaddrinfo\n"));
+	//char ipstr[INET_ADDRSTRLEN];
+	struct addrinfo hints;
+	struct addrinfo* res = NULL;
+	ZeroMemory(&hints, sizeof(hints));
 
-	if (!host_info) {
-		DEBUG_LOG( ("gethostbyname failed! Error code %d\n", WSAGetLastError()));
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = 0;
+
+	int status = getaddrinfo(serverName.str(), NULL, &hints, &res);
+	if (status != 0 || res == NULL) {
+		DEBUG_LOG(("getaddrinfo error: %s\n", gai_strerror(status)));
+		freeaddrinfo(res);
 		return(false);
 	}
 
-	memcpy(serverAddress, &host_info->h_addr_list[0][0], 4);
-	unsigned long temp = *((unsigned long*)(&serverAddress[0]));
-	temp = ntohl(temp);
-	*((unsigned long*)(&serverAddress[0])) = temp;
+	struct sockaddr_in* ipv4 = (struct sockaddr_in*)res->ai_addr;
+	struct in_addr ipv4_address = ipv4->sin_addr;
+
+	memcpy(serverAddress, &ipv4_address, sizeof(struct in_addr));
+	//unsigned long temp = *((unsigned long*)(&serverAddress[0]));
+	//temp = ntohl(temp);
+	//*((unsigned long*)(&serverAddress[0])) = temp;
 
 	DEBUG_LOG(("Host address is %d.%d.%d.%d\n", serverAddress[3], serverAddress[2], serverAddress[1], serverAddress[0]));
+	freeaddrinfo(res);
 
 	/*
 	** Load the MIB-II SNMP DLL.
@@ -404,10 +441,10 @@ Bool GetLocalChatConnectionAddress(AsciiString serverName, UnsignedShort serverP
 	** server we think we are talking to.
 	*/
 	found = false;
-	for (Int i=0; i<connectionVector.size(); ++i) {
+	for (size_t i=0; i<connectionVector.size(); ++i) {
 		ConnInfoStruct connection = connectionVector[i];
 
-		temp = ntohl(connection.RemoteIP);
+		unsigned long temp = ntohl(connection.RemoteIP);
 		memcpy(remoteAddress, (unsigned char*)&temp, 4);
 
 		/*
@@ -602,7 +639,7 @@ void GameSpyStagingRoom::startGame(Int gameID)
 
 AsciiString GameSpyStagingRoom::generateGameSpyGameResultsPacket( void )
 {
-	Int i;
+	//Int i;
 	Int endFrame = TheVictoryConditions->getEndFrame();
 	Int localSlotNum = getLocalSlotNum();
 	Int winningTeam = -1;
@@ -611,7 +648,7 @@ AsciiString GameSpyStagingRoom::generateGameSpyGameResultsPacket( void )
 	Int numAIs = 0;
 	Int numTeamsAtGameEnd = 0;
 	Int lastTeamAtGameEnd = -1;
-	for (i=0; i<MAX_SLOTS; ++i)
+	for (Int i=0; i<MAX_SLOTS; ++i)
 	{
 		AsciiString playerName;
 		playerName.format("player%d", i);
@@ -644,7 +681,7 @@ AsciiString GameSpyStagingRoom::generateGameSpyGameResultsPacket( void )
 	numPlayers = numHumans + numAIs;
 
 	AsciiString mapName;
-	for (i=0; i<getMap().getLength(); ++i)
+	for (size_t i=0; i<getMap().getLength(); ++i)
 	{
 		char c = getMap().getCharAt(i);
 		if (c == '\\')
@@ -657,7 +694,7 @@ AsciiString GameSpyStagingRoom::generateGameSpyGameResultsPacket( void )
 		getSeed(), m_GameSpySlot[0].getLoginName().str(), mapName.str(), numPlayers, endFrame, localSlotNum);
 
 	Int playerID = 0;
-	for (i=0; i<MAX_SLOTS; ++i)
+	for (Int i=0; i<MAX_SLOTS; ++i)
 	{
 		AsciiString playerName;
 		playerName.format("player%d", i);
@@ -869,7 +906,7 @@ void GameSpyStagingRoom::launchGame( void )
 	// mark us as "Loading" in the buddy list
 	BuddyRequest req;
 	req.buddyRequestType = BuddyRequest::BUDDYREQUEST_SETSTATUS;
-	req.arg.status.status = GP_PLAYING;
+	//req.arg.status.status = GP_PLAYING;
 	strcpy(req.arg.status.statusString, "Loading");
 	sprintf(req.arg.status.locationString, "%s", WideCharStringToMultiByte(TheGameSpyGame->getGameName().str()).c_str());
 	TheGameSpyBuddyMessageQueue->addRequest(req);

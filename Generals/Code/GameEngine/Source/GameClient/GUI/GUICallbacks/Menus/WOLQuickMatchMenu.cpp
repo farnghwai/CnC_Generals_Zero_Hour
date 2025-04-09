@@ -81,6 +81,21 @@ static Bool s_inQM = FALSE;
 #define PERF_LOG(x) {}
 #endif // DEBUG_LOGGING
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strncpy safe_strncpy
+#endif
+
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
 // window ids ------------------------------------------------------------------------------
 static NameKeyType parentWOLQuickMatchID = NAMEKEY_INVALID;
@@ -1140,7 +1155,7 @@ void WOLQuickMatchMenuUpdate( WindowLayout * layout, void *userData)
 			{
 			case PeerResponse::PEERRESPONSE_PLAYERUTM:
 				{
-					if (!stricmp(resp.command.c_str(), "STATS"))
+					if (!_stricmp(resp.command.c_str(), "STATS"))
 					{
 						DEBUG_LOG(("Saw STATS from %s, data was '%s'\n", resp.nick.c_str(), resp.commandOptions.c_str()));
 						AsciiString data = resp.commandOptions.c_str();
@@ -1169,7 +1184,7 @@ void WOLQuickMatchMenuUpdate( WindowLayout * layout, void *userData)
 						}
 					}
 					Int slotNum = TheGameSpyGame->getSlotNum(resp.nick.c_str());
-					if ((slotNum >= 0) && (slotNum < MAX_SLOTS) && (!stricmp(resp.command.c_str(), "NAT"))) {
+					if ((slotNum >= 0) && (slotNum < MAX_SLOTS) && (!_stricmp(resp.command.c_str(), "NAT"))) {
 						// this is a command for NAT negotiations, pass if off to TheNAT
 						sawImportantMessage = TRUE;
 						if (TheNAT != NULL) {

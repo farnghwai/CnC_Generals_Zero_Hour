@@ -634,7 +634,7 @@ void GameEngine::execute( void )
 				if (TheGlobalData->m_benchmarkTimer > 0)
 				{
 					DWORD currentTime = timeGetTime() / 1000;
-					if (TheGlobalData->m_benchmarkTimer < currentTime - startTime)
+					if (TheGlobalData->m_benchmarkTimer >= 0 && (DWORD)TheGlobalData->m_benchmarkTimer < currentTime - startTime)
 					{
 						if (TheGameLogic->isInGame())
 						{

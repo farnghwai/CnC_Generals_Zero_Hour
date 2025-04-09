@@ -173,6 +173,7 @@ Int UDP::Bind(const char *Host,UnsignedShort port)
   int status = getaddrinfo(Host, NULL, &hints, &res);
   if (status != 0 || res == NULL) {
 	  fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(status));
+	  freeaddrinfo(res);
 	  return (0);
   }
 

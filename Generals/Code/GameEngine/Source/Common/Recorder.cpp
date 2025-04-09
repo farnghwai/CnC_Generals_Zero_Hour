@@ -51,6 +51,68 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	char* safe_strncat(char* dest, const char* src, size_t count) {
+		size_t dest_len = strlen(dest);
+		size_t dest_size = dest_len + count + 1; // total buffer size required
+
+		if (strncat_s(dest, dest_size, src, count) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	inline char* safe_asctime(const struct tm* timeptr) {
+		// asctime returns a string like "Www Mmm dd hh:mm:ss yyyy\n"
+		// This requires at least 26 characters (25 + null terminator)
+		static char buffer[26];
+
+		if (asctime_s(buffer, sizeof(buffer), timeptr) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	inline struct tm* safe_localtime(const time_t* timer) {
+		static struct tm result;
+		if (localtime_s(&result, timer) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return &result;
+	}
+
+	#define strcpy safe_strcpy
+	#define fopen safe_fopen
+	#define strncpy safe_strncpy
+	#define strncat safe_strncat
+	#define asctime safe_asctime
+	#define localtime safe_localtime
+#endif
+
 Int REPLAY_CRC_INTERVAL = 100;
 
 const char *replayExtention = ".rep";
@@ -1162,7 +1224,7 @@ Bool RecorderClass::playbackFile(AsciiString filename)
  * Read a unicode string from the current file position. The string is assumed to be 0-terminated.
  */
 UnicodeString RecorderClass::readUnicodeString() {
-	UnsignedShort str[1024] = L"";
+	wchar_t  str[1024] = L"";
 	Int index = 0;
 
 	Int c = fgetwc(m_file);

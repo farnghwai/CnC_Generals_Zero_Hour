@@ -104,7 +104,7 @@ private:
 	GameWindow *m_location;
 	
 	Int m_currentObjectiveLine;
-	Int m_currentObjectiveLineCharacter;
+	UnsignedInt m_currentObjectiveLineCharacter;
 	Int m_currentObjectiveWidthOffset;
 	Bool m_finishedObjectiveText;
 	

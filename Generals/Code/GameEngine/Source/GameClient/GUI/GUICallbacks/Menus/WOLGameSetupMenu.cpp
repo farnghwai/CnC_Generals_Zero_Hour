@@ -71,6 +71,18 @@ void WOLDisplaySlotList( void );
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	#define _vsnprintf safe_vsnprintf
+#endif
+
 extern std::list<PeerResponse> TheLobbyQueuedUTMs;
 extern void MapSelectorTooltip(GameWindow *window, WinInstanceData *instData,	UnsignedInt mouse);
 
@@ -420,7 +432,7 @@ static void playerTooltip(GameWindow *window,
 	Int favorite = 0;
 	for(it = stats.games.begin(); it != stats.games.end(); ++it)
 	{
-		if(it->second >= numGames)
+		if(numGames >= 0 && it->second >= (UnsignedInt)numGames)
 		{
 			numGames = it->second;
 			favorite = it->first;
@@ -836,7 +848,7 @@ static void StartPressed(void)
 	// Check for too few teams
 	int numRandom = 0;
 	std::set<Int> teams; 
-	for (i=0; i<MAX_SLOTS; ++i)
+	for (int i=0; i<MAX_SLOTS; ++i)
 	{
 		GameSlot *slot = myGame->getSlot(i);
 		if (slot && slot->isOccupied() && slot->getPlayerTemplate() != PLAYERTEMPLATE_OBSERVER)
@@ -851,7 +863,8 @@ static void StartPressed(void)
 			}
 		}
 	}
-	if (numRandom + teams.size() < TheGlobalData->m_netMinPlayers)
+	size_t numRandomSize = (size_t)numRandom + teams.size();
+	if (TheGlobalData->m_netMinPlayers >= 0 && numRandomSize < (size_t)TheGlobalData->m_netMinPlayers)
 	{
 		if (myGame->amIHost())
 		{
@@ -862,7 +875,7 @@ static void StartPressed(void)
 		return;
 	}
 
-	if (numRandom + teams.size() < 2)
+	if (numRandomSize < 2)
 	{
 		UnicodeString text;
 		text.format(TheGameText->fetch("GUI:SandboxMode"));
@@ -1972,13 +1985,13 @@ void WOLGameSetupMenuUpdate( WindowLayout * layout, void *userData)
 							}
 						}
 					}
-					else if (!stricmp(resp.command.c_str(), "NAT"))
+					else if (!_stricmp(resp.command.c_str(), "NAT"))
 					{
 						if (TheNAT != NULL) {
 							TheNAT->processGlobalMessage(-1, resp.commandOptions.c_str());
 						}
 					}
-					else if (!stricmp(resp.command.c_str(), "Pings"))
+					else if (!_stricmp(resp.command.c_str(), "Pings"))
 					{
 						if (!TheGameSpyInfo->amIHost())
 						{
@@ -2016,7 +2029,7 @@ void WOLGameSetupMenuUpdate( WindowLayout * layout, void *userData)
 					if (game)
 					{
 						Int slotNum = game->getSlotNum(resp.nick.c_str());
-						if ((slotNum >= 0) && (slotNum < MAX_SLOTS) && (!stricmp(resp.command.c_str(), "NAT"))) {
+						if ((slotNum >= 0) && (slotNum < MAX_SLOTS) && (!_stricmp(resp.command.c_str(), "NAT"))) {
 							// this is a command for NAT negotiations, pass if off to TheNAT
 							if (TheNAT != NULL) {
 								TheNAT->processGlobalMessage(slotNum, resp.commandOptions.c_str());
