@@ -128,6 +128,41 @@ FILE *g_UT_commaLog=NULL;
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <float.h>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	// Wrapper function for _controlfp using _controlfp_s
+	inline unsigned int safe_controlfp(unsigned int newval, unsigned int mask) {
+		unsigned int current = 0;
+		if (_controlfp_s(&current, newval, mask) != 0) {
+			return 0; // Return 0 on failure
+		}
+		return current;
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf
+	#define _controlfp safe_controlfp
+#endif
+
 // I'm making this larger now that we know how big our maps are going to be. 
 enum { OBJ_HASH_SIZE	= 8192 };
 
@@ -423,7 +458,7 @@ void GameLogic::reset( void )
 
 	// set the hash to be rather large. We need to optimize this value later.
 	m_objHash.clear();
-	m_objHash.resize(OBJ_HASH_SIZE);
+	m_objHash.rehash(OBJ_HASH_SIZE);
 	m_gamePaused = FALSE;
 	m_inputEnabledMemory = TRUE;
 	m_mouseVisibleMemory = TRUE;
@@ -719,7 +754,7 @@ static void populateRandomSideAndColor( GameInfo *game )
 			// get a few values at random to get rid of the dreck.
 			// there's no mathematical basis for this, but empirically, it helps a lot.
 			UnsignedInt silly = GetGameLogicRandomSeed() % 7;
-			for (Int poo = 0; poo < silly; ++poo) 
+			for (UnsignedInt poo = 0; poo < silly; ++poo)
 			{
 				GameLogicRandomValue(0, 1);	// ignore result
 			}
@@ -1690,7 +1725,8 @@ void GameLogic::startNewGame( Bool saveGame )
 
 			}  // end if
 		
-			if(timeGetTime() > timer + 500)
+			int timer500 = timer + 500;
+			if(timer500 >= 0 && timeGetTime() > (DWORD)timer500)
 			{
 				if(progressCount < LOAD_PROGRESS_MAX_ALL_THE_FREAKN_OBJECTS)
 					progressCount ++;
@@ -2023,15 +2059,15 @@ void GameLogic::startNewGame( Bool saveGame )
 	TheWritableGlobalData->m_loadScreenRender = FALSE;	///< mark to resume rendering as normal
 	
 	// if we're in a gamespy game, mark us as playing
-	if (TheGameSpyBuddyMessageQueue && TheGameSpyGame && isInInternetGame())
-	{
-		BuddyRequest req;
-		req.buddyRequestType = BuddyRequest::BUDDYREQUEST_SETSTATUS;
-		req.arg.status.status = GP_PLAYING;
-		strcpy(req.arg.status.statusString, "Playing");
-		sprintf(req.arg.status.locationString, "%s", WideCharStringToMultiByte(TheGameSpyGame->getGameName().str()).c_str());
-		TheGameSpyBuddyMessageQueue->addRequest(req);
-	}	
+	//if (TheGameSpyBuddyMessageQueue && TheGameSpyGame && isInInternetGame())
+	//{
+	//	BuddyRequest req;
+	//	req.buddyRequestType = BuddyRequest::BUDDYREQUEST_SETSTATUS;
+	//	req.arg.status.status = GP_PLAYING;
+	//	strcpy(req.arg.status.statusString, "Playing");
+	//	sprintf(req.arg.status.locationString, "%s", WideCharStringToMultiByte(TheGameSpyGame->getGameName().str()).c_str());
+	//	TheGameSpyBuddyMessageQueue->addRequest(req);
+	//}	
 	
 	//Added By Sadullah Nader
 	//Added to fix the quit menu 
@@ -2236,7 +2272,7 @@ void GameLogic::processCommandList( CommandList *list )
 	if (m_shouldValidateCRCs && !TheNetwork->sawCRCMismatch())
 	{
 		Bool sawCRCMismatch = FALSE;
-		Int numPlayers = 0;
+		size_t numPlayers = 0;
 		DEBUG_ASSERTCRASH(TheNetwork, ("No Network!"));
 		if (TheNetwork)
 		{
@@ -2434,7 +2470,7 @@ void GameLogic::eraseSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && (size_t)i < m_sleepyUpdates.size(), ("bad sleepy idx"));
 
 	// swap with the final item, toss the final item, then rebalance
 	m_sleepyUpdates[i]->friend_setIndexInLogic(-1);
@@ -2470,7 +2506,7 @@ Int GameLogic::rebalanceParentSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && (size_t)i < m_sleepyUpdates.size(), ("bad sleepy idx"));
 
 	Int parent = ((i+1)>>1)-1;
 	while (parent >= 0 && isLowerPriority(m_sleepyUpdates[parent], m_sleepyUpdates[i]))
@@ -2496,7 +2532,7 @@ Int GameLogic::rebalanceChildSleepyUpdate(Int i)
 {
 	USE_PERF_TIMER(SleepyMaintenance)
 
-	DEBUG_ASSERTCRASH(i >= 0 && i < m_sleepyUpdates.size(), ("bad sleepy idx"));
+	DEBUG_ASSERTCRASH(i >= 0 && (size_t)i < m_sleepyUpdates.size(), ("bad sleepy idx"));
 
 // this function gets the brunt of the work (we frequently
 // balance down, not up), so this one is hand-unrolled for
@@ -2680,7 +2716,7 @@ void GameLogic::friend_awakenUpdateModule(Object* obj, UpdateModulePtr u, Unsign
 	Int idx = u->friend_getIndexInLogic();
 	if (obj->isInList(&m_objList))
 	{
-		if (idx < 0 || idx >= m_sleepyUpdates.size())
+		if (idx < 0 || (size_t)idx >= m_sleepyUpdates.size())
 		{
 			RELEASE_CRASH("fatal error! sleepy update module illegal index.\n");
 			return;
@@ -3121,8 +3157,15 @@ void GameLogic::update( void )
 	Bool generateForMP = (isMPGameOrReplay && (m_frame % TheGameInfo->getCRCInterval()) == 0);
 //#if defined(_DEBUG) || defined(_INTERNAL)
 #ifdef DEBUG_CRC
-	Bool generateForSolo = isSoloGameOrReplay && ((m_frame && (m_frame%100 == 0)) ||
-		(getFrame() > TheCRCFirstFrameToLog && getFrame() < TheCRCLastFrameToLog && ((m_frame % REPLAY_CRC_INTERVAL) == 0)));
+	Bool generateForSolo = isSoloGameOrReplay &&
+		((m_frame && (m_frame%100 == 0)) ||
+			(
+				TheCRCFirstFrameToLog >= 0 &&
+				getFrame() > (UnsignedInt)TheCRCFirstFrameToLog && 
+				getFrame() < (UnsignedInt)TheCRCLastFrameToLog &&
+				((m_frame % REPLAY_CRC_INTERVAL) == 0)
+			)
+		);
 #else
 	Bool generateForSolo = isSoloGameOrReplay && ((m_frame % REPLAY_CRC_INTERVAL) == 0);
 #endif // DEBUG_CRC

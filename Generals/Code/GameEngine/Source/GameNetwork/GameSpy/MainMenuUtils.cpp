@@ -43,7 +43,7 @@
 
 #include "GameClient/ShellHooks.h"
 
-#include "GameSpy/ghttp/ghttp.h"
+//#include "GameSpy/ghttp/ghttp.h"
 
 #include "GameNetwork/DownloadManager.h"
 #include "GameNetwork/GameSpy/BuddyThread.h"
@@ -53,6 +53,7 @@
 
 #include "WWDownload/Registry.h"
 #include "WWDownload/URLBuilder.h"
+#include <ws2tcpip.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -61,6 +62,18 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	inline int safe_open(const char* filename, int oflag, int pmode = _S_IREAD | _S_IWRITE) {
+		int fd = -1;
+		if (_sopen_s(&fd, filename, oflag, _SH_DENYNO, pmode) != 0) {
+			return -1; // Return -1 on failure
+		}
+		return fd;
+	}
+
+	#define _open safe_open  // Macro replacement to redirect calls
+#endif
 
 static Bool checkingForPatchBeforeGameSpy = FALSE;
 static Int checksLeftBeforeOnline = 0;
@@ -315,254 +328,254 @@ static void queuePatch(Bool mandatory, AsciiString downloadURL)
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-static GHTTPBool motdCallback( GHTTPRequest request, GHTTPResult result,
-															char * buffer, int bufferLen, void * param )
-{
-	Int run = (Int)param;
-	if (run != timeThroughOnline)
-	{
-		DEBUG_CRASH(("Old callback being called!"));
-		return GHTTPTrue;
-	}
-
-	if (MOTDBuffer)
-	{
-		delete[] MOTDBuffer;
-		MOTDBuffer = NULL;
-	}
-
-	MOTDBuffer = NEW char[bufferLen];
-	memcpy(MOTDBuffer, buffer, bufferLen);
-	MOTDBuffer[bufferLen-1] = 0;
-
-	--checksLeftBeforeOnline;
-	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
-	if (onlineCancelWindow && !checksLeftBeforeOnline)
-	{
-		TheWindowManager->winDestroy(onlineCancelWindow);
-		onlineCancelWindow = NULL;
-	}
-
-	DEBUG_LOG(("------- Got MOTD before going online -------\n"));
-	DEBUG_LOG(("%s\n", (MOTDBuffer)?MOTDBuffer:""));
-	DEBUG_LOG(("--------------------------------------------\n"));
-
-	if (!checksLeftBeforeOnline)
-		startOnline();
-
-	return GHTTPTrue;
-}
-
-///////////////////////////////////////////////////////////////////////////////////////
-
-static GHTTPBool configCallback( GHTTPRequest request, GHTTPResult result,
-																char * buffer, int bufferLen, void * param )
-{
-	Int run = (Int)param;
-	if (run != timeThroughOnline)
-	{
-		DEBUG_CRASH(("Old callback being called!"));
-		return GHTTPTrue;
-	}
-
-	if (configBuffer)
-	{
-		delete[] configBuffer;
-		configBuffer = NULL;
-	}
-
-	if (result != GHTTPSuccess || bufferLen < 100)
-	{
-		if (!checkingForPatchBeforeGameSpy)
-			return GHTTPTrue;
-		--checksLeftBeforeOnline;
-		if (onlineCancelWindow && !checksLeftBeforeOnline)
-		{
-			TheWindowManager->winDestroy(onlineCancelWindow);
-			onlineCancelWindow = NULL;
-		}
-		cantConnectBeforeOnline = TRUE;
-		if (!checksLeftBeforeOnline)
-		{
-			startOnline();
-		}
-		return GHTTPTrue;
-	}
-
-	configBuffer = NEW char[bufferLen];
-	memcpy(configBuffer, buffer, bufferLen);
-	configBuffer[bufferLen-1] = 0;
-
-	AsciiString fname;
-	fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
-	FILE *fp = fopen(fname.str(), "wb");
-	if (fp)
-	{
-		fwrite(configBuffer, bufferLen, 1, fp);
-		fclose(fp);
-	}
-
-	--checksLeftBeforeOnline;
-	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
-	if (onlineCancelWindow && !checksLeftBeforeOnline)
-	{
-		TheWindowManager->winDestroy(onlineCancelWindow);
-		onlineCancelWindow = NULL;
-	}
-
-	DEBUG_LOG(("Got Config before going online\n"));
-
-	if (!checksLeftBeforeOnline)
-		startOnline();
-
-	return GHTTPTrue;
-}
+//static GHTTPBool motdCallback( GHTTPRequest request, GHTTPResult result,
+//															char * buffer, int bufferLen, void * param )
+//{
+//	Int run = (Int)param;
+//	if (run != timeThroughOnline)
+//	{
+//		DEBUG_CRASH(("Old callback being called!"));
+//		return GHTTPTrue;
+//	}
+//
+//	if (MOTDBuffer)
+//	{
+//		delete[] MOTDBuffer;
+//		MOTDBuffer = NULL;
+//	}
+//
+//	MOTDBuffer = NEW char[bufferLen];
+//	memcpy(MOTDBuffer, buffer, bufferLen);
+//	MOTDBuffer[bufferLen-1] = 0;
+//
+//	--checksLeftBeforeOnline;
+//	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
+//	if (onlineCancelWindow && !checksLeftBeforeOnline)
+//	{
+//		TheWindowManager->winDestroy(onlineCancelWindow);
+//		onlineCancelWindow = NULL;
+//	}
+//
+//	DEBUG_LOG(("------- Got MOTD before going online -------\n"));
+//	DEBUG_LOG(("%s\n", (MOTDBuffer)?MOTDBuffer:""));
+//	DEBUG_LOG(("--------------------------------------------\n"));
+//
+//	if (!checksLeftBeforeOnline)
+//		startOnline();
+//
+//	return GHTTPTrue;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-static GHTTPBool configHeadCallback( GHTTPRequest request, GHTTPResult result,
-																		char * buffer, int bufferLen, void * param )
-{
-	Int run = (Int)param;
-	if (run != timeThroughOnline)
-	{
-		DEBUG_CRASH(("Old callback being called!"));
-		return GHTTPTrue;
-	}
-
-	DEBUG_LOG(("HTTP head resp: res=%d, len=%d, buf=[%s]\n", result, bufferLen, buffer));
-
-	if (result == GHTTPSuccess)
-	{
-		DEBUG_LOG(("Headers are [%s]\n", ghttpGetHeaders( request )));
-
-		AsciiString headers(ghttpGetHeaders( request ));
-		AsciiString line;
-		while (headers.nextToken(&line, "\n\r"))
-		{
-			AsciiString key, val;
-			line.nextToken(&key, ": ");
-			line.nextToken(&val, ": \r\n");
-
-			if (key.compare("Content-Length") == 0 && val.isNotEmpty())
-			{
-				Int serverLen = atoi(val.str());
-				Int fileLen = 0;
-				AsciiString fname;
-				fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
-				FILE *fp = fopen(fname.str(), "rb");
-				if (fp)
-				{
-					fseek(fp, 0, SEEK_END);
-					fileLen = ftell(fp);
-					fclose(fp);
-				}
-
-				if (serverLen == fileLen)
-				{
-					// we don't need to download the MOTD again
-					--checksLeftBeforeOnline;
-					DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
-					if (onlineCancelWindow && !checksLeftBeforeOnline)
-					{
-						TheWindowManager->winDestroy(onlineCancelWindow);
-						onlineCancelWindow = NULL;
-					}
-
-					if (configBuffer)
-					{
-						delete[] configBuffer;
-						configBuffer = NULL;
-					}
-
-					AsciiString fname;
-					fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
-					FILE *fp = fopen(fname.str(), "rb");
-					if (fp)
-					{
-						configBuffer = NEW char[fileLen];
-						fread(configBuffer, fileLen, 1, fp);
-						configBuffer[fileLen-1] = 0;
-						fclose(fp);
-
-						DEBUG_LOG(("Got Config before going online\n"));
-
-						if (!checksLeftBeforeOnline)
-							startOnline();
-
-						return GHTTPTrue;
-					}
-				}
-			}
-		}
-	}
-
-	// we need to download the MOTD again
-	std::string gameURL, mapURL;
-	std::string configURL, motdURL;
-	FormatURLFromRegistry(gameURL, mapURL, configURL, motdURL);
-	ghttpGet( configURL.c_str(), GHTTPFalse, configCallback, param );
-
-	return GHTTPTrue;
-}
+//static GHTTPBool configCallback( GHTTPRequest request, GHTTPResult result,
+//																char * buffer, int bufferLen, void * param )
+//{
+//	Int run = (Int)param;
+//	if (run != timeThroughOnline)
+//	{
+//		DEBUG_CRASH(("Old callback being called!"));
+//		return GHTTPTrue;
+//	}
+//
+//	if (configBuffer)
+//	{
+//		delete[] configBuffer;
+//		configBuffer = NULL;
+//	}
+//
+//	if (result != GHTTPSuccess || bufferLen < 100)
+//	{
+//		if (!checkingForPatchBeforeGameSpy)
+//			return GHTTPTrue;
+//		--checksLeftBeforeOnline;
+//		if (onlineCancelWindow && !checksLeftBeforeOnline)
+//		{
+//			TheWindowManager->winDestroy(onlineCancelWindow);
+//			onlineCancelWindow = NULL;
+//		}
+//		cantConnectBeforeOnline = TRUE;
+//		if (!checksLeftBeforeOnline)
+//		{
+//			startOnline();
+//		}
+//		return GHTTPTrue;
+//	}
+//
+//	configBuffer = NEW char[bufferLen];
+//	memcpy(configBuffer, buffer, bufferLen);
+//	configBuffer[bufferLen-1] = 0;
+//
+//	AsciiString fname;
+//	fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
+//	FILE *fp = fopen(fname.str(), "wb");
+//	if (fp)
+//	{
+//		fwrite(configBuffer, bufferLen, 1, fp);
+//		fclose(fp);
+//	}
+//
+//	--checksLeftBeforeOnline;
+//	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
+//	if (onlineCancelWindow && !checksLeftBeforeOnline)
+//	{
+//		TheWindowManager->winDestroy(onlineCancelWindow);
+//		onlineCancelWindow = NULL;
+//	}
+//
+//	DEBUG_LOG(("Got Config before going online\n"));
+//
+//	if (!checksLeftBeforeOnline)
+//		startOnline();
+//
+//	return GHTTPTrue;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-static GHTTPBool gamePatchCheckCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
-{
-	Int run = (Int)param;
-	if (run != timeThroughOnline)
-	{
-		DEBUG_CRASH(("Old callback being called!"));
-		return GHTTPTrue;
-	}
+//static GHTTPBool configHeadCallback( GHTTPRequest request, GHTTPResult result,
+//																		char * buffer, int bufferLen, void * param )
+//{
+//	Int run = (Int)param;
+//	if (run != timeThroughOnline)
+//	{
+//		DEBUG_CRASH(("Old callback being called!"));
+//		return GHTTPTrue;
+//	}
+//
+//	DEBUG_LOG(("HTTP head resp: res=%d, len=%d, buf=[%s]\n", result, bufferLen, buffer));
+//
+//	if (result == GHTTPSuccess)
+//	{
+//		DEBUG_LOG(("Headers are [%s]\n", ghttpGetHeaders( request )));
+//
+//		AsciiString headers(ghttpGetHeaders( request ));
+//		AsciiString line;
+//		while (headers.nextToken(&line, "\n\r"))
+//		{
+//			AsciiString key, val;
+//			line.nextToken(&key, ": ");
+//			line.nextToken(&val, ": \r\n");
+//
+//			if (key.compare("Content-Length") == 0 && val.isNotEmpty())
+//			{
+//				Int serverLen = atoi(val.str());
+//				Int fileLen = 0;
+//				AsciiString fname;
+//				fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
+//				FILE *fp = fopen(fname.str(), "rb");
+//				if (fp)
+//				{
+//					fseek(fp, 0, SEEK_END);
+//					fileLen = ftell(fp);
+//					fclose(fp);
+//				}
+//
+//				if (serverLen == fileLen)
+//				{
+//					// we don't need to download the MOTD again
+//					--checksLeftBeforeOnline;
+//					DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
+//					if (onlineCancelWindow && !checksLeftBeforeOnline)
+//					{
+//						TheWindowManager->winDestroy(onlineCancelWindow);
+//						onlineCancelWindow = NULL;
+//					}
+//
+//					if (configBuffer)
+//					{
+//						delete[] configBuffer;
+//						configBuffer = NULL;
+//					}
+//
+//					AsciiString fname;
+//					fname.format("%sGeneralsOnline\\Config.txt", TheGlobalData->getPath_UserData().str());
+//					FILE *fp = fopen(fname.str(), "rb");
+//					if (fp)
+//					{
+//						configBuffer = NEW char[fileLen];
+//						fread(configBuffer, fileLen, 1, fp);
+//						configBuffer[fileLen-1] = 0;
+//						fclose(fp);
+//
+//						DEBUG_LOG(("Got Config before going online\n"));
+//
+//						if (!checksLeftBeforeOnline)
+//							startOnline();
+//
+//						return GHTTPTrue;
+//					}
+//				}
+//			}
+//		}
+//	}
+//
+//	// we need to download the MOTD again
+//	std::string gameURL, mapURL;
+//	std::string configURL, motdURL;
+//	FormatURLFromRegistry(gameURL, mapURL, configURL, motdURL);
+//	ghttpGet( configURL.c_str(), GHTTPFalse, configCallback, param );
+//
+//	return GHTTPTrue;
+//}
 
-	--checksLeftBeforeOnline;
-	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
+///////////////////////////////////////////////////////////////////////////////////////
 
-	DEBUG_LOG(("Result=%d, buffer=[%s], len=%d\n", result, buffer, bufferLen));
-	if (result != GHTTPSuccess)
-	{
-		if (!checkingForPatchBeforeGameSpy)
-			return GHTTPTrue;
-		cantConnectBeforeOnline = TRUE;
-		if (!checksLeftBeforeOnline)
-		{
-			startOnline();
-		}
-		return GHTTPTrue;
-	}
-
-	AsciiString message = buffer;
-	AsciiString line;
-	while (message.nextToken(&line, "\r\n"))
-	{
-		AsciiString type, req, url;
-		Bool ok = TRUE;
-		ok &= line.nextToken(&type, " ");
-		ok &= line.nextToken(&req, " ");
-		ok &= line.nextToken(&url, " ");
-		if (ok && type == "patch")
-		{
-			DEBUG_LOG(("Saw a patch: %d/[%s]\n", atoi(req.str()), url.str()));
-			queuePatch( atoi(req.str()), url );
-			if (atoi(req.str()))
-			{
-				mustDownloadPatch = TRUE;
-			}
-		}
-		else if (ok && type == "server")
-		{
-		}
-	}
-
-	if (!checksLeftBeforeOnline)
-	{
-		startOnline();
-	}
-
-	return GHTTPTrue;
-}
+//static GHTTPBool gamePatchCheckCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
+//{
+//	Int run = (Int)param;
+//	if (run != timeThroughOnline)
+//	{
+//		DEBUG_CRASH(("Old callback being called!"));
+//		return GHTTPTrue;
+//	}
+//
+//	--checksLeftBeforeOnline;
+//	DEBUG_ASSERTCRASH(checksLeftBeforeOnline>=0, ("Too many callbacks"));
+//
+//	DEBUG_LOG(("Result=%d, buffer=[%s], len=%d\n", result, buffer, bufferLen));
+//	if (result != GHTTPSuccess)
+//	{
+//		if (!checkingForPatchBeforeGameSpy)
+//			return GHTTPTrue;
+//		cantConnectBeforeOnline = TRUE;
+//		if (!checksLeftBeforeOnline)
+//		{
+//			startOnline();
+//		}
+//		return GHTTPTrue;
+//	}
+//
+//	AsciiString message = buffer;
+//	AsciiString line;
+//	while (message.nextToken(&line, "\r\n"))
+//	{
+//		AsciiString type, req, url;
+//		Bool ok = TRUE;
+//		ok &= line.nextToken(&type, " ");
+//		ok &= line.nextToken(&req, " ");
+//		ok &= line.nextToken(&url, " ");
+//		if (ok && type == "patch")
+//		{
+//			DEBUG_LOG(("Saw a patch: %d/[%s]\n", atoi(req.str()), url.str()));
+//			queuePatch( atoi(req.str()), url );
+//			if (atoi(req.str()))
+//			{
+//				mustDownloadPatch = TRUE;
+//			}
+//		}
+//		else if (ok && type == "server")
+//		{
+//		}
+//	}
+//
+//	if (!checksLeftBeforeOnline)
+//	{
+//		startOnline();
+//	}
+//
+//	return GHTTPTrue;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
@@ -598,143 +611,149 @@ void CancelPatchCheckCallback( void )
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-static GHTTPBool overallStatsCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
-{
-	DEBUG_LOG(("overallStatsCallback() - Result=%d, len=%d\n", result, bufferLen));
-	if (result != GHTTPSuccess)
-	{
-		return GHTTPTrue;
-	}
-
-	OverallStats USA, China, GLA;
-	AsciiString message = buffer;
-
-	Int state = STATS_MAX; // STATS_MAX == none
-	AsciiString line;
-	OverallStats *stats = NULL;
-	while (message.nextToken(&line, "\n"))
-	{
-		line.trim();
-		line.toLower();
-		if (strstr(line.str(), "today"))
-		{
-			state = STATS_TODAY;
-		}
-		else if (strstr(line.str(), "yesterday"))
-		{
-			state = STATS_YESTERDAY;
-		}
-		else if (strstr(line.str(), "all time"))
-		{
-			state = STATS_ALLTIME;
-		}
-		else if (strstr(line.str(), "last week"))
-		{
-			state = STATS_LASTWEEK;
-		}
-		else if (state != STATS_MAX && strstr(line.str(), "usa"))
-		{
-			stats = &USA;
-		}
-		else if (state != STATS_MAX && strstr(line.str(), "china"))
-		{
-			stats = &China;
-		}
-		else if (state != STATS_MAX && strstr(line.str(), "gla"))
-		{
-			stats = &GLA;
-		}
-
-		if (stats)
-		{
-			AsciiString totalLine, winsLine, lossesLine;
-			message.nextToken(&totalLine, "\n");
-			message.nextToken(&winsLine, "\n");
-			message.nextToken(&lossesLine, "\n");
-			while (totalLine.isNotEmpty() && !isdigit(totalLine.getCharAt(0)))
-			{
-				totalLine = totalLine.str()+1;
-			}
-			while (winsLine.isNotEmpty() && !isdigit(winsLine.getCharAt(0)))
-			{
-				winsLine = winsLine.str()+1;
-			}
-			while (lossesLine.isNotEmpty() && !isdigit(lossesLine.getCharAt(0)))
-			{
-				lossesLine = lossesLine.str()+1;
-			}
-			if (totalLine.isNotEmpty() && winsLine.isNotEmpty() && lossesLine.isNotEmpty())
-			{
-				stats->wins[state] = atoi(winsLine.str());
-				stats->losses[state] = atoi(lossesLine.str());
-			}
-
-			stats = NULL;
-		}
-	}
-
-	HandleOverallStats(USA, China, GLA);
-
-	return GHTTPTrue;
-}
+//static GHTTPBool overallStatsCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
+//{
+//	DEBUG_LOG(("overallStatsCallback() - Result=%d, len=%d\n", result, bufferLen));
+//	if (result != GHTTPSuccess)
+//	{
+//		return GHTTPTrue;
+//	}
+//
+//	OverallStats USA, China, GLA;
+//	AsciiString message = buffer;
+//
+//	Int state = STATS_MAX; // STATS_MAX == none
+//	AsciiString line;
+//	OverallStats *stats = NULL;
+//	while (message.nextToken(&line, "\n"))
+//	{
+//		line.trim();
+//		line.toLower();
+//		if (strstr(line.str(), "today"))
+//		{
+//			state = STATS_TODAY;
+//		}
+//		else if (strstr(line.str(), "yesterday"))
+//		{
+//			state = STATS_YESTERDAY;
+//		}
+//		else if (strstr(line.str(), "all time"))
+//		{
+//			state = STATS_ALLTIME;
+//		}
+//		else if (strstr(line.str(), "last week"))
+//		{
+//			state = STATS_LASTWEEK;
+//		}
+//		else if (state != STATS_MAX && strstr(line.str(), "usa"))
+//		{
+//			stats = &USA;
+//		}
+//		else if (state != STATS_MAX && strstr(line.str(), "china"))
+//		{
+//			stats = &China;
+//		}
+//		else if (state != STATS_MAX && strstr(line.str(), "gla"))
+//		{
+//			stats = &GLA;
+//		}
+//
+//		if (stats)
+//		{
+//			AsciiString totalLine, winsLine, lossesLine;
+//			message.nextToken(&totalLine, "\n");
+//			message.nextToken(&winsLine, "\n");
+//			message.nextToken(&lossesLine, "\n");
+//			while (totalLine.isNotEmpty() && !isdigit(totalLine.getCharAt(0)))
+//			{
+//				totalLine = totalLine.str()+1;
+//			}
+//			while (winsLine.isNotEmpty() && !isdigit(winsLine.getCharAt(0)))
+//			{
+//				winsLine = winsLine.str()+1;
+//			}
+//			while (lossesLine.isNotEmpty() && !isdigit(lossesLine.getCharAt(0)))
+//			{
+//				lossesLine = lossesLine.str()+1;
+//			}
+//			if (totalLine.isNotEmpty() && winsLine.isNotEmpty() && lossesLine.isNotEmpty())
+//			{
+//				stats->wins[state] = atoi(winsLine.str());
+//				stats->losses[state] = atoi(lossesLine.str());
+//			}
+//
+//			stats = NULL;
+//		}
+//	}
+//
+//	HandleOverallStats(USA, China, GLA);
+//
+//	return GHTTPTrue;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
-static GHTTPBool numPlayersOnlineCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
-{
-	DEBUG_LOG(("numPlayersOnlineCallback() - Result=%d, buffer=[%s], len=%d\n", result, buffer, bufferLen));
-	if (result != GHTTPSuccess)
-	{
-		return GHTTPTrue;
-	}
-
-	AsciiString message = buffer;
-	message.trim();
-	const char *s = message.reverseFind('\\');
-	if (!s)
-	{
-		return GHTTPTrue;
-	}
-
-	if (*s == '\\')
-		++s;
-
-	DEBUG_LOG(("Message was '%s', trimmed to '%s'=%d\n", buffer, s, atoi(s)));
-	HandleNumPlayersOnline(atoi(s));
-
-	return GHTTPTrue;
-}
+//static GHTTPBool numPlayersOnlineCallback( GHTTPRequest request, GHTTPResult result, char * buffer, int bufferLen, void * param )
+//{
+//	DEBUG_LOG(("numPlayersOnlineCallback() - Result=%d, buffer=[%s], len=%d\n", result, buffer, bufferLen));
+//	if (result != GHTTPSuccess)
+//	{
+//		return GHTTPTrue;
+//	}
+//
+//	AsciiString message = buffer;
+//	message.trim();
+//	const char *s = message.reverseFind('\\');
+//	if (!s)
+//	{
+//		return GHTTPTrue;
+//	}
+//
+//	if (*s == '\\')
+//		++s;
+//
+//	DEBUG_LOG(("Message was '%s', trimmed to '%s'=%d\n", buffer, s, atoi(s)));
+//	HandleNumPlayersOnline(atoi(s));
+//
+//	return GHTTPTrue;
+//}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 void CheckOverallStats( void )
 {
-	ghttpGet("http://gamestats.gamespy.com/ccgenerals/display.html",
-		GHTTPFalse, overallStatsCallback, NULL);
+	//ghttpGet("http://gamestats.gamespy.com/ccgenerals/display.html",
+	//	GHTTPFalse, overallStatsCallback, NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 void CheckNumPlayersOnline( void )
 {
-	ghttpGet("http://launch.gamespyarcade.com/software/launch/arcadecount2.dll?svcname=ccgenerals",
-		GHTTPFalse, numPlayersOnlineCallback, NULL);
+	//ghttpGet("http://launch.gamespyarcade.com/software/launch/arcadecount2.dll?svcname=ccgenerals",
+	//	GHTTPFalse, numPlayersOnlineCallback, NULL);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 DWORD WINAPI asyncGethostbynameThreadFunc( void * szName )
 {
-	HOSTENT *he = gethostbyname( (const char *)szName );
+	//char ipstr[INET_ADDRSTRLEN];
+	struct addrinfo hints;
+	struct addrinfo* res = NULL;
+	ZeroMemory(&hints, sizeof(hints));
 
-	if (he)
-	{
-		s_asyncDNSThreadSucceeded = TRUE;
-	}
-	else
-	{
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = 0;
+
+	int status = getaddrinfo((const char*)szName, NULL, &hints, &res);
+	if (status != 0 || res == NULL) {
 		s_asyncDNSThreadSucceeded = FALSE;
 	}
+	else {
+		s_asyncDNSThreadSucceeded = TRUE;
+	}
+	freeaddrinfo(res);
 
 	s_asyncDNSThreadDone = TRUE;
 	return 0;
@@ -802,7 +821,7 @@ void HTTPThinkWrapper( void )
 	{
 		try
 		{
-			ghttpThink();
+			//ghttpThink();
 		}
 		catch (...)
 		{
@@ -871,7 +890,7 @@ static void reallyStartPatchCheck( void )
 	{
 		if (!proxy.empty())
 		{
-			ghttpSetProxy(proxy.c_str());
+			//ghttpSetProxy(proxy.c_str());
 		}
 	}
 
@@ -880,10 +899,10 @@ static void reallyStartPatchCheck( void )
 	DEBUG_LOG(("Map patch check: [%s]\n", mapURL.c_str()));
 	DEBUG_LOG(("Config: [%s]\n", configURL.c_str()));
 	DEBUG_LOG(("MOTD: [%s]\n", motdURL.c_str()));
-	ghttpGet(gameURL.c_str(), GHTTPFalse, gamePatchCheckCallback, (void *)timeThroughOnline);
-	ghttpGet(mapURL.c_str(), GHTTPFalse, gamePatchCheckCallback, (void *)timeThroughOnline);
-	ghttpHead(configURL.c_str(), GHTTPFalse, configHeadCallback, (void *)timeThroughOnline);
-	ghttpGet(motdURL.c_str(), GHTTPFalse, motdCallback, (void *)timeThroughOnline);
+	//ghttpGet(gameURL.c_str(), GHTTPFalse, gamePatchCheckCallback, (void *)timeThroughOnline);
+	//ghttpGet(mapURL.c_str(), GHTTPFalse, gamePatchCheckCallback, (void *)timeThroughOnline);
+	//ghttpHead(configURL.c_str(), GHTTPFalse, configHeadCallback, (void *)timeThroughOnline);
+	//ghttpGet(motdURL.c_str(), GHTTPFalse, motdCallback, (void *)timeThroughOnline);
 	
 	// check total game stats
 	CheckOverallStats();

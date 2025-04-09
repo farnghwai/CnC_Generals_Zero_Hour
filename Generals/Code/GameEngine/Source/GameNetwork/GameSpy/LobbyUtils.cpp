@@ -69,7 +69,7 @@
 #endif
 
 // PRIVATE DATA ///////////////////////////////////////////////////////////////////////////////////
-static enum {
+enum {
 	COLUMN_NAME = 0,
 	COLUMN_MAP,
 	COLUMN_LADDER,
@@ -432,21 +432,21 @@ static void populateBuddyGames(void)
 	for (BuddyInfoMap::const_iterator bit = m->begin(); bit != m->end(); ++bit)
 	{
 		BuddyInfo info = bit->second;
-		if (info.m_status == GP_STAGING)
-		{
-			StagingRoomMap *srm = TheGameSpyInfo->getStagingRoomList();
-			for (StagingRoomMap::iterator srmIt = srm->begin(); srmIt != srm->end(); ++srmIt)
-			{
-				GameSpyStagingRoom *game = srmIt->second;
-				game->cleanUpSlotPointers();
-				const GameSpyGameSlot *slot = game->getGameSpySlot(0);
-				if (slot && slot->getName() == info.m_locationString)
-				{
-					theBuddyGames->insert(game);
-					break;
-				}
-			}
-		}
+		//if (info.m_status == GP_STAGING)
+		//{
+		//	StagingRoomMap *srm = TheGameSpyInfo->getStagingRoomList();
+		//	for (StagingRoomMap::iterator srmIt = srm->begin(); srmIt != srm->end(); ++srmIt)
+		//	{
+		//		GameSpyStagingRoom *game = srmIt->second;
+		//		game->cleanUpSlotPointers();
+		//		const GameSpyGameSlot *slot = game->getGameSpySlot(0);
+		//		if (slot && slot->getName() == info.m_locationString)
+		//		{
+		//			theBuddyGames->insert(game);
+		//			break;
+		//		}
+		//	}
+		//}
 	}
 }
 
@@ -459,11 +459,11 @@ static void clearBuddyGames(void)
 
 struct GameSortStruct
 {
-	bool operator()(GameSpyStagingRoom *g1, GameSpyStagingRoom *g2)
+	bool operator()(GameSpyStagingRoom *g1, GameSpyStagingRoom *g2) const
 	{
 		// sort CRC mismatches to the bottom
 		Bool g1Good = (g1->getExeCRC() != TheGlobalData->m_exeCRC || g1->getIniCRC() != TheGlobalData->m_iniCRC);
-		Bool g2Good = (g1->getExeCRC() != TheGlobalData->m_exeCRC || g1->getIniCRC() != TheGlobalData->m_iniCRC);
+		Bool g2Good = (g2->getExeCRC() != TheGlobalData->m_exeCRC || g2->getIniCRC() != TheGlobalData->m_iniCRC);
 		if ( g1Good ^ g2Good )
 		{
 			return g1Good;
@@ -498,17 +498,17 @@ struct GameSortStruct
 		switch(theGameSortType)
 		{
 		case GAMESORT_ALPHA_ASCENDING:
-			return wcsicmp(g1->getGameName().str(), g2->getGameName().str()) < 0;
-			break;
+			return _wcsicmp(g1->getGameName().str(), g2->getGameName().str()) < 0;
+			//break;
 		case GAMESORT_ALPHA_DESCENDING:
-			return wcsicmp(g1->getGameName().str(),g2->getGameName().str()) > 0;
-			break;
+			return _wcsicmp(g1->getGameName().str(),g2->getGameName().str()) > 0;
+			//break;
 		case GAMESORT_PING_ASCENDING:
 			return g1->getPingAsInt() < g2->getPingAsInt();
-			break;
+			//break;
 		case GAMESORT_PING_DESCENDING:
 			return g1->getPingAsInt() > g2->getPingAsInt();
-			break;
+			//break;
 		}
 		return false;
 	}

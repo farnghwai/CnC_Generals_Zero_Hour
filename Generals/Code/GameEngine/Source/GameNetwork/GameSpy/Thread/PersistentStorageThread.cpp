@@ -47,6 +47,33 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_snprintf(char* buffer, size_t count, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+	#define _snprintf safe_snprintf
+#endif
+
 //-------------------------------------------------------------------------
 
 PSRequest::PSRequest()
@@ -582,39 +609,39 @@ PSPlayerStats GameSpyPSMessageQueue::findPlayerStatsByID( Int id )
 
 Bool PSThreadClass::tryConnect( void )
 {
-	Int result;
+	//Int result;
 
 	DEBUG_LOG(("m_opCount = %d - opening connection\n", m_opCount));
 
-	if (IsStatsConnected())
-	{
-		DEBUG_LOG(("connection already open!\n"));
-		return true;
-	}
-
-	// this may block for 1-2 seconds (according to GS) so it's nice we're not in the UI thread :)
-	result = InitStatsConnection(0);
-
-#ifdef DEBUG_LOGGING
-	static const char *retValStrings[6] = {
-		"GE_NOERROR",
-		"GE_NOSOCKET",
-		"GE_NODNS",
-		"GE_NOCONNECT",
-		"GE_BUSY",
-		"GE_DATAERROR"
-	};
-#endif // DEBUG_LOGGING
-
-	if (result != GE_NOERROR)
-	{
-		DEBUG_LOG(("InitStatsConnection() returned %d (%s)\n", result, retValStrings[result]));
-		return false;
-	}
-	else
-	{
-		DEBUG_LOG(("InitStatsConnection() succeeded\n"));
-	}
+//	if (IsStatsConnected())
+//	{
+//		DEBUG_LOG(("connection already open!\n"));
+//		return true;
+//	}
+//
+//	// this may block for 1-2 seconds (according to GS) so it's nice we're not in the UI thread :)
+//	result = InitStatsConnection(0);
+//
+//#ifdef DEBUG_LOGGING
+//	static const char *retValStrings[6] = {
+//		"GE_NOERROR",
+//		"GE_NOSOCKET",
+//		"GE_NODNS",
+//		"GE_NOCONNECT",
+//		"GE_BUSY",
+//		"GE_DATAERROR"
+//	};
+//#endif // DEBUG_LOGGING
+//
+//	if (result != GE_NOERROR)
+//	{
+//		DEBUG_LOG(("InitStatsConnection() returned %d (%s)\n", result, retValStrings[result]));
+//		return false;
+//	}
+//	else
+//	{
+//		DEBUG_LOG(("InitStatsConnection() succeeded\n"));
+//	}
 
 	return true;
 }
@@ -629,7 +656,7 @@ static void persAuthCallback(int localid, int profileid, int authenticated, char
 
 Bool PSThreadClass::tryLogin( Int id, std::string nick, std::string password, std::string email )
 {
-	char validate[33];
+	//char validate[33];
 	DEBUG_LOG(("PSThreadClass::tryLogin id = %d, nick = %s, password = %s, email = %s\n", id, nick.c_str(), password.c_str(), email.c_str()));
 	/***********
 	We'll go ahead and start the authentication, using a Presence & Messaging SDK
@@ -641,26 +668,26 @@ Bool PSThreadClass::tryLogin( Int id, std::string nick, std::string password, st
 	client will create the validation token using GenerateAuth, and send it
 	back to the server for use in PreAuthenticatePlayerPM
 	***********/
-	char *munkeeHack = strdup(password.c_str()); // GenerateAuth takes a char*, not a const char* :P
-	GenerateAuth(GetChallenge(NULL), munkeeHack, validate);
-	free (munkeeHack);
+	//char *munkeeHack = _strdup(password.c_str()); // GenerateAuth takes a char*, not a const char* :P
+	//GenerateAuth(GetChallenge(NULL), munkeeHack, validate);
+	//free (munkeeHack);
 
-	/************
-	After we get the validation token, we pass it and the profileid of the user
-	we are authenticating into PreAuthenticatePlayerPM.
-	We pass the same authentication callback as for the first user, but a different
-	localid this time.
-	************/
-	m_loginOK = false;
-	m_doneTryingToLogin = false;
-	PreAuthenticatePlayerPM(id, id, validate, ::persAuthCallback, this);
-	while (!m_doneTryingToLogin && IsStatsConnected())
-		PersistThink();
+	///************
+	//After we get the validation token, we pass it and the profileid of the user
+	//we are authenticating into PreAuthenticatePlayerPM.
+	//We pass the same authentication callback as for the first user, but a different
+	//localid this time.
+	//************/
+	//m_loginOK = false;
+	//m_doneTryingToLogin = false;
+	//PreAuthenticatePlayerPM(id, id, validate, ::persAuthCallback, this);
+	//while (!m_doneTryingToLogin && IsStatsConnected())
+	//	PersistThink();
 	DEBUG_LOG(("Persistant Storage Login success %d\n", m_loginOK));
 	return m_loginOK;
 }
 
-static void getPersistentDataCallback(int localid, int profileid, persisttype_t type, int index, int success, char *data, int len, void *instance)
+static void getPersistentDataCallback(int localid, int profileid, int index, int success, char *data, int len, void *instance)
 {
 	DEBUG_LOG(("Data get callback: localid: %d profileid: %d success: %d len: %d data: %s\n",localid, profileid, success, len, data));
 	PSThreadClass *t = (PSThreadClass *)instance;
@@ -753,7 +780,7 @@ static void getPersistentDataCallback(int localid, int profileid, persisttype_t 
 	TheGameSpyPSMessageQueue->addResponse(resp);
 }
 
-static void setPersistentDataLocaleCallback(int localid, int profileid, persisttype_t type, int index, int success, void *instance)
+static void setPersistentDataLocaleCallback(int localid, int profileid, int index, int success, void *instance)
 {
 	DEBUG_LOG(("Data save callback: localid: %d profileid: %d success: %d\n", localid, profileid, success));
 
@@ -764,7 +791,7 @@ static void setPersistentDataLocaleCallback(int localid, int profileid, persistt
 	t->decrOpCount();
 }
 
-static void setPersistentDataCallback(int localid, int profileid, persisttype_t type, int index, int success, void *instance)
+static void setPersistentDataCallback(int localid, int profileid, int index, int success, void *instance)
 {
 	DEBUG_LOG(("Data save callback: localid: %d profileid: %d success: %d\n", localid, profileid, success));
 
@@ -802,7 +829,7 @@ void preAuthCDCallback(int localid, int profileid, int authenticated, char *errm
 	authInfo->id = profileid;
 }
 
-static void getPreorderCallback(int localid, int profileid, persisttype_t type, int index, int success, char *data, int len, void *instance)
+static void getPreorderCallback(int localid, int profileid, int index, int success, char *data, int len, void *instance)
 {
 	PSThreadClass *t = (PSThreadClass *)instance;
 	if (!t)
@@ -846,11 +873,11 @@ void PSThreadClass::Thread_Function()
 	gcd_secret_key[0]='g';gcd_secret_key[1]='3';gcd_secret_key[2]='T';gcd_secret_key[3]='9';
 	gcd_secret_key[4]='s';gcd_secret_key[5]='2';gcd_secret_key[6]='\0';
 	/**/
-	gcd_gamename[0]='c';gcd_gamename[1]='c';gcd_gamename[2]='g';gcd_gamename[3]='e';
-	gcd_gamename[4]='n';gcd_gamename[5]='e';gcd_gamename[6]='r';gcd_gamename[7]='a';
-	gcd_gamename[8]='l';gcd_gamename[9]='s';gcd_gamename[10]='\0';
-	gcd_secret_key[0]='h';gcd_secret_key[1]='5';gcd_secret_key[2]='T';gcd_secret_key[3]='2';
-	gcd_secret_key[4]='f';gcd_secret_key[5]='6';gcd_secret_key[6]='\0';
+	//gcd_gamename[0]='c';gcd_gamename[1]='c';gcd_gamename[2]='g';gcd_gamename[3]='e';
+	//gcd_gamename[4]='n';gcd_gamename[5]='e';gcd_gamename[6]='r';gcd_gamename[7]='a';
+	//gcd_gamename[8]='l';gcd_gamename[9]='s';gcd_gamename[10]='\0';
+	//gcd_secret_key[0]='h';gcd_secret_key[1]='5';gcd_secret_key[2]='T';gcd_secret_key[3]='2';
+	//gcd_secret_key[4]='f';gcd_secret_key[5]='6';gcd_secret_key[6]='\0';
 	/**/
 	
 	//strcpy(StatsServerHostname, "sdkdev.gamespy.com");
@@ -867,13 +894,13 @@ void PSThreadClass::Thread_Function()
 				{
 					if (tryConnect())
 					{
-						NewGame(0);
-#ifdef DEBUG_LOGGING
-						Int res = 
-#endif // DEBUG_LOGGING
-							SendGameSnapShot(NULL, req.results.c_str(), SNAP_FINAL);
-						DEBUG_LOG(("Just sent game results - res was %d\n", res));
-						FreeGame(NULL);
+//						NewGame(0);
+//#ifdef DEBUG_LOGGING
+//						Int res = 
+//#endif // DEBUG_LOGGING
+//							SendGameSnapShot(NULL, req.results.c_str(), SNAP_FINAL);
+//						DEBUG_LOG(("Just sent game results - res was %d\n", res));
+//						FreeGame(NULL);
 					}
 				}
 				break;
@@ -894,7 +921,7 @@ void PSThreadClass::Thread_Function()
 					{
 						DEBUG_LOG(("Successful login\n"));
 						incrOpCount();
-						GetPersistDataValues(0, req.player.id, pd_public_rw, 0, "", getPersistentDataCallback, this);
+						//GetPersistDataValues(0, req.player.id, pd_public_rw, 0, "", getPersistentDataCallback, this);
 					}
 					else
 					{
@@ -923,7 +950,7 @@ void PSThreadClass::Thread_Function()
 						char kvbuf[256];
 						sprintf(kvbuf, "\\locale\\%d", req.player.locale);
 						incrOpCount();
-						SetPersistDataValues(0, req.player.id, pd_public_rw, 0, kvbuf, setPersistentDataLocaleCallback, this);
+						//SetPersistDataValues(0, req.player.id, pd_public_rw, 0, kvbuf, setPersistentDataLocaleCallback, this);
 					}
 				}
 				break;
@@ -1029,10 +1056,10 @@ void PSThreadClass::Thread_Function()
 						if (TheGameSpyPSMessageQueue)
 							TheGameSpyPSMessageQueue->trackPlayerStats(req.player);
 
-						char *munkeeHack = strdup(GameSpyPSMessageQueueInterface::formatPlayerKVPairs(req.player).c_str()); // GS takes a char* for some reason
+						char *munkeeHack = _strdup(GameSpyPSMessageQueueInterface::formatPlayerKVPairs(req.player).c_str()); // GS takes a char* for some reason
 						incrOpCount();
 						DEBUG_LOG(("Setting values %s\n", munkeeHack));
-						SetPersistDataValues(0, req.player.id, pd_public_rw, 0, munkeeHack, setPersistentDataCallback, this);
+						//SetPersistDataValues(0, req.player.id, pd_public_rw, 0, munkeeHack, setPersistentDataCallback, this);
 						free(munkeeHack);
 					}
 					else
@@ -1055,24 +1082,24 @@ void PSThreadClass::Thread_Function()
 						cdAuthInfo.id = 0;
 						char cdkeyHash[33] = "";
 						char validationToken[33] = "";
-						char *munkeeHack = strdup(req.cdkey.c_str()); // GenerateAuth takes a char*, not a const char* :P
+						char *munkeeHack = _strdup(req.cdkey.c_str()); // GenerateAuth takes a char*, not a const char* :P
 
-						GenerateAuth(GetChallenge(NULL), munkeeHack, validationToken); // validation token
-						GenerateAuth("", munkeeHack, cdkeyHash); // cdkey hash
+						//GenerateAuth(GetChallenge(NULL), munkeeHack, validationToken); // validation token
+						//GenerateAuth("", munkeeHack, cdkeyHash); // cdkey hash
 
 						free (munkeeHack);
 
-						PreAuthenticatePlayerCD( 0, "preorder", cdkeyHash, validationToken, preAuthCDCallback , &cdAuthInfo);
+						//PreAuthenticatePlayerCD( 0, "preorder", cdkeyHash, validationToken, preAuthCDCallback , &cdAuthInfo);
 
-						while (running && IsStatsConnected() && !cdAuthInfo.done)
-							PersistThink();
+						//while (running && IsStatsConnected() && !cdAuthInfo.done)
+						//	PersistThink();
 
 						DEBUG_LOG(("Looking for preorder status for %d (success=%d, done=%d) from CDKey %s with hash %s\n",
 							cdAuthInfo.id, cdAuthInfo.success, cdAuthInfo.done, req.cdkey.c_str(), cdkeyHash));
-						if (cdAuthInfo.done && cdAuthInfo.success)
-							GetPersistDataValues(0, cdAuthInfo.id, pd_public_ro, 0, "\\preorder", getPreorderCallback, this);
-						else
-							decrOpCount();
+						//if (cdAuthInfo.done && cdAuthInfo.success)
+						//	GetPersistDataValues(0, cdAuthInfo.id, pd_public_ro, 0, "\\preorder", getPreorderCallback, this);
+						//else
+						//	decrOpCount();
 					}
 				}
 				break;
@@ -1080,24 +1107,24 @@ void PSThreadClass::Thread_Function()
 		}
 
 		// update the network
-		if (IsStatsConnected())
-		{
-			PersistThink();
-			if (m_opCount <= 0)
-			{
-				DEBUG_ASSERTCRASH(m_opCount == 0, ("Negative operations pending!!!"));
-				DEBUG_LOG(("m_opCount = %d - closing connection\n", m_opCount));
-				CloseStatsConnection();
-				m_opCount = 0;
-			}
-		}
+		//if (IsStatsConnected())
+		//{
+		//	PersistThink();
+		//	if (m_opCount <= 0)
+		//	{
+		//		DEBUG_ASSERTCRASH(m_opCount == 0, ("Negative operations pending!!!"));
+		//		DEBUG_LOG(("m_opCount = %d - closing connection\n", m_opCount));
+		//		CloseStatsConnection();
+		//		m_opCount = 0;
+		//	}
+		//}
 
 		// end our timeslice
 		Switch_Thread();
 	}
 
-	if (IsStatsConnected())
-		CloseStatsConnection();
+	/*if (IsStatsConnected())
+		CloseStatsConnection();*/
 	} catch ( ... ) {
 		DEBUG_CRASH(("Exception in storage thread!"));
 	}

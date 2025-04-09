@@ -31,12 +31,13 @@
 #ifndef __PEERDEFS_H__
 #define __PEERDEFS_H__
 
-#include "GameSpy/Peer/Peer.h"
-#include "GameSpy/GP/GP.h"
+//#include "GameSpy/Peer/Peer.h"
+//#include "GameSpy/GP/GP.h"
 
 #include "GameClient/Color.h"
 #include "Common/STLTypedefs.h"
 #include "GameNetwork/GameSpy/StagingRoomGameInfo.h"
+#include "GameNetwork/GameSpy/GPCommonTemp.h"
 
 class GameWindow;
 class PSPlayerStats;
@@ -56,14 +57,14 @@ class GameSpyRCMenuData
 {
 public:
 	AsciiString m_nick;
-	GPProfile m_id;
+	INT m_id;
 	RCItemType m_itemType;
 };
 
 class BuddyInfo
 {
 public:
-	GPProfile m_id;
+	INT m_id;
 	AsciiString m_name;
 	AsciiString m_email;
 	AsciiString m_countryCode;
@@ -71,15 +72,15 @@ public:
 	UnicodeString m_statusString;
 	UnicodeString m_locationString;
 };
-typedef std::map<GPProfile, BuddyInfo> BuddyInfoMap;
+typedef std::map<INT, BuddyInfo> BuddyInfoMap;
 
 class BuddyMessage
 {
 public:
 	UnsignedInt m_timestamp;
-	GPProfile m_senderID;
+	INT m_senderID;
 	AsciiString m_senderNick;
-	GPProfile m_recipientID;
+	INT m_recipientID;
 	AsciiString m_recipientNick;
 	UnicodeString m_message;
 };

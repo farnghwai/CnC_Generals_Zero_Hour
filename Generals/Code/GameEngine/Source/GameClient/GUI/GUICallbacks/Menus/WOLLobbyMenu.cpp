@@ -69,6 +69,7 @@
 #include "GameNetwork/GameSpy/PersistentStorageThread.h"
 #include "GameNetwork/GameSpy/LobbyUtils.h"
 #include "GameNetwork/RankPointValue.h"
+#include <set>
 
 #ifdef _INTERNAL
 // for occasional debugging...
@@ -96,7 +97,7 @@ static const time_t gameListRefreshInterval = 10000;
 static time_t playerListRefreshTime = 0;
 static const time_t playerListRefreshInterval = 5000;
 
-void setUnignoreText( WindowLayout *layout, AsciiString nick, GPProfile id);
+void setUnignoreText( WindowLayout *layout, AsciiString nick, INT id);
 static void doSliderTrack(GameWindow *control, Int val);
 Bool DontShowMainMenu = FALSE;
 enum { COLUMN_PLAYERNAME = 2 };
@@ -515,7 +516,8 @@ void PopulateLobbyPlayerListbox(void)
 		for (it = players->begin(); it != players->end(); ++it)
 		{
 			PlayerInfo info = it->second;
-			if (info.m_flags & PEER_FLAG_OP || TheGameSpyConfig->isPlayerVIP(info.m_profileID))
+			if (info.m_flags //& PEER_FLAG_OP 
+				|| TheGameSpyConfig->isPlayerVIP(info.m_profileID))
 			{
 				Int index = insertPlayerInListbox(info, info.isIgnored()?GameSpyColor[GSCOLOR_PLAYER_IGNORED]:GameSpyColor[GSCOLOR_PLAYER_OWNER]);
 
@@ -533,7 +535,8 @@ void PopulateLobbyPlayerListbox(void)
 		{
 			PlayerInfo info = it->second;
 			bIt = buddies->find(info.m_profileID);
-			if ( !(info.m_flags & PEER_FLAG_OP || TheGameSpyConfig->isPlayerVIP(info.m_profileID)) && bIt != buddies->end() )
+			if ( !(info.m_flags //& PEER_FLAG_OP 
+				|| TheGameSpyConfig->isPlayerVIP(info.m_profileID)) && bIt != buddies->end() )
 			{
 				Int index = insertPlayerInListbox(info, info.isIgnored()?GameSpyColor[GSCOLOR_PLAYER_IGNORED]:GameSpyColor[GSCOLOR_PLAYER_BUDDY]);
 
@@ -551,7 +554,8 @@ void PopulateLobbyPlayerListbox(void)
 		{
 			PlayerInfo info = it->second;
 			bIt = buddies->find(info.m_profileID);
-			if ( !(info.m_flags & PEER_FLAG_OP || TheGameSpyConfig->isPlayerVIP(info.m_profileID)) && bIt == buddies->end() )
+			if ( !(info.m_flags //& PEER_FLAG_OP 
+				|| TheGameSpyConfig->isPlayerVIP(info.m_profileID)) && bIt == buddies->end() )
 			{
 				Int index = insertPlayerInListbox(info, info.isIgnored()?GameSpyColor[GSCOLOR_PLAYER_IGNORED]:GameSpyColor[GSCOLOR_PLAYER_NORMAL]);
 
@@ -569,7 +573,8 @@ void PopulateLobbyPlayerListbox(void)
 		{
 			std::set<Int>::const_iterator indexIt;
 			Int *newIndices = NEW Int[indicesToSelect.size()];
-			for (i=0, indexIt = indicesToSelect.begin(); indexIt != indicesToSelect.end(); ++i, ++indexIt)
+			Int i = 0;
+			for (indexIt = indicesToSelect.begin(); indexIt != indicesToSelect.end(); ++i, ++indexIt)
 			{
 				newIndices[i] = *indexIt;
 				DEBUG_LOG(("Queueing up index %d to re-select\n", *indexIt));
@@ -639,7 +644,7 @@ void WOLLobbyMenuInit( WindowLayout *layout, void *userData )
 	comboLobbyGroupRoomsID = TheNameKeyGenerator->nameToKey(AsciiString("WOLCustomLobby.wnd:ComboBoxGroupRooms"));
 	comboLobbyGroupRooms = TheWindowManager->winGetWindowFromId(parent, comboLobbyGroupRoomsID);
 
-	GadgetTextEntrySetText(textEntryChat, UnicodeString.TheEmptyString);
+	GadgetTextEntrySetText(textEntryChat, UnicodeString::TheEmptyString);
 
 	populateGroupRoomListbox(comboLobbyGroupRooms);
 
@@ -1033,93 +1038,93 @@ void WOLLobbyMenuUpdate( WindowLayout * layout, void *userData)
 				{
 					sawImportantMessage = TRUE;
 					SetLobbyAttemptHostJoin(FALSE);
-					if (resp.createStagingRoom.result == PEERJoinSuccess)
-					{
-						// Woohoo!  On to our next screen!
-						buttonPushed = true;
-						nextScreen = "Menus/GameSpyGameOptionsMenu.wnd";
-						TheShell->pop();
-						TheGameSpyInfo->markAsStagingRoomHost();
-						TheGameSpyInfo->setGameOptions();
-					}
+					//if (resp.createStagingRoom.result == PEERJoinSuccess)
+					//{
+					//	// Woohoo!  On to our next screen!
+					//	buttonPushed = true;
+					//	nextScreen = "Menus/GameSpyGameOptionsMenu.wnd";
+					//	TheShell->pop();
+					//	TheGameSpyInfo->markAsStagingRoomHost();
+					//	TheGameSpyInfo->setGameOptions();
+					//}
 				}
 				break;
 			case PeerResponse::PEERRESPONSE_JOINSTAGINGROOM:
 				{
 					sawImportantMessage = TRUE;
 					SetLobbyAttemptHostJoin(FALSE);
-					Bool isHostPresent = TRUE;
-					if (resp.joinStagingRoom.ok == PEERTrue)
-					{
-						GameSpyStagingRoom *room = TheGameSpyInfo->getCurrentStagingRoom();
-						if (!room)
-						{
-							isHostPresent = FALSE;
-						}
-						else
-						{
-							isHostPresent = FALSE;
-							for (Int i=0; i<MAX_SLOTS; ++i)
-							{
-								AsciiString hostName;
-								hostName.translate(room->getConstSlot(0)->getName());
-								const char *firstPlayer = resp.stagingRoomPlayerNames[i].c_str();
-								if (!strcmp(hostName.str(), firstPlayer))
-								{
-									DEBUG_LOG(("Saw host %s == %s in slot %d\n", hostName.str(), firstPlayer, i));
-									isHostPresent = TRUE;
-								}
-							}
-						}
-					}
-					if (resp.joinStagingRoom.ok == PEERTrue && isHostPresent)
-					{
-						// Woohoo!  On to our next screen!
-						buttonPushed = true;
-						nextScreen = "Menus/GameSpyGameOptionsMenu.wnd";
-						TheShell->pop();
-					}
-					else
-					{
-						UnicodeString s;
+					//Bool isHostPresent = TRUE;
+					//if (resp.joinStagingRoom.ok == PEERTrue)
+					//{
+					//	GameSpyStagingRoom *room = TheGameSpyInfo->getCurrentStagingRoom();
+					//	if (!room)
+					//	{
+					//		isHostPresent = FALSE;
+					//	}
+					//	else
+					//	{
+					//		isHostPresent = FALSE;
+					//		for (Int i=0; i<MAX_SLOTS; ++i)
+					//		{
+					//			AsciiString hostName;
+					//			hostName.translate(room->getConstSlot(0)->getName());
+					//			const char *firstPlayer = resp.stagingRoomPlayerNames[i].c_str();
+					//			if (!strcmp(hostName.str(), firstPlayer))
+					//			{
+					//				DEBUG_LOG(("Saw host %s == %s in slot %d\n", hostName.str(), firstPlayer, i));
+					//				isHostPresent = TRUE;
+					//			}
+					//		}
+					//	}
+					//}
+					//if (resp.joinStagingRoom.ok == PEERTrue && isHostPresent)
+					//{
+					//	// Woohoo!  On to our next screen!
+					//	buttonPushed = true;
+					//	nextScreen = "Menus/GameSpyGameOptionsMenu.wnd";
+					//	TheShell->pop();
+					//}
+					//else
+					//{
+					//	UnicodeString s;
 
-						switch(resp.joinStagingRoom.result)
-						{
-						case PEERFullRoom:        // The room is full.
-							s = TheGameText->fetch("GUI:JoinFailedRoomFull");
-							break;
-						case PEERInviteOnlyRoom:  // The room is invite only.
-							s = TheGameText->fetch("GUI:JoinFailedInviteOnly");
-							break;
-						case PEERBannedFromRoom:  // The local user is banned from the room.
-							s = TheGameText->fetch("GUI:JoinFailedBannedFromRoom");
-							break;
-						case PEERBadPassword:     // An incorrect password (or none) was given for a passworded room.
-							s = TheGameText->fetch("GUI:JoinFailedBadPassword");
-							break;
-						case PEERAlreadyInRoom:   // The local user is already in or entering a room of the same type.
-							s = TheGameText->fetch("GUI:JoinFailedAlreadyInRoom");
-							break;
-						case PEERNoConnection:    // Can't join a room if there's no chat connection.
-							s = TheGameText->fetch("GUI:JoinFailedNoConnection");
-							break;
-						default:
-							s = TheGameText->fetch("GUI:JoinFailedDefault");
-							break;
-						}
-						GSMessageBoxOk(TheGameText->fetch("GUI:JoinFailedDefault"), s);
-						if (groupRoomToJoin)
-						{
-							DEBUG_LOG(("WOLLobbyMenuUpdate() - rejoining group room %d\n", groupRoomToJoin));
-							TheGameSpyInfo->joinGroupRoom(groupRoomToJoin);
-							groupRoomToJoin = 0;
-						}
-						else
-						{
-							DEBUG_LOG(("WOLLobbyMenuUpdate() - joining best group room\n"));
-							TheGameSpyInfo->joinBestGroupRoom();
-						}
-					}
+					//	switch(resp.joinStagingRoom.result)
+					//	{
+					//	case PEERFullRoom:        // The room is full.
+					//		s = TheGameText->fetch("GUI:JoinFailedRoomFull");
+					//		break;
+					//	case PEERInviteOnlyRoom:  // The room is invite only.
+					//		s = TheGameText->fetch("GUI:JoinFailedInviteOnly");
+					//		break;
+					//	case PEERBannedFromRoom:  // The local user is banned from the room.
+					//		s = TheGameText->fetch("GUI:JoinFailedBannedFromRoom");
+					//		break;
+					//	case PEERBadPassword:     // An incorrect password (or none) was given for a passworded room.
+					//		s = TheGameText->fetch("GUI:JoinFailedBadPassword");
+					//		break;
+					//	case PEERAlreadyInRoom:   // The local user is already in or entering a room of the same type.
+					//		s = TheGameText->fetch("GUI:JoinFailedAlreadyInRoom");
+					//		break;
+					//	case PEERNoConnection:    // Can't join a room if there's no chat connection.
+					//		s = TheGameText->fetch("GUI:JoinFailedNoConnection");
+					//		break;
+					//	default:
+					//		s = TheGameText->fetch("GUI:JoinFailedDefault");
+					//		break;
+					//	}
+					//	GSMessageBoxOk(TheGameText->fetch("GUI:JoinFailedDefault"), s);
+					//	if (groupRoomToJoin)
+					//	{
+					//		DEBUG_LOG(("WOLLobbyMenuUpdate() - rejoining group room %d\n", groupRoomToJoin));
+					//		TheGameSpyInfo->joinGroupRoom(groupRoomToJoin);
+					//		groupRoomToJoin = 0;
+					//	}
+					//	else
+					//	{
+					//		DEBUG_LOG(("WOLLobbyMenuUpdate() - joining best group room\n"));
+					//		TheGameSpyInfo->joinBestGroupRoom();
+					//	}
+					//}
 				}
 				break;
 			case PeerResponse::PEERRESPONSE_STAGINGROOMLISTCOMPLETE:
@@ -1127,138 +1132,138 @@ void WOLLobbyMenuUpdate( WindowLayout * layout, void *userData)
 				break;
 			case PeerResponse::PEERRESPONSE_STAGINGROOM:
 				{
-					GameSpyStagingRoom room;
-					switch(resp.stagingRoom.action)
-					{
-					case PEER_CLEAR:
-						TheGameSpyInfo->clearStagingRoomList();
-						//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_CLEAR"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-						break;
-					case PEER_ADD:
-					case PEER_UPDATE:
-					{
-						if (resp.stagingRoom.percentComplete == 100)
-						{
-							TheGameSpyInfo->sawFullGameList();
-						}
+					//GameSpyStagingRoom room;
+					//switch(resp.stagingRoom.action)
+					//{
+					//case PEER_CLEAR:
+					//	TheGameSpyInfo->clearStagingRoomList();
+					//	//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_CLEAR"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//	break;
+					//case PEER_ADD:
+					//case PEER_UPDATE:
+					//{
+					//	if (resp.stagingRoom.percentComplete == 100)
+					//	{
+					//		TheGameSpyInfo->sawFullGameList();
+					//	}
 
-						//if (ParseAsciiStringToGameInfo(&room, resp.stagingRoomMapName.c_str()))
-						//if (ParseAsciiStringToGameInfo(&room, resp.stagingServerGameOptions.c_str()))
-						Bool serverOk = TRUE;
-						if (!resp.stagingRoomMapName.length())
-						{
-							serverOk = FALSE;
-						}
-						// fix for ghost game problem - need to iterate over all resp.stagingRoomPlayerNames[i]
-						Bool sawSelf = FALSE;
-						//for (Int i=0; i<MAX_SLOTS; ++i)
-						//{
-							if (TheGameSpyInfo->getLocalName() == resp.stagingRoomPlayerNames[0].c_str())
-							{
-								sawSelf = TRUE; // don't show ghost games for myself
-							}
-						//}
-						if (sawSelf)
-							serverOk = FALSE;
+					//	//if (ParseAsciiStringToGameInfo(&room, resp.stagingRoomMapName.c_str()))
+					//	//if (ParseAsciiStringToGameInfo(&room, resp.stagingServerGameOptions.c_str()))
+					//	Bool serverOk = TRUE;
+					//	if (!resp.stagingRoomMapName.length())
+					//	{
+					//		serverOk = FALSE;
+					//	}
+					//	// fix for ghost game problem - need to iterate over all resp.stagingRoomPlayerNames[i]
+					//	Bool sawSelf = FALSE;
+					//	//for (Int i=0; i<MAX_SLOTS; ++i)
+					//	//{
+					//		if (TheGameSpyInfo->getLocalName() == resp.stagingRoomPlayerNames[0].c_str())
+					//		{
+					//			sawSelf = TRUE; // don't show ghost games for myself
+					//		}
+					//	//}
+					//	if (sawSelf)
+					//		serverOk = FALSE;
 
-						if (serverOk)
-						{
-							room.setGameName(UnicodeString(resp.stagingServerName.c_str()));
-							room.setID(resp.stagingRoom.id);
-							room.setHasPassword(resp.stagingRoom.requiresPassword);
-							room.setVersion(resp.stagingRoom.version);
-							room.setExeCRC(resp.stagingRoom.exeCRC);
-							room.setIniCRC(resp.stagingRoom.iniCRC);
-							room.setAllowObservers(resp.stagingRoom.allowObservers);
-							room.setPingString(resp.stagingServerPingString.c_str());
-							room.setLadderIP(resp.stagingServerLadderIP.c_str());
-							room.setLadderPort(resp.stagingRoom.ladderPort);
-							room.setReportedNumPlayers(resp.stagingRoom.numPlayers);
-							room.setReportedMaxPlayers(resp.stagingRoom.maxPlayers);
-							room.setReportedNumObservers(resp.stagingRoom.numObservers);
+					//	if (serverOk)
+					//	{
+					//		room.setGameName(UnicodeString(resp.stagingServerName.c_str()));
+					//		room.setID(resp.stagingRoom.id);
+					//		room.setHasPassword(resp.stagingRoom.requiresPassword);
+					//		room.setVersion(resp.stagingRoom.version);
+					//		room.setExeCRC(resp.stagingRoom.exeCRC);
+					//		room.setIniCRC(resp.stagingRoom.iniCRC);
+					//		room.setAllowObservers(resp.stagingRoom.allowObservers);
+					//		room.setPingString(resp.stagingServerPingString.c_str());
+					//		room.setLadderIP(resp.stagingServerLadderIP.c_str());
+					//		room.setLadderPort(resp.stagingRoom.ladderPort);
+					//		room.setReportedNumPlayers(resp.stagingRoom.numPlayers);
+					//		room.setReportedMaxPlayers(resp.stagingRoom.maxPlayers);
+					//		room.setReportedNumObservers(resp.stagingRoom.numObservers);
 
-							Int i;
-							AsciiString gsMapName = resp.stagingRoomMapName.c_str();
-							AsciiString mapName = "";
-							for (i=0; i<gsMapName.getLength(); ++i)
-							{
-								char c = gsMapName.getCharAt(i);
-								if (c != '/')
-									mapName.concat(c);
-								else
-									mapName.concat('\\');
-							}
-							room.setMap(TheGameState->portableMapPathToRealMapPath(mapName));
+					//		//Int i;
+					//		AsciiString gsMapName = resp.stagingRoomMapName.c_str();
+					//		AsciiString mapName = "";
+					//		for (size_t i=0; i<gsMapName.getLength(); ++i)
+					//		{
+					//			char c = gsMapName.getCharAt(i);
+					//			if (c != '/')
+					//				mapName.concat(c);
+					//			else
+					//				mapName.concat('\\');
+					//		}
+					//		room.setMap(TheGameState->portableMapPathToRealMapPath(mapName));
 
-							Int numPlayers = 0;
-							for (i=0; i<MAX_SLOTS; ++i)
-							{
-								GameSpyGameSlot *slot = room.getGameSpySlot(i);
-								if (slot)
-								{
-									slot->setWins( resp.stagingRoom.wins[i] );
-									slot->setLosses( resp.stagingRoom.losses[i] );
-									slot->setProfileID( resp.stagingRoom.profileID[i] );
-									slot->setPlayerTemplate( resp.stagingRoom.faction[i] );
-									slot->setColor( resp.stagingRoom.color[i] );
-									if (resp.stagingRoom.profileID[i] == SLOT_EASY_AI)
-									{
-										slot->setState(SLOT_EASY_AI);
-										++numPlayers;
-									}
-									else if (resp.stagingRoom.profileID[i] == SLOT_MED_AI)
-									{
-										slot->setState(SLOT_MED_AI);
-										++numPlayers;
-									}
-									else if (resp.stagingRoom.profileID[i] == SLOT_BRUTAL_AI)
-									{
-										slot->setState(SLOT_BRUTAL_AI);
-										++numPlayers;
-									}
-									else if (resp.stagingRoomPlayerNames[i].length())
-									{
-										UnicodeString nameUStr;
-										nameUStr.translate(resp.stagingRoomPlayerNames[i].c_str());
-										slot->setState(SLOT_PLAYER, nameUStr);
-										++numPlayers;
-									}
-									else
-									{
-										slot->setState(SLOT_OPEN);
-									}
-								}
-							}
-							DEBUG_ASSERTCRASH(numPlayers, ("Game had no players!\n"));
-							//DEBUG_LOG(("Saw room: hasPass=%d, allowsObservers=%d\n", room.getHasPassword(), room.getAllowObservers()));
-							if (resp.stagingRoom.action == PEER_ADD)
-							{
-								TheGameSpyInfo->addStagingRoom(room);
-								//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_ADD"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-							}
-							else
-							{
-								TheGameSpyInfo->updateStagingRoom(room);
-								//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_UPDATE"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-							}
-						}
-						else
-						{
-							room.setID(resp.stagingRoom.id);
-							TheGameSpyInfo->removeStagingRoom(room);
-							//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_UPDATE FAILED"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-						}
-						break;
-					}
-					case PEER_REMOVE:
-						room.setID(resp.stagingRoom.id);
-						TheGameSpyInfo->removeStagingRoom(room);
-						//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_REMOVE"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-						break;
-					default:
-						//TheGameSpyInfo->addText( UnicodeString(L"gameList: Unknown"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
-						break;
-					}
+					//		Int numPlayers = 0;
+					//		for (Int i=0; i<MAX_SLOTS; ++i)
+					//		{
+					//			GameSpyGameSlot *slot = room.getGameSpySlot(i);
+					//			if (slot)
+					//			{
+					//				slot->setWins( resp.stagingRoom.wins[i] );
+					//				slot->setLosses( resp.stagingRoom.losses[i] );
+					//				slot->setProfileID( resp.stagingRoom.profileID[i] );
+					//				slot->setPlayerTemplate( resp.stagingRoom.faction[i] );
+					//				slot->setColor( resp.stagingRoom.color[i] );
+					//				if (resp.stagingRoom.profileID[i] == SLOT_EASY_AI)
+					//				{
+					//					slot->setState(SLOT_EASY_AI);
+					//					++numPlayers;
+					//				}
+					//				else if (resp.stagingRoom.profileID[i] == SLOT_MED_AI)
+					//				{
+					//					slot->setState(SLOT_MED_AI);
+					//					++numPlayers;
+					//				}
+					//				else if (resp.stagingRoom.profileID[i] == SLOT_BRUTAL_AI)
+					//				{
+					//					slot->setState(SLOT_BRUTAL_AI);
+					//					++numPlayers;
+					//				}
+					//				else if (resp.stagingRoomPlayerNames[i].length())
+					//				{
+					//					UnicodeString nameUStr;
+					//					nameUStr.translate(resp.stagingRoomPlayerNames[i].c_str());
+					//					slot->setState(SLOT_PLAYER, nameUStr);
+					//					++numPlayers;
+					//				}
+					//				else
+					//				{
+					//					slot->setState(SLOT_OPEN);
+					//				}
+					//			}
+					//		}
+					//		DEBUG_ASSERTCRASH(numPlayers, ("Game had no players!\n"));
+					//		//DEBUG_LOG(("Saw room: hasPass=%d, allowsObservers=%d\n", room.getHasPassword(), room.getAllowObservers()));
+					//		if (resp.stagingRoom.action == PEER_ADD)
+					//		{
+					//			TheGameSpyInfo->addStagingRoom(room);
+					//			//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_ADD"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//		}
+					//		else
+					//		{
+					//			TheGameSpyInfo->updateStagingRoom(room);
+					//			//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_UPDATE"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//		}
+					//	}
+					//	else
+					//	{
+					//		room.setID(resp.stagingRoom.id);
+					//		TheGameSpyInfo->removeStagingRoom(room);
+					//		//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_UPDATE FAILED"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//	}
+					//	break;
+					//}
+					//case PEER_REMOVE:
+					//	room.setID(resp.stagingRoom.id);
+					//	TheGameSpyInfo->removeStagingRoom(room);
+					//	//TheGameSpyInfo->addText( UnicodeString(L"gameList: PEER_REMOVE"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//	break;
+					//default:
+					//	//TheGameSpyInfo->addText( UnicodeString(L"gameList: Unknown"), GameSpyColor[GSCOLOR_DEFAULT], listboxLobbyChat );
+					//	break;
+					//}
 				}
 				break;
 			}
@@ -1713,7 +1718,7 @@ WindowMsgHandledType WOLLobbyMenuSystem( GameWindow *window, UnsignedInt msg,
 						break;
 					}
 
-					GPProfile profileID = 0;
+					INT profileID = 0;
 					AsciiString aName;
 					aName.translate(GadgetListBoxGetText(control, rc->pos, COLUMN_PLAYERNAME));
 					PlayerInfoMap::iterator it = TheGameSpyInfo->getPlayerInfoMap()->find(aName);
@@ -1751,9 +1756,11 @@ WindowMsgHandledType WOLLobbyMenuSystem( GameWindow *window, UnsignedInt msg,
 					rcMenu->winGetSize(&rcSize.x, &rcSize.y);
 					rcPos.x = rc->mouseX;
 					rcPos.y = rc->mouseY;
-					if(rc->mouseX + rcSize.x > TheDisplay->getWidth())
+					int rcX = rc->mouseX + rcSize.x;
+					int rcY = rc->mouseY + rcSize.y;
+					if(rcX >= 0 && (UnsignedInt)rcX > TheDisplay->getWidth())
 						rcPos.x = TheDisplay->getWidth() - rcSize.x;
-					if(rc->mouseY + rcSize.y > TheDisplay->getHeight())
+					if(rcY >= 0 && (UnsignedInt)rcY > TheDisplay->getHeight())
 						rcPos.y = TheDisplay->getHeight() - rcSize.y;
 					rcMenu->winSetPosition(rcPos.x, rcPos.y);
 					

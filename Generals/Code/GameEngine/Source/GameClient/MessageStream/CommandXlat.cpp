@@ -2184,6 +2184,22 @@ GameMessage::Type CommandTranslator::evaluateContextCommand( Drawable *draw,
 
 }  // end evaluateContextCommand
 
+//[DX9] by Gemini Code Assist
+static void ParticleSystemDebugDisplayWrapper(DebugDisplayInterface* dd, void* userData)
+{
+	// Call the original function, passing NULL for the FILE* argument
+	ParticleSystemDebugDisplay(dd, userData, NULL);
+}
+static void AudioDebugDisplayWrapper(DebugDisplayInterface* dd, void* userData)
+{
+	// Call the original function, passing NULL for the FILE* argument
+	AudioDebugDisplay(dd, userData, NULL);
+}
+static void StatDebugDisplayWrapper(DebugDisplayInterface* dd, void* userData)
+{
+	// Call the original function, passing NULL for the FILE* argument
+	StatDebugDisplay(dd, userData, NULL);
+}
 
 // ------------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -3624,7 +3640,7 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 		//-----------------------------------------------------------------------------------------
 		case GameMessage::MSG_META_DEMO_TOGGLE_BW_VIEW:
 		{   //We're not testing BW mode anymore, so use this message for toggling wireframe mode.
-			static mode=0;
+			static int mode=0;
 			if (mode == 0)
 			{	//First turn on wireframe
 				TheTacticalView->set3DWireFrameMode(TRUE);
@@ -4228,7 +4244,7 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 			{
 				// cheese festival: do NOT imitate this code. it is for debug purposes only.
 				std::vector<AsciiString> v = TheScienceStore->friend_getScienceNames();
-				for (int i = 0; i < v.size(); ++i) 
+				for (size_t i = 0; i < v.size(); ++i) 
 				{
 					ScienceType st = TheScienceStore->getScienceFromInternalName(v[i]);
 					if (st != SCIENCE_INVALID && TheScienceStore->isScienceGrantable(st))
@@ -4332,10 +4348,10 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 		//-----------------------------------------------------------------------------------------
 		case GameMessage::MSG_META_DEMO_TOGGLE_PARTICLEDEBUG:
 		{
-			if (TheDisplay->getDebugDisplayCallback() == ParticleSystemDebugDisplay)
+			if (TheDisplay->getDebugDisplayCallback() == ParticleSystemDebugDisplayWrapper)
 				TheDisplay->setDebugDisplayCallback(NULL);
 			else
-				TheDisplay->setDebugDisplayCallback(ParticleSystemDebugDisplay);
+				TheDisplay->setDebugDisplayCallback(ParticleSystemDebugDisplayWrapper);
 			disp = DESTROY_MESSAGE;
 			break;
 		}
@@ -4550,10 +4566,10 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 		//-----------------------------------------------------------------------------------------
 		case GameMessage::MSG_META_DEMO_TOGGLE_DEBUG_STATS:
 		{
-			if (TheDisplay->getDebugDisplayCallback() == StatDebugDisplay)
+			if (TheDisplay->getDebugDisplayCallback() == StatDebugDisplayWrapper)
 				TheDisplay->setDebugDisplayCallback(NULL);
 			else
-				TheDisplay->setDebugDisplayCallback(StatDebugDisplay);
+				TheDisplay->setDebugDisplayCallback(StatDebugDisplayWrapper);
 			disp = DESTROY_MESSAGE;
 			break;
 		}
@@ -4568,10 +4584,10 @@ GameMessageDisposition CommandTranslator::translateGameMessage(const GameMessage
 #if defined(_INTERNAL) || defined(_DEBUG) || defined(_PLAYTEST)
 		case GameMessage::MSG_META_DEMO_TOGGLE_AUDIODEBUG:
 		{
-			if (TheDisplay->getDebugDisplayCallback() == AudioDebugDisplay)
+			if (TheDisplay->getDebugDisplayCallback() == AudioDebugDisplayWrapper)
 				TheDisplay->setDebugDisplayCallback(NULL);
 			else
-				TheDisplay->setDebugDisplayCallback(AudioDebugDisplay);
+				TheDisplay->setDebugDisplayCallback(AudioDebugDisplayWrapper);
 			disp = DESTROY_MESSAGE;
 			break;
 		}

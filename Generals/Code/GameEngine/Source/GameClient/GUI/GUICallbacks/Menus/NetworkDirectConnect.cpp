@@ -31,7 +31,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "GameSpy/peer/peer.h"
+//#include "GameSpy/peer/peer.h"
 
 #include "Common/QuotedPrintable.h"
 #include "Common/UserPreferences.h"
@@ -54,6 +54,42 @@
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	int safe_swscanf(const wchar_t* buffer, const wchar_t* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vswscanf_s(buffer, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define strcpy safe_strcpy
+	#define sscanf safe_sscanf
+	#define swscanf safe_swscanf
 #endif
 
 // window ids ------------------------------------------------------------------------------

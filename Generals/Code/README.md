@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 52% (16 / 27)
+Completion: 63% (17 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -13,7 +13,7 @@ Compression | Libraries\Source\Compression\Compression.vcxproj | Done | See note
 DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Done | See note 2
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
-GameEngine | GameEngine\GameEngine.vcxproj | Work-in-Progress
+GameEngine | GameEngine\GameEngine.vcxproj | Done* | See note 7
 GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Not Started
 GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Halt* | Reference to WW3D2Debug.lib
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
@@ -25,10 +25,10 @@ pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
 textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
 WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
-ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Done* | See note 5 and 6
+ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Done | See note 5 and 6
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
-wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Done*
+wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Done
 wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done | See note 3
 wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done
 wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done
@@ -58,3 +58,13 @@ GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
   | hash_map | unordered_map |
 5. Converting to DirectX 9 and remove legacy DirectX dependencies
 6. Remove Sound library Miles Sound System "Asimp3" (WWAudio Project) without replacement
+7. Remove GameSpy SDK library dependencies. Comment out code that are using. Major affected file class: 
+- BuddyThread
+- PeerDefs
+- PeerThread
+- PersistentStorageThread
+- MainMenu
+- NetworkDirectConnect
+- OptionsMenu?
+- WOLWelcomeMenu
+- MainMenuUtils

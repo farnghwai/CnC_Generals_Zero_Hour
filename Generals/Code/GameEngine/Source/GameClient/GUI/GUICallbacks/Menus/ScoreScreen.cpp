@@ -105,6 +105,30 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline wchar_t* safe_wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) {
+		if (wcsncpy_s(dest, count, src, _TRUNCATE) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define wcsncpy safe_wcsncpy
+#endif
+
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -874,7 +898,7 @@ void initInternetMultiPlayer(void)
 		return;
 	BuddyRequest req;
 	req.buddyRequestType = BuddyRequest::BUDDYREQUEST_SETSTATUS;
-	req.arg.status.status = GP_ONLINE;
+	//req.arg.status.status = GP_ONLINE;
 	strcpy(req.arg.status.statusString, "Online");
 	strcpy(req.arg.status.locationString, "");
 	TheGameSpyBuddyMessageQueue->addRequest(req);
@@ -1434,7 +1458,7 @@ winName.format("ScoreScreen.wnd:StaticTextScore%d", pos);
 						}
 					}
 					DEBUG_LOG(("Game ended on frame %d - TheGameLogic->getFrame()=%d\n", lastFrameOfGame-1, TheGameLogic->getFrame()-1));
-					for (i=0; i<MAX_SLOTS; ++i)
+					for (Int i=0; i<MAX_SLOTS; ++i)
 					{
 						const GameSlot *slot = TheGameInfo->getConstSlot(i);
 						DEBUG_LOG(("latestHumanInGame=%d, slot->isOccupied()=%d, slot->disconnected()=%d, slot->isAI()=%d, slot->lastFrameInGame()=%d\n",
@@ -1667,7 +1691,7 @@ winName.format("ScoreScreen.wnd:StaticTextScore%d", pos);
 					stats.lastGeneral = ptIdx;
 
 					Int gameSize = 0;
-					for (i=0; i<MAX_SLOTS; ++i)
+					for (Int i=0; i<MAX_SLOTS; ++i)
 					{
 						if (TheGameSpyGame->getConstSlot(i)->isOccupied() && TheGameSpyGame->getConstSlot(i)->getPlayerTemplate() != PLAYERTEMPLATE_OBSERVER)
 							++gameSize;

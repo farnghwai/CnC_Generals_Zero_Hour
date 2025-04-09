@@ -35,7 +35,7 @@
 
 GPConnection TheGPConnectionObj;
 GPConnection *TheGPConnection = &TheGPConnectionObj;
-GPProfile GameSpyLocalProfile = 0;
+INT GameSpyLocalProfile = 0;
 char GameSpyProfilePassword[64];
 
 void GPRecvBuddyMessageCallback(GPConnection * pconnection, GPRecvBuddyMessageArg * arg, void * param)

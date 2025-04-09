@@ -31,9 +31,21 @@
 #ifndef __BUDDYTHREAD_H__
 #define __BUDDYTHREAD_H__
 
-#include "GameSpy/GP/GP.h"
+//#include "GameSpy/GP/GP.h"
+#include "GPCommonTemp.h"
 
 #define MAX_BUDDY_CHAT_LEN 128
+#define MAX_COUNTRYCODE_LEN 240
+#define MAX_EMAIL_LEN 240
+#define MAX_LOCATION_STRING_LEN 240
+#define MAX_NICK_LEN 240
+#define MAX_PASSWORD_LEN 240
+#define MAX_REASON_LEN 240
+#define MAX_STATUS_STRING_LEN 240
+
+
+
+
 
 // this class encapsulates a request for the buddy thread
 class BuddyRequest
@@ -60,34 +72,34 @@ public:
 	{
 		struct
 		{
-			GPProfile recipient;
+			INT recipient;
 			WideChar text[MAX_BUDDY_CHAT_LEN];
 		} message;
 
 		struct
 		{
-			char nick[GP_NICK_LEN];
-			char email[GP_EMAIL_LEN];
-			char password[GP_PASSWORD_LEN];
+			char nick[MAX_NICK_LEN];
+			char email[MAX_EMAIL_LEN];
+			char password[MAX_PASSWORD_LEN];
 			Bool hasFirewall;
 		} login;
 
 		struct
 		{
-			GPProfile id;
+			INT id;
 			WideChar text[MAX_BUDDY_CHAT_LEN];
 		} addbuddy;
 
 		struct
 		{
-			GPProfile id;
+			INT id;
 		} profile;
 
 		struct
 		{
 			GPEnum status;
-			char statusString[GP_STATUS_STRING_LEN];
-			char locationString[GP_LOCATION_STRING_LEN];
+			char statusString[MAX_STATUS_STRING_LEN];
+			char locationString[MAX_LOCATION_STRING_LEN];
 		} status;
 
 	} arg;
@@ -109,7 +121,7 @@ public:
 		BUDDYRESPONSE_MAX
 	} buddyResponseType;
 
-	GPProfile profile;
+	INT profile;
 	GPResult result;
 
 	union
@@ -117,16 +129,16 @@ public:
 		struct
 		{
 			UnsignedInt date;
-			char nick[GP_NICK_LEN];
+			char nick[MAX_NICK_LEN];
 			WideChar text[MAX_BUDDY_CHAT_LEN];
 		} message;
 
 		struct
 		{
-			char nick[GP_NICK_LEN];
-			char email[GP_EMAIL_LEN];
-			char countrycode[GP_COUNTRYCODE_LEN];
-			WideChar text[GP_REASON_LEN];
+			char nick[MAX_NICK_LEN];
+			char email[MAX_EMAIL_LEN];
+			char countrycode[MAX_COUNTRYCODE_LEN];
+			WideChar text[MAX_REASON_LEN];
 		} request;
 
 		struct
@@ -139,12 +151,12 @@ public:
 
 		struct
 		{
-			char nick[GP_NICK_LEN];
-			char email[GP_EMAIL_LEN];
-			char countrycode[GP_COUNTRYCODE_LEN];
-			char location[GP_LOCATION_STRING_LEN];
+			char nick[MAX_NICK_LEN];
+			char email[MAX_EMAIL_LEN];
+			char countrycode[MAX_COUNTRYCODE_LEN];
+			char location[MAX_LOCATION_STRING_LEN];
 			GPEnum status;
-			char statusString[GP_STATUS_STRING_LEN];
+			char statusString[MAX_STATUS_STRING_LEN];
 		} status;
 	} arg;
 };
@@ -168,7 +180,7 @@ public:
 	virtual void addResponse( const BuddyResponse& resp ) = 0;
 	virtual Bool getResponse( BuddyResponse& resp ) = 0;
 
-	virtual GPProfile getLocalProfileID( void ) = 0;
+	virtual INT getLocalProfileID( void ) = 0;
 
 	static GameSpyBuddyMessageQueueInterface* createNewMessageQueue( void );
 };

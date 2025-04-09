@@ -30,7 +30,7 @@
 // INCLUDES ///////////////////////////////////////////////////////////////////////////////////////
 #include "PreRTS.h"	// This must go first in EVERY cpp file int the GameEngine
 
-#include "GameSpy/ghttp/ghttp.h"
+//#include "GameSpy/ghttp/ghttp.h"
 
 #include "Common/AudioAffect.h"
 #include "Common/AudioSettings.h"
@@ -79,6 +79,32 @@
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_itoa(int value, char* buffer, int radix) {
+		if (_itoa_s(value, buffer, _MAX_PATH, radix) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return buffer;
+	}
+
+	#define sscanf safe_sscanf
+	#define itoa safe_itoa
 #endif
 
 
@@ -316,7 +342,7 @@ Bool OptionPreferences::getAlternateMouseModeEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useAlternateMouse;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -344,7 +370,7 @@ Bool OptionPreferences::usesSystemMapDir(void)
 	if (it == end())
 		return TRUE;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -356,7 +382,7 @@ Bool OptionPreferences::saveCameraInReplays(void)
 	if (it == end())
 		return TRUE;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -368,7 +394,7 @@ Bool OptionPreferences::useCameraInReplays(void)
 	if (it == end())
 		return TRUE;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -398,7 +424,7 @@ Bool OptionPreferences::getSendDelay(void)
 	if (it == end())
 		return TheGlobalData->m_firewallSendDelay;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -537,7 +563,7 @@ Bool OptionPreferences::getCloudShadowsEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useCloudMap;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -549,7 +575,7 @@ Bool OptionPreferences::getLightmapEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useLightMap;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -561,7 +587,7 @@ Bool OptionPreferences::getSmoothWaterEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_showSoftWaterEdge;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -573,7 +599,7 @@ Bool OptionPreferences::getTreesEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useTrees;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -585,7 +611,7 @@ Bool OptionPreferences::getExtraAnimationsDisabled(void)
 	if (it == end())
 		return TheGlobalData->m_useDrawModuleLOD;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return FALSE;	//we are enabling extra animations, so disabled LOD
 	}
 	return TRUE;
@@ -597,7 +623,7 @@ Bool OptionPreferences::getDynamicLODEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_enableDynamicLOD;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -609,7 +635,7 @@ Bool OptionPreferences::getFPSLimitEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useFpsLimit;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -621,7 +647,7 @@ Bool OptionPreferences::get3DShadowsEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useShadowVolumes;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -633,7 +659,7 @@ Bool OptionPreferences::get2DShadowsEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_useShadowDecals;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -645,7 +671,7 @@ Bool OptionPreferences::getBuildingOcclusionEnabled(void)
 	if (it == end())
 		return TheGlobalData->m_enableBehindBuildingMarkers;
 
-	if (stricmp(it->second.str(), "yes") == 0) {
+	if (_stricmp(it->second.str(), "yes") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -1089,7 +1115,7 @@ static void saveOptions( void )
 		AsciiString aStr;
 		aStr.translate(uStr);
 		SetStringInRegistry("", "Proxy", aStr.str());
-		ghttpSetProxy(aStr.str());
+		//ghttpSetProxy(aStr.str());
 	}
 
    	//-------------------------------------------------------------------------------------------------
@@ -1549,7 +1575,7 @@ void OptionsMenuInit( WindowLayout *layout, void *userData )
 	// populate resolution modes
 	GadgetComboBoxReset(comboBoxResolution);
 	Int numResolutions = TheDisplay->getDisplayModeCount();
-	for( i = 0; i < numResolutions; ++i )
+	for(Int i = 0; i < numResolutions; ++i )
 	{	Int xres,yres,bitDepth;
 		TheDisplay->getDisplayModeDescription(i,&xres,&yres,&bitDepth);
 		str.format(L"%d x %d",xres,yres);

@@ -53,7 +53,7 @@
 		return dest;
 	}
 
-	wchar_t* safe_wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) {
+	inline wchar_t* safe_wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) {
 		if (wcsncpy_s(dest, count, src, _TRUNCATE) != 0) {
 			return nullptr; // Return nullptr on failure
 		}

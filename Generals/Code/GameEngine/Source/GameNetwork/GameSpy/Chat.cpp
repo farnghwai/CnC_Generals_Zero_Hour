@@ -37,6 +37,7 @@
 #include "GameNetwork/GameSpy/PeerDefsImplementation.h"
 #include "GameNetwork/GameSpy/PeerThread.h"
 #include "GameClient/InGameUI.h"
+#include "GameNetwork/GameSpy/GPCommonTemp.h"
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
@@ -210,7 +211,7 @@ void GameSpyInfo::addChat( PlayerInfo p, UnicodeString msg, Bool isPublic, Bool 
 	if(isSavedIgnored(p.m_profileID) || isIgnored(p.m_name))
 		return;
 	
-	Bool isOwner = p.m_flags & PEER_FLAG_OP;
+	Bool isOwner = p.m_flags;// &PEER_FLAG_OP;
 	Bool isBuddy = getBuddyMap()->find(p.m_profileID) != getBuddyMap()->end();
 
 	Bool isMe = p.m_name.compare(TheGameSpyInfo->getLocalName()) == 0;

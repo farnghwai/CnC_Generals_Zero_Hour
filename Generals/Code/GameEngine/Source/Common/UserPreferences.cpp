@@ -56,6 +56,20 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
+
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -518,23 +532,23 @@ Int CustomMatchPreferences::getPreferredFaction(void)
 {
 	Int ret;
 	CustomMatchPreferences::const_iterator it = find("PlayerTemplate");
-	if (it == end())
-	{
-		return PLAYERTEMPLATE_RANDOM;
-	}
+	//if (it == end())
+	//{
+	//	return PLAYERTEMPLATE_RANDOM;
+	//}
 
 	ret = atoi(it->second.str());
-	if (ret == PLAYERTEMPLATE_OBSERVER || ret < PLAYERTEMPLATE_MIN || ret >= ThePlayerTemplateStore->getPlayerTemplateCount())
-		ret = PLAYERTEMPLATE_RANDOM;
+	//if (ret == PLAYERTEMPLATE_OBSERVER || ret < PLAYERTEMPLATE_MIN || ret >= ThePlayerTemplateStore->getPlayerTemplateCount())
+	//	ret = PLAYERTEMPLATE_RANDOM;
 
-	if (ret >= 0)
-	{
-		const PlayerTemplate *fac = ThePlayerTemplateStore->getNthPlayerTemplate(ret);
-		if (!fac)
-			ret = PLAYERTEMPLATE_RANDOM;
-		else if (fac->getStartingBuilding().isEmpty())
-			ret = PLAYERTEMPLATE_RANDOM;
-	}
+	//if (ret >= 0)
+	//{
+	//	const PlayerTemplate *fac = ThePlayerTemplateStore->getNthPlayerTemplate(ret);
+	//	if (!fac)
+	//		ret = PLAYERTEMPLATE_RANDOM;
+	//	else if (fac->getStartingBuilding().isEmpty())
+	//		ret = PLAYERTEMPLATE_RANDOM;
+	//}
 
 	return ret;
 }
@@ -552,7 +566,7 @@ Bool CustomMatchPreferences::usesSystemMapDir(void)
 	if (it == end())
 		return TRUE;
 
-	if (stricmp(it->second.str(), "1") == 0) {
+	if (_stricmp(it->second.str(), "1") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -572,7 +586,7 @@ Bool CustomMatchPreferences::usesLongGameList(void)
 	if (it == end())
 		return FALSE;
 
-	if (stricmp(it->second.str(), "1") == 0) {
+	if (_stricmp(it->second.str(), "1") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -591,7 +605,7 @@ Bool CustomMatchPreferences::allowsObservers(void)
 	if (it == end())
 		return TRUE;
 
-	if (stricmp(it->second.str(), "1") == 0) {
+	if (_stricmp(it->second.str(), "1") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -617,7 +631,7 @@ Bool CustomMatchPreferences::getDisallowAsianText( void )
 			return TRUE;
 	}
 
-	if (stricmp(it->second.str(), "1") == 0) {
+	if (_stricmp(it->second.str(), "1") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -637,7 +651,7 @@ Bool CustomMatchPreferences::getDisallowNonAsianText( void )
 	if (it == end())
 		return FALSE;
 
-	if (stricmp(it->second.str(), "1") == 0) {
+	if (_stricmp(it->second.str(), "1") == 0) {
 		return TRUE;
 	}
 	return FALSE;
@@ -807,7 +821,7 @@ Bool LadderPreferences::loadProfile( Int profileID )
 			continue;
 
 		p.port = atoi( ptr + 1 );
-		for (Int i=0; i<strlen(ptr); ++i)
+		for (size_t i=0; i<strlen(ptr); ++i)
 		{
 			ladName.removeLastChar();
 		}
@@ -819,7 +833,7 @@ Bool LadderPreferences::loadProfile( Int profileID )
 			continue;
 
 		p.lastPlayDate = atoi( ptr + 1 );
-		for (i=0; i<strlen(ptr); ++i)
+		for (size_t i=0; i<strlen(ptr); ++i)
 		{
 			ladData.removeLastChar();
 		}
