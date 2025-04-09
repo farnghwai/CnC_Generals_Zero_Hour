@@ -67,6 +67,18 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	int safe_open(const char* filename, int oflag, int pmode = _S_IREAD | _S_IWRITE) {
+		int fd = -1;
+		if (_sopen_s(&fd, filename, oflag, _SH_DENYNO, pmode) != 0) {
+			return -1; // Return -1 on failure
+		}
+		return fd;
+	}
+
+	#define _open safe_open  // Macro replacement to redirect calls
+#endif
 //----------------------------------------------------------------------------
 //         Externals                                                     
 //----------------------------------------------------------------------------

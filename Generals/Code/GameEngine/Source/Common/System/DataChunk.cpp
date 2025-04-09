@@ -522,7 +522,7 @@ void DataChunkTableOfContents::write( OutputStream &s )
 	// output symbol table
 	for( m=this->m_list; m; m=m->next )
 	{
-		len = m->name.getLength();
+		len = static_cast<unsigned char>(m->name.getLength());
 		s.write( (char *)&len, sizeof(unsigned char) );
 		s.write( (char *)m->name.str(),  len);
 		s.write( (char *)&m->id, sizeof(UnsignedInt) );

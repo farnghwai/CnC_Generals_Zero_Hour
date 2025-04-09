@@ -847,7 +847,9 @@ void ReleaseCrashLocalized(const AsciiString& p, const AsciiString& m)
 	theReleaseCrashLogFile = fopen(curbuf, "w");
 	if (theReleaseCrashLogFile)
 	{
-		fprintf(theReleaseCrashLogFile, "Release Crash at %s; Reason %s\n", getCurrentTimeString(), mesg.str());
+		AsciiString mesgAscii;
+		mesgAscii.translate(mesg);
+		fprintf(theReleaseCrashLogFile, "Release Crash at %s; Reason %s\n", getCurrentTimeString(), mesgAscii.str());
 
 		const int STACKTRACE_SIZE	= 12;
 		const int STACKTRACE_SKIP = 6;
