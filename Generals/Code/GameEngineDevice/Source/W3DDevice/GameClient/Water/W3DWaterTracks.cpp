@@ -59,6 +59,28 @@
 #include "assetmgr.h"
 #include "WW3D2/DX8Wrapper.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define strcpy safe_strcpy
+	#define fopen safe_fopen
+#endif
+
 //#pragma optimize("", off)
 
 //#define ALLOW_WATER_TRACK_EDIT

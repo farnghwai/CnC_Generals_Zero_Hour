@@ -71,6 +71,22 @@
 
 #include "GameClient/GUICallbacks.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline struct tm* safe_localtime(const time_t* timer) {
+		static struct tm result;
+		if (localtime_s(&result, timer) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return &result;
+	}
+
+	#define localtime safe_localtime
+#endif
+
 //-----------------------------------------------------------------------------
 // DEFINES ////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

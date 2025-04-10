@@ -72,6 +72,29 @@
 #include "WW3D2/MeshMdl.h"
 #include "WW3D2/Scene.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+#endif
+
 //-----------------------------------------------------------------------------
 //         Private Data                                                     
 //-----------------------------------------------------------------------------
@@ -253,15 +276,15 @@ Bool W3DBridge::load(enum BodyDamageType curDamageState)
 	for (i=0; i<pObj->Get_Num_Sub_Objects(); i++) {
 		RenderObjClass *pSub = pObj->Get_Sub_Object(i);
 		Matrix3D mtx = pSub->Get_Transform();
-		if (0==strnicmp(left, pSub->Get_Name(), strlen(left))) {
+		if (0==_strnicmp(left, pSub->Get_Name(), strlen(left))) {
 			m_leftMtx = mtx;
 			strcpy(left, pSub->Get_Name());
 		}
-		if (0==strnicmp(section, pSub->Get_Name(), strlen(section))) {
+		if (0==_strnicmp(section, pSub->Get_Name(), strlen(section))) {
 			m_sectionMtx = mtx;
 			strcpy(section, pSub->Get_Name());
 		}
-		if (0==strnicmp(right, pSub->Get_Name(), strlen(right))) {
+		if (0==_strnicmp(right, pSub->Get_Name(), strlen(right))) {
 			m_rightMtx = mtx;
 			strcpy(right, pSub->Get_Name());
 		}

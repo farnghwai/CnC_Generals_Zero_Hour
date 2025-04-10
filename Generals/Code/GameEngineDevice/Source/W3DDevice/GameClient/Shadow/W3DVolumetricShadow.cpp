@@ -49,7 +49,8 @@
 #include "Lib/BaseType.h"
 #include "W3DDevice/GameClient/W3DGranny.h"
 #include "W3DDevice/GameClient/Heightmap.h"
-#include "D3dx8math.h"
+//#include "D3dx8math.h"
+#include <DirectXMath.h>
 #include "common/GlobalData.h"
 #include "common/drawmodule.h"
 #include "W3DDevice/GameClient/W3DVolumetricShadow.h"
@@ -63,6 +64,21 @@
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strncpy safe_strncpy
 #endif
 
 // Global Variables and Functions /////////////////////////////////////////////
@@ -109,8 +125,8 @@ struct SHADOW_STATIC_VOLUME_VERTEX	//vertex structure passed to D3D
 	#define SHADOW_DYNAMIC_VOLUME_FVF	D3DFVF_XYZ
 #endif
 
-LPDIRECT3DVERTEXBUFFER8 shadowVertexBufferD3D=NULL;		///<D3D vertex buffer
-LPDIRECT3DINDEXBUFFER8	shadowIndexBufferD3D=NULL;	///<D3D index buffer
+LPDIRECT3DVERTEXBUFFER9 shadowVertexBufferD3D=NULL;		///<D3D vertex buffer
+LPDIRECT3DINDEXBUFFER9	shadowIndexBufferD3D=NULL;	///<D3D index buffer
 int nShadowVertsInBuf=0;	//model vetices in vertex buffer
 int nShadowStartBatchVertex=0;
 int nShadowIndicesInBuf=0;	//model vetices in vertex buffer
@@ -127,7 +143,7 @@ static Real beX;
 static Real beY;
 static Real beZ;
 
-static LPDIRECT3DVERTEXBUFFER8 lastActiveVertexBuffer=NULL;
+static LPDIRECT3DVERTEXBUFFER9 lastActiveVertexBuffer=NULL;
 
 /** A simple structure to hold random geometry (vertices, polygons, etc.).  We'll use this
 * to store shadow volumes. */
@@ -1274,7 +1290,7 @@ void W3DVolumetricShadow::RenderMeshVolume(Int meshIndex, Int lightIndex, const 
 	Int numVerts, numPolys, numIndex;
 
 	//Get D3D Device used by W3D for quicker access.
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	if (!m_pDev)
 		return;
@@ -1336,7 +1352,7 @@ void W3DVolumetricShadow::RenderDynamicMeshVolume(Int meshIndex, Int lightIndex,
 	UnsignedShort *pvIndices;
 
 	//Get D3D Device used by W3D for quicker access.
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	if (!m_pDev)
 		return;
@@ -1474,7 +1490,7 @@ void W3DVolumetricShadow::RenderMeshVolumeBounds(Int meshIndex, Int lightIndex, 
 	static Vector3 verts[8];
 
 	//Get D3D Device used by W3D for quicker access.
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	if (!m_pDev)
 		return;
@@ -3239,7 +3255,7 @@ void W3DVolumetricShadow::resetSilhouette( Int meshIndex )
 // ============================================================================
 void W3DVolumetricShadowManager::renderStencilShadows( void )
 {
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	if (!m_pDev)
 		return;	//need device to render anything.
@@ -3327,7 +3343,7 @@ void W3DVolumetricShadowManager::renderShadows( Bool forceStencilFill )
 	if (m_shadowList && TheGlobalData->m_useShadowVolumes)
 	{
 
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 		if (!m_pDev)
 			return;	//need device to render anything.
@@ -3645,7 +3661,7 @@ Bool W3DVolumetricShadowManager::ReAcquireResources(void)
 {
 	ReleaseResources();
 
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	DEBUG_ASSERTCRASH(m_pDev, ("Trying to ReAquireResources on W3DVolumetricShadowManager without device"));
 

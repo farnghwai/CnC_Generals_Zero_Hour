@@ -53,6 +53,22 @@
 //#pragma message("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+#endif
+
 //Since there can't be more than 1 mouse, might as well keep these static.
 static CriticalSectionClass mutex;
 static Bool isThread;
@@ -113,7 +129,7 @@ W3DMouse::W3DMouse( void )
 
 W3DMouse::~W3DMouse( void )
 {
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	if (m_pDev)
 	{
@@ -248,7 +264,7 @@ void W3DMouse::freeD3DAssets(void)
 		REF_PTR_RELEASE(m_currentD3DSurface[i]);
 
 	//free textures.
-	for (i=0; i<NUM_MOUSE_CURSORS; i++)
+	for (Int i=0; i<NUM_MOUSE_CURSORS; i++)
 	{
 		for (Int j=0; j<MAX_2D_CURSOR_ANIM_FRAMES; j++)
 			REF_PTR_RELEASE(cursorTextures[i][j]);
@@ -391,7 +407,7 @@ void W3DMouse::setCursor( MouseCursor cursor )
 	{
 		SetCursor(NULL);	//Kill Windows Cursor
 
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 		Bool doImageChange=FALSE;
 
 		if (m_pDev != NULL)
@@ -487,7 +503,7 @@ void W3DMouse::draw(void)
 	{
 		//called from upate thread or rendering loop.  Tells D3D where
 		//to draw the mouse cursor.
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 		if (m_pDev)
 		{	m_pDev->ShowCursor(TRUE);	//Enable DX8 cursor
 

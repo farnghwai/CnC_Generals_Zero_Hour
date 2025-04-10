@@ -99,8 +99,8 @@ public:
 	// Support routines for filter methods.
 	static Bool canRenderToTexture(void) { return (m_oldRenderSurface && m_newRenderSurface);}
 	static void startRenderToTexture(void); ///< Sets render target to texture.
-	static IDirect3DTexture8 * endRenderToTexture(void); ///< Ends render to texture, & returns texture.
-	static IDirect3DTexture8 * getRenderTexture(void);	///< returns last used render target texture
+	static IDirect3DTexture9 * endRenderToTexture(void); ///< Ends render to texture, & returns texture.
+	static IDirect3DTexture9 * getRenderTexture(void);	///< returns last used render target texture
 	static void drawViewport(Int color);	///<draws 2 triangles covering the current tactical viewport
 
 
@@ -113,10 +113,10 @@ protected:
 	static FilterTypes m_currentFilter; ///< Last filter that was set.
 	// Info for a render to texture surface for special effects.
 	static Bool m_renderingToTexture;
-	static IDirect3DSurface8 *m_oldRenderSurface;	///<previous render target
-	static IDirect3DTexture8 *m_renderTexture;		///<texture into which rendering will be redirected.
-	static IDirect3DSurface8 *m_newRenderSurface;	///<new render target inside m_renderTexture
-	static IDirect3DSurface8 *m_oldDepthSurface;	///<previous depth buffer surface
+	static IDirect3DSurface9 *m_oldRenderSurface;	///<previous render target
+	static IDirect3DTexture9 *m_renderTexture;		///<texture into which rendering will be redirected.
+	static IDirect3DSurface9 *m_newRenderSurface;	///<new render target inside m_renderTexture
+	static IDirect3DSurface9 *m_oldDepthSurface;	///<previous depth buffer surface
 
 
 };

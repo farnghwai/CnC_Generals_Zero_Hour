@@ -935,7 +935,7 @@ WWINLINE void DX8Wrapper::Clamp_Color(Vector4& color)
 	//	cmovnb edi,edx
 	//	mov dword ptr[esi+12],edi
 	//}
-	const float one = 1.0f;
+	//const float one = 1.0f;
 
 	// Clamp each component to be at least 1.0 if it's non-negative
 	color.X = fmaxf(0.0f, fminf(color.X, 1.0f));

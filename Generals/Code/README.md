@@ -14,7 +14,7 @@ DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Done | See note 2
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
 GameEngine | GameEngine\GameEngine.vcxproj | Done* | See note 7
-GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Not Started
+GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Work-in-Progress
 GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Halt* | Reference to WW3D2Debug.lib
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
 launcher | Tools\Launcher\launcher.vcxproj | Not Started

@@ -115,12 +115,13 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>
+      </MinimalRebuild>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>..\Libraries\Include\MSS;../Libraries/Source/Benchmark;..\Main;Include;..\GameEngine\Include;..\Libraries\Include;..\Libraries\Source\WWVegas;..\Libraries\Source\WWVegas\WW3D2;..\Libraries\Source\WWVegas\WWLib;..\Libraries\Source\WWVegas\WWDebug;..\Libraries\Source\WWVegas\WWMath;..\Libraries\Source\WWVegas\WWSaveLoad;..\Libraries\Include\Granny;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_LIB;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -279,6 +280,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\invmonochrome.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\invmonochrome.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\monochrome.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\monochrome.pso 
@@ -290,6 +292,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\monochrome.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\monochrome.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\motionblur.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\motionblur.pso 
@@ -301,6 +304,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\motionblur.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\motionblur.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\MotionBlur.nvv">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\MotionBlur.vso</Command>
@@ -310,6 +314,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\Run\Shaders\MotionBlur.vso;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\MotionBlur.vso</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\MotionBlur.vso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\roadnoise2.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\roadnoise2.pso 
@@ -321,6 +326,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\roadnoise2.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\roadnoise2.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\terrain.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrain.pso 
@@ -332,6 +338,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrain.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\terrain.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\terrainnoise.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrainnoise.pso 
@@ -343,6 +350,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrainnoise.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\terrainnoise.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Shaders\terrainnoise2.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrainnoise2.pso 
@@ -354,6 +362,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\terrainnoise2.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\terrainnoise2.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Water\wave.nvp">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\wave.pso</Command>
@@ -364,6 +373,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\wave.pso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\wave.pso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
     <CustomBuild Include="Source\W3DDevice\GameClient\Water\wave.nvv">
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\wave.vso</Command>
@@ -374,6 +384,7 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">..\tools\nvasm\nvasm -d %(FullPath) $(SolutionDir)..\Run\Shaders\wave.vso 
 if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">$(SolutionDir)..\Run\Shaders\wave.vso;%(Outputs)</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -466,6 +477,44 @@ if ERRORLEVEL 7 ECHO Warning: Output File Read Only! </Command>
       <Project>{469c65d6-df25-48c9-9bc2-3c8bd45ba407}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\invmonochrome.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">2.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\Run\Shaders\invmonochrome.pso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\monochrome.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </ExcludedFromBuild>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)..\Run\Shaders\monochrome.pso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">2.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\motionblur_p.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\MotionBlur_v.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\roadnoise2.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrain.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrainnoise.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrainnoise2.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Water\wave_p.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Water\wave_v.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

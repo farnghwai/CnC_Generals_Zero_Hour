@@ -58,12 +58,26 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define fopen safe_fopen
+#endif
 
 #ifdef _DEBUG
 #include "W3DDevice/GameClient/HeightMap.h"
 #include "WW3D2/DX8IndexBuffer.h"
 #include "WW3D2/DX8VertexBuffer.h"
 #include "WW3D2/VertMaterial.h"
+
 class DebugHintObject : public RenderObjClass
 {	
 

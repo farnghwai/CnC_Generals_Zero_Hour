@@ -51,6 +51,46 @@
 
 #include <io.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+	#define strncpy safe_strncpy
+	#define strcat safe_strcat
+#endif
+
 //-------------------------------------------------------------------------------------------------
 /** Game file access.  At present this allows us to access test assets, assets from
 	* legacy GDI assets, and the current flat directory access for textures, models etc */
@@ -160,11 +200,11 @@ char const * GameFileClass::Set_Name( char const *filename )
 
 	// test the extension to recognize a few key file types
 	GameFileType fileType = FILE_TYPE_UNKNOWN;
-	if( stricmp( extension, ".w3d" ) == 0 )
+	if( _stricmp( extension, ".w3d" ) == 0 )
 		fileType = FILE_TYPE_W3D;
-	else if( stricmp( extension, ".tga" ) == 0 )
+	else if( _stricmp( extension, ".tga" ) == 0 )
 		fileType = FILE_TYPE_TGA;
-	else if( stricmp( extension, ".dds" ) == 0 )
+	else if( _stricmp( extension, ".dds" ) == 0 )
 		fileType = FILE_TYPE_DDS;
 
 	// all .w3d files are in W3D_DIR_PATH, all .tga files are in TGA_DIR_PATH

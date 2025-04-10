@@ -73,6 +73,30 @@
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+#endif
+
 //-------------------------------------------------------------------------------------------------
 static inline Bool isValidTimeToCalcLogicStuff()
 {
@@ -1256,7 +1280,7 @@ static void parseShowHideSubObject(INI* ini, void *instance, void *store, const 
 		Bool found = false;
 		for (std::vector<ModelConditionInfo::HideShowSubObjInfo>::iterator it = vec->begin(); it != vec->end(); ++it)
 		{
-			if (stricmp(it->subObjName.str(), subObjName.str()) == 0)
+			if (_stricmp(it->subObjName.str(), subObjName.str()) == 0)
 			{
 				it->hide = (userData != NULL);
 				found = true;
@@ -1283,7 +1307,7 @@ void W3DModelDraw::showSubObject( const AsciiString& name, Bool show )
 		Bool found = false;
 		for( std::vector<ModelConditionInfo::HideShowSubObjInfo>::iterator it = m_subObjectVec.begin(); it != m_subObjectVec.end(); ++it )
 		{
-			if( stricmp( it->subObjName.str(), name.str() ) == 0 )
+			if( _stricmp( it->subObjName.str(), name.str() ) == 0 )
 			{
 				it->hide = !show;
 				found = true;
@@ -3428,7 +3452,7 @@ Int W3DModelDraw::getPristineBonePositionsForConditionState(
 	
 	if (positions && transforms)
 	{
-		for (i = 0; i < posCount; ++i)
+		for (Int i = 0; i < posCount; ++i)
 		{
 			Vector3 pos = transforms[i].Get_Translation();
 			positions[i].x = pos.X;
@@ -3526,7 +3550,7 @@ Int W3DModelDraw::getCurrentBonePositions(
 	
 	if (positions && transforms)
 	{
-		for (i = 0; i < posCount; ++i)
+		for (Int i = 0; i < posCount; ++i)
 		{
 			Vector3 pos = transforms[i].Get_Translation();
 			positions[i].x = pos.X;
@@ -4194,7 +4218,7 @@ void W3DModelDrawModuleData::xfer( Xfer *x )
 				x->xferInt(&(info->m_turrets[i].m_turretAngleBone));
 				x->xferInt(&(info->m_turrets[i].m_turretPitchBone));
 			}
-			for (i=0; i<WEAPONSLOT_COUNT; ++i)
+			for (Int i=0; i<WEAPONSLOT_COUNT; ++i)
 			{
 				for (ModelConditionInfo::WeaponBarrelInfoVec::iterator wit = info->m_weaponBarrelInfoVec[i].begin(); wit != info->m_weaponBarrelInfoVec[i].end(); ++wit)
 				{

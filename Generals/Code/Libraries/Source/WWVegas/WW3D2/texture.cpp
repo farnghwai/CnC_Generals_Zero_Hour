@@ -37,7 +37,7 @@
 
 #include "texture.h"
 
-#include <d3d11.h>
+#include <d3d9.h>
 #include <stdio.h>
 #include "dx8wrapper.h"
 #include "targa.h"

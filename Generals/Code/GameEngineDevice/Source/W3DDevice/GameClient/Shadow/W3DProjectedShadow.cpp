@@ -46,7 +46,8 @@
 #include "Lib/BaseType.h"
 #include "W3DDevice/GameClient/W3DGranny.h"
 #include "W3DDevice/GameClient/Heightmap.h"
-#include "D3dx8math.h"
+//#include "D3dx8math.h"
+#include <DirectXMath.h>
 #include "common/GlobalData.h"
 #include "W3DDevice/GameClient/W3DProjectedShadow.h"
 #include "WW3D2/statistics.h"
@@ -63,6 +64,29 @@
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define strncpy safe_strncpy
 #endif
 
 /** @todo: We're going to have a pool of a couple rendertargets to use
@@ -85,8 +109,8 @@ W3DProjectedShadowManager *TheW3DProjectedShadowManager=NULL;	//global singleton
 ProjectedShadowManager	*TheProjectedShadowManager;				//global singleton with simpler interface.
 extern const FrustumClass *shadowCameraFrustum;	//defined in W3DShadow.
 ///@todo: Externs from volumetric shadow renderer - these need to be moved into W3DBufferManager
-extern LPDIRECT3DVERTEXBUFFER8 shadowVertexBufferD3D;		///<D3D vertex buffer
-extern LPDIRECT3DINDEXBUFFER8	shadowIndexBufferD3D;	///<D3D index buffer
+extern LPDIRECT3DVERTEXBUFFER9 shadowVertexBufferD3D;		///<D3D vertex buffer
+extern LPDIRECT3DINDEXBUFFER9	shadowIndexBufferD3D;	///<D3D index buffer
 extern int nShadowVertsInBuf;	//model vetices in vertex buffer
 extern int nShadowStartBatchVertex;
 extern int nShadowIndicesInBuf;	//model vetices in vertex buffer
@@ -110,8 +134,8 @@ struct SHADOW_DECAL_VERTEX	//vertex structure passed to D3D
 
 #define SHADOW_DECAL_FVF	D3DFVF_XYZ|D3DFVF_TEX1|D3DFVF_DIFFUSE
 
-LPDIRECT3DVERTEXBUFFER8 shadowDecalVertexBufferD3D=NULL;		///<D3D vertex buffer
-LPDIRECT3DINDEXBUFFER8	shadowDecalIndexBufferD3D=NULL;	///<D3D index buffer
+LPDIRECT3DVERTEXBUFFER9 shadowDecalVertexBufferD3D=NULL;		///<D3D vertex buffer
+LPDIRECT3DINDEXBUFFER9	shadowDecalIndexBufferD3D=NULL;	///<D3D index buffer
 int nShadowDecalVertsInBuf=0;	//model vetices in vertex buffer
 int nShadowDecalStartBatchVertex=0;
 int nShadowDecalIndicesInBuf=0;	//model vetices in vertex buffer
@@ -312,7 +336,7 @@ Bool W3DProjectedShadowManager::ReAcquireResources(void)
 			m_dynamicRenderTarget=DX8Wrapper::Create_Render_Target (DEFAULT_RENDER_TARGET_WIDTH, DEFAULT_RENDER_TARGET_HEIGHT);
 	}
 
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 	DEBUG_ASSERTCRASH(m_pDev, ("Trying to ReAquireResources on W3DProjectedShadowManager without device"));
 	DEBUG_ASSERTCRASH(shadowDecalIndexBufferD3D == NULL && shadowDecalIndexBufferD3D == NULL, ("ReAquireResources not released in W3DProjectedShadowManager"));
@@ -410,7 +434,7 @@ Int W3DProjectedShadowManager::renderProjectedTerrainShadow(W3DProjectedShadow *
 		Real mapScaleInv=1.0f/MAP_XY_FACTOR;
 		SHADOW_VOLUME_VERTEX* pvVertices;
 		UnsignedShort *pvIndices;
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 		if (!m_pDev)	return 0;
 
@@ -724,7 +748,7 @@ void W3DProjectedShadowManager::flushDecals(W3DShadowTexture *texture, ShadowTyp
 		return;
 	}
 
-	LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+	LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 	if (!m_pDev)	return;	//no D3D Device to render
 
 	VertexMaterialClass *vmat=VertexMaterialClass::Get_Preset(VertexMaterialClass::PRELIT_DIFFUSE);
@@ -858,7 +882,7 @@ void W3DProjectedShadowManager::queueDecal(W3DProjectedShadow *shadow)
 
 	if (TheTerrainRenderObject)
 	{
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 		if (!m_pDev)	return;	//no D3D Device to render
 
@@ -1189,7 +1213,7 @@ void W3DProjectedShadowManager::queueSimpleDecal(W3DProjectedShadow *shadow)
 
 	if (TheTerrainRenderObject)
 	{
-		LPDIRECT3DDEVICE8 m_pDev=DX8Wrapper::_Get_D3D_Device8();
+		LPDIRECT3DDEVICE9 m_pDev=DX8Wrapper::_Get_D3D_Device8();
 
 		if (!m_pDev)	return;	//no D3D Device to render
 

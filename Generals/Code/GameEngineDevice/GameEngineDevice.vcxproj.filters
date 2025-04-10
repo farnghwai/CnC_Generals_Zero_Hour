@@ -662,4 +662,36 @@
       <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\invmonochrome.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\monochrome.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\motionblur_p.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\MotionBlur_v.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\roadnoise2.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrain.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrainnoise.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Shaders\terrainnoise2.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Water\wave_p.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Water</Filter>
+    </FxCompile>
+    <FxCompile Include="Source\W3DDevice\GameClient\Water\wave_v.hlsl">
+      <Filter>Source\W3DDevice\GameClient %28W3DDevice%29\Water</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>
