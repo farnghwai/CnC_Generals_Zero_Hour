@@ -85,7 +85,8 @@ public:
 	///Return last activated shader.
 	static inline ShaderTypes getCurrentShader(void) {return m_currentShader;}
 	/// Loads a .vso file and creates a vertex shader for it
-	static HRESULT LoadAndCreateD3DShader(char* strFilePath, const DWORD* pDeclaration, DWORD Usage, Bool ShaderType, DWORD* pHandle);
+	static HRESULT LoadAndCreatePixelShader(char* strFilePath, IDirect3DPixelShader9** ppPixelShader);
+	static HRESULT LoadAndCreateVertexShader(char* strFilePath, IDirect3DVertexShader9** ppVertexShader);
 
 	static Bool testMinimumRequirements(ChipsetType *videoChipType, CpuType *cpuType, Int *cpuFreq, Int *numRAM, Real *intBenchIndex, Real *floatBenchIndex, Real *memBenchIndex);
 	static StaticGameLODLevel getGPUPerformanceIndex(void);
@@ -113,6 +114,7 @@ protected:
 	static FilterTypes m_currentFilter; ///< Last filter that was set.
 	// Info for a render to texture surface for special effects.
 	static Bool m_renderingToTexture;
+	static DWORD renderTargetIndex; //[DX9]
 	static IDirect3DSurface9 *m_oldRenderSurface;	///<previous render target
 	static IDirect3DTexture9 *m_renderTexture;		///<texture into which rendering will be redirected.
 	static IDirect3DSurface9 *m_newRenderSurface;	///<new render target inside m_renderTexture
@@ -175,7 +177,7 @@ protected:
 ///converts viewport to black & white.
 class ScreenBWFilter : public W3DFilterInterface
 {
-	DWORD	m_dwBWPixelShader;		///<D3D handle to pixel shader which tints texture to black & white.
+	IDirect3DPixelShader9*	m_dwBWPixelShader;		///<D3D handle to pixel shader which tints texture to black & white.
 public:
 	virtual Int init(void);			///<perform any one time initialization and validation
 	virtual Int shutdown(void);		///<release resources used by shader

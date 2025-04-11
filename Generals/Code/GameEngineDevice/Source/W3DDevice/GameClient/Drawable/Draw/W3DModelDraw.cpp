@@ -1088,7 +1088,7 @@ void W3DModelDrawModuleData::validateStuffForTimeAndWeather(const Drawable* draw
 
 		Bool a = false;
 		Bool b = false;
-		for (c_it = m_conditionStates.begin(); c_it != m_conditionStates.end(); ++c_it)
+		for (ModelConditionVector::iterator c_it = m_conditionStates.begin(); c_it != m_conditionStates.end(); ++c_it)
 		{
 
 			if (!a && c_it->m_transitionKey == src && c_it->matchesMode(night, snowy))
@@ -3294,7 +3294,7 @@ Bool W3DModelDraw::getProjectileLaunchOffset(
 	}
 	else
 	{
-		if (specificBarrelToUse < 0 || specificBarrelToUse >= wbvec.size())
+		if (specificBarrelToUse < 0 || (size_t)specificBarrelToUse >= wbvec.size())
 			specificBarrelToUse = 0;
 
 		if (launchPos)

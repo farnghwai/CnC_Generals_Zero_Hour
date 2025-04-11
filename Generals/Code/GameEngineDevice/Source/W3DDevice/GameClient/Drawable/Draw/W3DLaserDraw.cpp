@@ -153,7 +153,7 @@ W3DLaserDraw::W3DLaserDraw( Thing *thing, const ModuleData* moduleData ) :
 	//Allocate an array of lines equal to the number of beams * segments
 	m_line3D = NEW SegmentedLineClass *[ data->m_numBeams * data->m_segments ];
 
-	for( int segment = 0; segment < data->m_segments; segment++ )
+	for( UnsignedInt segment = 0; segment < data->m_segments; segment++ )
 	{
 		//We don't care about segment positioning yet until we actually set the position
 		

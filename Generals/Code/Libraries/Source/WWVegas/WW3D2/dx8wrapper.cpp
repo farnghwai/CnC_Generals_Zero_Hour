@@ -2757,7 +2757,7 @@ HRESULT DX8Wrapper::D3D9LoadSurfaceFromSurface(
 // Implements exact 2×2 box filter averaging when dimensions are halved
 // Replacement for legacy D3DXFilterTexture with D3DX_FILTER_BOX
 // Implements 2×2 box filter averaging for DirectX 9 (which lacks D3DTEXF_BOX)
-HRESULT CustomFilterTexture(
+HRESULT DX8Wrapper::CustomFilterTexture(
 	LPDIRECT3DTEXTURE9 pTexture,    // [in] Texture to be filtered
 	UINT iMipLevels = 0             // [in] Number of mip levels to generate, 0 for all levels
 )

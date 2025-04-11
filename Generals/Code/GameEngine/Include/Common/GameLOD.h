@@ -219,7 +219,7 @@ protected:
 	Real m_floatBenchIndex;
 	Real m_memBenchIndex;
 	Real m_compositeBenchIndex;
-	Real m_currentTextureReduction;
+	Int m_currentTextureReduction;
 	Int m_reallyLowMHz;
 };
 

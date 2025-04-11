@@ -392,7 +392,7 @@ void RTS3DScene::Visibility_Check(CameraClass * camera)
 
 	Int currentFrame=0;
 	if (TheGameLogic) currentFrame = TheGameLogic->getFrame();
-	if (currentFrame <= TheGlobalData->m_defaultOcclusionDelay)
+	if (currentFrame >= 0 && (UnsignedInt)currentFrame <= TheGlobalData->m_defaultOcclusionDelay)
 		currentFrame = TheGlobalData->m_defaultOcclusionDelay+1;	//make sure occlusion is enabled when game starts (frame 0).
 
 
@@ -474,7 +474,7 @@ void RTS3DScene::Visibility_Check(CameraClass * camera)
 							else
 							if (draw->getObject() &&
 									(draw->isKindOf(KINDOF_SCORE) || draw->isKindOf(KINDOF_SCORE_CREATE) || draw->isKindOf(KINDOF_SCORE_DESTROY) || draw->isKindOf(KINDOF_MP_COUNT_FOR_VICTORY)) &&
-									(draw->getObject()->getSafeOcclusionFrame()) <= currentFrame && m_numPotentialOccludees < TheGlobalData->m_maxVisibleOccludeeObjects)
+									(currentFrame >= 0 && (draw->getObject()->getSafeOcclusionFrame()) <= (UnsignedInt)currentFrame) && m_numPotentialOccludees < TheGlobalData->m_maxVisibleOccludeeObjects)
 							{	//object which could be occluded but still needs to be visible.
 								m_potentialOccludees[m_numPotentialOccludees++]=robj;
 								drawInfo->m_flags |= DrawableInfo::ERF_POTENTIAL_OCCLUDEE;
@@ -908,6 +908,9 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 	//Override the behind building selection if it's not available on current hardware (needs stencil).
 	TheWritableGlobalData->m_enableBehindBuildingMarkers = TheWritableGlobalData->m_enableBehindBuildingMarkers && DX8Wrapper::Has_Stencil();
 
+	float depthBias0 = -0.000005f * 0;
+	float depthBias7 = -0.000005f * 7;
+
 	if (Get_Extra_Pass_Polygon_Mode() == EXTRA_PASS_DISABLE)
 	{
 		if (m_customPassMode == SCENE_PASS_DEFAULT)
@@ -924,7 +927,8 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 			//wireframe should be visible.
 			///@todo: Clearing to black may not be needed if the scene already did the clear.
 			DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE,D3DCOLORWRITEENABLE_ALPHA);
-			DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias0);
 			//Since all objects will be rendered with same material, disable resetting until all are done.
 			m_maskMaterialPass->setAllowUninstall(FALSE);
 
@@ -948,8 +952,9 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 			///@todo: Clearing to black may not be needed if the scene already did the clear.
 			DX8Wrapper::Clear(true, false, Vector3(0.0f,0.0f,0.0f),1.0f);	// Clear color but not z
 			DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE,D3DCOLORWRITEENABLE_ALPHA);
-			DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
-			
+			//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias0);
+
 			//We're only filling the z-buffer so ignore normal textures and state changes to speed things up.
 			m_customPassMode = SCENE_PASS_ALPHA_MASK;
 			m_maskMaterialPass->setAllowUninstall(FALSE);
@@ -991,7 +996,9 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 
 			//Disable writes to color buffer to save memory bandwidth - we only need Z.
 			DX8Wrapper::Set_DX8_Render_State(D3DRS_COLORWRITEENABLE,0);
-			DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias0);
+
 			Customized_Render(rinfo);
 			Flush(rinfo);
 			//Re-enable writes to color buffer.
@@ -1001,7 +1008,8 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 			case EXTRA_PASS_LINE:
 				WW3D::Enable_Texturing(false);
 				DX8Wrapper::Set_DX8_Render_State(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
-				DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 7);
+				//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 7);
+				DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias7);
 				Customized_Render(rinfo);
 				break;
 			case EXTRA_PASS_CLEAR_LINE:
@@ -1009,13 +1017,15 @@ void RTS3DScene::Render(RenderInfoClass & rinfo)
 				WW3D::Enable_Texturing(false);
 				WW3D::Enable_Coloring(0xff008000);
 				DX8Wrapper::Set_DX8_Render_State(D3DRS_FILLMODE,D3DFILL_WIREFRAME);
-				DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 7);
+				//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 7);
+				DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias7);
 				Customized_Render(rinfo);
 				break;
 			}
 			Flush(rinfo);
 			DX8Wrapper::Set_DX8_Render_State(D3DRS_FILLMODE,D3DFILL_SOLID);
-			DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			//DX8Wrapper::Set_DX8_Render_State (D3DRS_ZBIAS, 0);
+			DX8Wrapper::Set_DX8_Render_State(D3DRS_DEPTHBIAS, *(DWORD*)&depthBias0);
 			WW3D::Enable_Texturing(old_enable);
 			WW3D::Enable_Coloring(0);
 			ShaderClass::Invalidate();
@@ -1213,7 +1223,8 @@ void renderStenciledPlayerColor( UnsignedInt color, UnsignedInt stencilRef, Bool
 
 	//draw polygons like this is very inefficient but for only 2 triangles, it's
 	//not worth bothering with index/vertex buffers.
-	m_pDev->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+	//m_pDev->SetVertexShader(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
+	m_pDev->SetFVF(D3DFVF_XYZRHW | D3DFVF_DIFFUSE);
 
 	// Set stencil states
 	DX8Wrapper::Set_DX8_Render_State(D3DRS_STENCILENABLE, TRUE );
