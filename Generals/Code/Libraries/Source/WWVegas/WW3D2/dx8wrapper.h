@@ -381,7 +381,7 @@ public:
 	// [DX9]
 	static HRESULT CustomFilterTexture(
 		LPDIRECT3DTEXTURE9 pTexture,    // [in] Texture to be filtered
-		UINT iMipLevels = 0             // [in] Number of mip levels to generate, 0 for all levels
+		UINT iMipLevels             // [in] Number of mip levels to generate, 0 for all levels
 	);
 	/*
 	** Statistics

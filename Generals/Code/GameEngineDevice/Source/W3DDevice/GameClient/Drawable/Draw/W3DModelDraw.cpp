@@ -3633,7 +3633,7 @@ Bool W3DModelDraw::handleWeaponFireFX(WeaponSlotType wslot, Int specificBarrelTo
 	
 	Bool handled = false;
 
-	if (specificBarrelToUse < 0 || specificBarrelToUse > wbvec.size())
+	if (specificBarrelToUse < 0 || (size_t)specificBarrelToUse > wbvec.size())
 		specificBarrelToUse = 0;
 
 	const ModelConditionInfo::WeaponBarrelInfo& info = wbvec[specificBarrelToUse];
@@ -3866,10 +3866,10 @@ void W3DModelDraw::doHideShowProjectileObjects( UnsignedInt showCount, UnsignedI
 	ModelConditionInfo::HideShowSubObjInfo oneEntry;
 	if (m_curState->m_weaponProjectileHideShowName[slot].isEmpty())
 	{
-		for( Int projectileIndex = 0; projectileIndex < maxCount; projectileIndex++ )
+		for( UnsignedInt projectileIndex = 0; projectileIndex < maxCount; projectileIndex++ )
 		{
 			oneEntry.subObjName.format("%s%02d", m_curState->m_weaponProjectileLaunchBoneName[slot].str(), (projectileIndex + 1));
-			oneEntry.hide = (projectileIndex < hideCount);
+			oneEntry.hide = (hideCount >= 0) && (projectileIndex < (UnsignedInt)hideCount);
 			showHideVector.push_back( oneEntry );
 		}
 	}
@@ -3949,14 +3949,14 @@ void W3DModelDraw::xfer( Xfer *xfer )
 	DrawModule::xfer( xfer );
 
 	// weapon recoil info vectors
-	UnsignedByte recoilInfoCount;
+	UnsignedInt recoilInfoCount;
 	WeaponRecoilInfo weaponRecoilInfo;
 	for( Int i = 0; i < WEAPONSLOT_COUNT; ++i )
 	{
 
 		// count of data here
 		recoilInfoCount = m_weaponRecoilInfoVec[ i ].size();
-		xfer->xferUnsignedByte( &recoilInfoCount );
+		xfer->xferUnsignedInt( &recoilInfoCount );
 		if( xfer->getXferMode() == XFER_SAVE )
 		{
 
@@ -3986,7 +3986,7 @@ void W3DModelDraw::xfer( Xfer *xfer )
 			m_weaponRecoilInfoVec[ i ].clear();
 
 			// read each data item
-			for( Int j = 0; j < recoilInfoCount; ++j )
+			for( UnsignedInt j = 0; j < recoilInfoCount; ++j )
 			{
 
 				// read state
@@ -4008,8 +4008,8 @@ void W3DModelDraw::xfer( Xfer *xfer )
 	}  // end for, i
 
 	// sub object vector
-	UnsignedByte subObjectCount = m_subObjectVec.size();
-	xfer->xferUnsignedByte( &subObjectCount );
+	UnsignedInt subObjectCount = m_subObjectVec.size();
+	xfer->xferUnsignedInt( &subObjectCount );
 	ModelConditionInfo::HideShowSubObjInfo hideShowSubObjInfo;
 	if( xfer->getXferMode() == XFER_SAVE )
 	{

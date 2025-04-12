@@ -1,39 +1,72 @@
-;
-;	Command & Conquer Generals(tm)
-;	Copyright 2025 Electronic Arts Inc.
-;
-;	This program is free software: you can redistribute it and/or modify
-;	it under the terms of the GNU General Public License as published by
-;	the Free Software Foundation, either version 3 of the License, or
-;	(at your option) any later version.
-;
-;	This program is distributed in the hope that it will be useful,
-;	but WITHOUT ANY WARRANTY; without even the implied warranty of
-;	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;	GNU General Public License for more details.
-;
-;	You should have received a copy of the GNU General Public License
-;	along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;
+//-----------------------------------------------------------------------------
+// terrainnoise2.hlsl - Migrated to PS 2.0 HLSL using PS_OUTPUT struct
+//-----------------------------------------------------------------------------
 
-;////////////////////////////////////////////////////////////////////////////////
-;//																																						 //
-;//  (c) 2001-2003 Electronic Arts Inc.																				 //
-;//																																						 //
-;////////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+// Sampler Declarations
+//-----------------------------------------------------------------------------
+sampler2D Tex0 : register(s0); // Base layer 1
+sampler2D Tex1 : register(s1); // Base layer 2
+sampler2D Tex2 : register(s2); // Modulator 1
+sampler2D Tex3 : register(s3); // Modulator 2
 
-; Terrain pixel shader
-; Created:   Mark Wilczynski, August 2001
+//-----------------------------------------------------------------------------
+// Input Structure (from Vertex Shader)
+//-----------------------------------------------------------------------------
+struct PS_INPUT
+{
+    float4 Color : COLOR0; // Interpolated vertex color (v0)
+    float2 TexCoord : TEXCOORD0; // Texture coordinates
+};
 
-; Declare pixel shader version 1.1
-ps.1.1
+//-----------------------------------------------------------------------------
+// Output Structure (to Render Target)
+//-----------------------------------------------------------------------------
+// PS_OUTPUT is a user-defined name, not a keyword.Color
+// It must contain at least one member with a COLOR semantic
+// to write to the render target.
+struct PS_OUTPUT
+{
+    float4 Color : COLOR0; // Output color for the pixel
+    // You could add more outputs here for Multiple Render Targets (MRTs)
+    // e.g., float4 NormalData : COLOR1;
+};
 
-tex t0	; get texture 0
-tex t1	; get texture 1
-tex	t2	; get texture 2
-tex t3	; get texture 3
+//-----------------------------------------------------------------------------
+// Pixel Shader Main Function (PS 2.0)
+//-----------------------------------------------------------------------------
+// The main function now returns the PS_OUTPUT structure
+PS_OUTPUT main(PS_INPUT input)
+{
+    // Declare the output structure variable
+    PS_OUTPUT output;
 
-lrp r0, v0.a, t1, t0	;alpha blend between 2 textures
-mul r0, r0, v0			;apply diffuse lighting
-mul r0, r0, t2			;modulate with texture 2
-mul r0, r0, t3			;modulate with texture 3
+    // Sample the textures
+    float4 texColor0 = tex2D(Tex0, input.TexCoord);
+    float4 texColor1 = tex2D(Tex1, input.TexCoord);
+    float4 texColor2 = tex2D(Tex2, input.TexCoord);
+    float4 texColor3 = tex2D(Tex3, input.TexCoord);
+
+    // Perform calculations
+    // lrp r0, v0.a, t1, t0 ; alpha blend between 2 textures
+    // lerp(a, b, s) = a + s*(b-a) = (1-s)*a + s*b
+    // PS 1.1 lrp dst, factor, src1, src0 calculates (factor * src1) + ((1 - factor) * src0)
+    // So, lerp(texColor0, texColor1, input.Color.a) matches the original logic.    
+    float4 result = lerp(texColor0, texColor1, input.Color.a); // Blend base layers
+    
+    // mul r0, r0, v0 ; apply diffuse lighting (and potentially tint)
+    result = result * input.Color; // Apply lighting/tint
+    
+    // mul r0, r0, t2 ; modulate with texture 2    
+    result = result * texColor2; // Modulate
+    
+    // mul r0, r0, t3 ; modulate with texture 3    
+    result = result * texColor3; // Modulate
+
+    // Assign the final calculated color to the output structure member
+    output.Color = result;
+
+    // Return the entire output structure
+    return output;
+}
+

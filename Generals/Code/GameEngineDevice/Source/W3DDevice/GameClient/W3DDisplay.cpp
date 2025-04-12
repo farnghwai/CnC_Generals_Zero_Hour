@@ -114,6 +114,45 @@ static void drawFramerateBar(void);
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
 #endif
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+	#define fopen safe_fopen
+#endif
+
 // DEFINE AND ENUMS ///////////////////////////////////////////////////////////
 #define W3D_DISPLAY_DEFAULT_BIT_DEPTH 32
 
@@ -124,6 +163,12 @@ static Real theLightXOffset = 0.1f;
 static Real theLightYOffset = 0.07f;
 static Int theFlashCount = 0;
 #endif
+
+static void StatDebugDisplayWrapper(DebugDisplayInterface* dd, void* userData)
+{
+	// Call the original function, passing NULL for the FILE* argument
+	StatDebugDisplay(dd, userData, NULL);
+}
 
 //*****************************************************************************************
 //*****************************************************************************************
@@ -493,6 +538,7 @@ void Reset_D3D_Device(bool active)
 			WW3D::Set_Render_Device( WW3D::Get_Render_Device(),TheDisplay->getWidth(),TheDisplay->getHeight(),TheDisplay->getBitDepth(),TheDisplay->getWindowed(),true, true);
 			OSVERSIONINFO	osvi;
 			osvi.dwOSVersionInfoSize=sizeof(OSVERSIONINFO);
+			#pragma warning(disable : 4996) //TO-FIX Temporary disable warning, will revisit it to migrate more modern way to check after that
 			if (GetVersionEx(&osvi))
 			{	//check if we're running Win9x variant since they have buggy alt-tab that requires
 				//reloading all textures.
@@ -501,6 +547,7 @@ void Reset_D3D_Device(bool active)
 						WW3D::_Invalidate_Textures();
 				}
 			}
+			#pragma warning(default : 4996) //TO-FIX Restore back
 		}
 		else
 		{
@@ -764,7 +811,7 @@ void W3DDisplay::init( void )
 	m_initialized = true;
 	if( TheGlobalData->m_displayDebug )
 	{
-		m_debugDisplayCallback = StatDebugDisplay;
+		m_debugDisplayCallback = StatDebugDisplayWrapper;
 	}
 }  // end init
 
@@ -1374,7 +1421,7 @@ void W3DDisplay::gatherDebugStats( void )
 
 			unibuffer.concat( L"\nModelStates: " );
 			ModelConditionFlags mcFlags = draw->getModelConditionFlags();
-			const numEntriesPerLine = 4;
+			const int numEntriesPerLine = 4;
 			int lineCount = 0;
 
 			for( int i = 0; i < MODELCONDITION_COUNT; i++ )
@@ -1461,7 +1508,7 @@ void StatDebugDisplay( DebugDisplayInterface *, void *, FILE *fp )
 //=============================================================================
 void W3DDisplay::drawCurrentDebugDisplay( void )
 {
-	if (m_debugDisplayCallback == StatDebugDisplay)
+	if (m_debugDisplayCallback == StatDebugDisplayWrapper)
 	{
 		drawDebugStats();
 	}
@@ -1613,7 +1660,7 @@ AGAIN:
 #endif
 
 	// compute debug statistics for display later
-	if ( m_debugDisplayCallback == StatDebugDisplay 
+	if ( m_debugDisplayCallback == StatDebugDisplayWrapper
 #if defined(_DEBUG) || defined(_INTERNAL)
 				|| TheGlobalData->m_benchmarkTimer > 0
 #endif
@@ -1828,7 +1875,7 @@ AGAIN:
 					Int height = TheDisplay->getHeight() * .9;
 
 					Int width;
-					if( displayString->getWidth() > TheDisplay->getWidth() )
+					if(displayString->getWidth() >= 0 && (UnsignedInt)displayString->getWidth() > TheDisplay->getWidth() )
 						width = 20;
 					else
 						width = ( TheDisplay->getWidth() - displayString->getWidth() ) / 2;
@@ -2869,7 +2916,7 @@ void W3DDisplay::takeScreenShot(void)
 
 	// Lock front buffer and copy
 
-	IDirect3DSurface8 *fb;
+	IDirect3DSurface9 *fb;
 	fb=DX8Wrapper::_Get_DX8_Front_Buffer();
 	D3DSURFACE_DESC desc;
 	fb->GetDesc(&desc);

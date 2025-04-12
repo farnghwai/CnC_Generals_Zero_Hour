@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 63% (17 / 27)
+Completion: 67% (18 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -13,8 +13,8 @@ Compression | Libraries\Source\Compression\Compression.vcxproj | Done | See note
 DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Done | See note 2
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
-GameEngine | GameEngine\GameEngine.vcxproj | Done* | See note 7
-GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Work-in-Progress
+GameEngine | GameEngine\GameEngine.vcxproj | Done | See note 7
+GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done* | see note 8 and 9
 GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Halt* | Reference to WW3D2Debug.lib
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
 launcher | Tools\Launcher\launcher.vcxproj | Not Started
@@ -68,3 +68,10 @@ GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
 - OptionsMenu?
 - WOLWelcomeMenu
 - MainMenuUtils
+8. Remove MilesAudioManager and Blink dependencies without replacement by comment it out.
+9. Pixel Shader and Vertex Shader 
+- Use DirectX HLSL 
+- Migrate code from 1.1 to 2.0
+- Remove 1.1 support
+- Compiled by DirectX HLSL compiler via Shadel Model 2  instead of NVIDIA nvasm compiler
+- Move Shader assembly code to individual file and remove DirectX depreciated code related shader compilation.

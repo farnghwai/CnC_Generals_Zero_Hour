@@ -110,7 +110,7 @@ protected:
   /// Manager for display strings
 	virtual DisplayStringManager *createDisplayStringManager( void ) { return NEW W3DDisplayStringManager; }
 
-	virtual VideoPlayerInterface *createVideoPlayer( void ) { return NEW BinkVideoPlayer; }
+	virtual VideoPlayerInterface* createVideoPlayer(void) { return NULL;/*NEW BinkVideoPlayer;*/ }
 	/// factory for creating the TerrainVisual
 	virtual TerrainVisual *createTerrainVisual( void ) { return NEW W3DTerrainVisual; }
 

@@ -39,7 +39,7 @@ PS_OUTPUT main(PS_INPUT input)
     // the bump map was created. A common method is to treat the sample
     // as signed offsets (-1 to +1 range) scaled by some factor.
     // Assuming bumpSample.xy contains the raw offsets for now:
-    float2 perturbation = offset.xy * 2.0 - 1.0; // Might need: (bumpSample.xy * 2.0 - 1.0) * BumpScale;
+    float2 perturbation = (offset.xy * 2.0f) - 1.0f; // Might need: (bumpSample.xy * 2.0 - 1.0) * BumpScale;
     float2 perturbedEnvUV = input.texCoord2 + perturbation * 0.05; // scale offset to simulate bump effect
     float4 reflection = tex2D(envMapTex, perturbedEnvUV);
     

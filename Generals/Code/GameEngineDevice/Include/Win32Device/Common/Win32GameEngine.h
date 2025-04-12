@@ -38,7 +38,7 @@
 #include "Common/GameEngine.h"
 #include "GameLogic/GameLogic.h"
 #include "GameNetwork/NetworkInterface.h"
-#include "MilesAudioDevice/MilesAudioManager.h"
+//#include "MilesAudioDevice/MilesAudioManager.h"
 #include "Win32Device/Common/Win32BIGFileSystem.h"
 #include "Win32Device/Common/Win32LocalFileSystem.h"
 #include "W3DDevice/Common/W3DModuleFactory.h"
@@ -81,7 +81,7 @@ protected:
 	virtual NetworkInterface *createNetwork( void );				///< Factory for the network
 	virtual Radar *createRadar( void );											///< Factory for radar
 	virtual WebBrowser *createWebBrowser( void );						///< Factory for embedded browser
-	virtual AudioManager *createAudioManager( void );				///< Factory for audio device
+	//virtual AudioManager *createAudioManager( void );				///< Factory for audio device //[DX9]
 	virtual ParticleSystemManager* createParticleSystemManager( void );
 
 
@@ -102,6 +102,6 @@ inline ParticleSystemManager* Win32GameEngine::createParticleSystemManager( void
 inline NetworkInterface *Win32GameEngine::createNetwork( void ) { return NetworkInterface::createNetwork(); }
 inline Radar *Win32GameEngine::createRadar( void ) { return NEW W3DRadar; }
 inline WebBrowser *Win32GameEngine::createWebBrowser( void ) { return NEW CComObject<W3DWebBrowser>; }
-inline AudioManager *Win32GameEngine::createAudioManager( void ) { return NEW MilesAudioManager; }
+//inline AudioManager *Win32GameEngine::createAudioManager( void ) { return NEW MilesAudioManager; } //[DX9]
  
 #endif  // end __WIN32GAMEENGINE_H_

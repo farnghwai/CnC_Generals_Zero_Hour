@@ -188,19 +188,19 @@ void W3DMainMenuDraw( GameWindow *window, WinInstanceData *instData )
 	IRegion2D	topHorizontal1 ={pos.x, pos.y, pos.x + size.x, pos.y	};
 	IRegion2D	topHorizontal1drop ={pos.x, pos.y+1, pos.x + size.x, pos.y+1	};
 
-	IRegion2D	topHorizontal2 ={pos.x, pos.y + (size.y * .1) , pos.x + size.x, pos.y + (size.y * .1)	};
-	IRegion2D	topHorizontal2drop ={pos.x, pos.y + (size.y * .12) , pos.x + size.x, pos.y + (size.y * .12)	};
+	IRegion2D	topHorizontal2 ={pos.x, static_cast<Int>(floor(pos.y + (size.y * .1))) , pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .1)))	};
+	IRegion2D	topHorizontal2drop ={pos.x, static_cast<Int>(floor(pos.y + (size.y * .12))) , pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .12)))	};
 
-	IRegion2D	bottomHorizontal1={pos.x, pos.y + (size.y * .9), pos.x + size.x, pos.y + (size.y * .9)	};
-	IRegion2D	bottomHorizontal1drop={pos.x, pos.y + (size.y * .92), pos.x + size.x, pos.y + (size.y * .92)	};
+	IRegion2D	bottomHorizontal1={pos.x, static_cast<Int>(floor(pos.y + (size.y * .9))), pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .9)))	};
+	IRegion2D	bottomHorizontal1drop={pos.x, static_cast<Int>(floor(pos.y + (size.y * .92))), pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .92)))	};
 
 	IRegion2D	bottomHorizontal2= {pos.x, pos.y + size.y, pos.x + size.x, pos.y + size.y 	};
 	IRegion2D	bottomHorizontal2drop= {pos.x, pos.y + size.y + 1, pos.x + size.x, pos.y + size.y + 1	};
 
-	IRegion2D	verticle1 ={pos.x + (size.x * .225), pos.y , pos.x + (size.x * .225), height 	};
-	IRegion2D	verticle2 ={pos.x + (size.x * .445), pos.y, pos.x + (size.x * .445), height 	};
-	IRegion2D	verticle3 ={pos.x + (size.x * .6662), pos.y, pos.x + (size.x * .6662), height 	};
-	IRegion2D	verticle4 ={pos.x + (size.x * .885), pos.y , pos.x + (size.x * .885), height 	};
+	IRegion2D	verticle1 ={ static_cast<Int>(floor(pos.x + (size.x * .225))), pos.y , static_cast<Int>(floor(pos.x + (size.x * .225))), height 	};
+	IRegion2D	verticle2 ={ static_cast<Int>(floor(pos.x + (size.x * .445))), pos.y, static_cast<Int>(floor(pos.x + (size.x * .445))), height 	};
+	IRegion2D	verticle3 ={ static_cast<Int>(floor(pos.x + (size.x * .6662))), pos.y, static_cast<Int>(floor(pos.x + (size.x * .6662))), height 	};
+	IRegion2D	verticle4 ={ static_cast<Int>(floor(pos.x + (size.x * .885))), pos.y , static_cast<Int>(floor(pos.x + (size.x * .885))), height 	};
 //	static IRegion2D	verticle5 ={pos.x + (size.x * .7250), pos.y + (size.y * .12), pos.x + (size.x * .7250), pos.y + (size.y * .86) 	};
 //	static IRegion2D	verticle6 ={pos.x + (size.x * .9062), pos.y + (size.y * .12), pos.x + (size.x * .9062), pos.y + (size.y * .86) 	};
 
@@ -252,19 +252,19 @@ void W3DMainMenuFourDraw( GameWindow *window, WinInstanceData *instData )
 	IRegion2D	topHorizontal1 ={pos.x, pos.y, pos.x + size.x, pos.y	};
 	IRegion2D	topHorizontal1drop ={pos.x, pos.y+1, pos.x + size.x, pos.y+1	};
 
-	IRegion2D	topHorizontal2 ={pos.x, pos.y + (size.y * .1) , pos.x + size.x, pos.y + (size.y * .1)	};
-	IRegion2D	topHorizontal2drop ={pos.x, pos.y + (size.y * .12) , pos.x + size.x, pos.y + (size.y * .12)	};
+	IRegion2D	topHorizontal2 ={ pos.x, static_cast<Int>(floor(pos.y + (size.y * .1))) , pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .1))) };
+	IRegion2D	topHorizontal2drop = { pos.x, static_cast<Int>(floor(pos.y + (size.y * .12))) , pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .12))) };
 
-	IRegion2D	bottomHorizontal1={pos.x, pos.y + (size.y * .9), pos.x + size.x, pos.y + (size.y * .9)	};
-	IRegion2D	bottomHorizontal1drop={pos.x, pos.y + (size.y * .92), pos.x + size.x, pos.y + (size.y * .92)	};
+	IRegion2D	bottomHorizontal1 = { pos.x, static_cast<Int>(floor(pos.y + (size.y * .9))), pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .9))) };
+	IRegion2D	bottomHorizontal1drop = { pos.x, static_cast<Int>(floor(pos.y + (size.y * .92))), pos.x + size.x, static_cast<Int>(floor(pos.y + (size.y * .92))) };
 
-	IRegion2D	bottomHorizontal2= {pos.x, pos.y + size.y, pos.x + size.x, pos.y + size.y 	};
-	IRegion2D	bottomHorizontal2drop= {pos.x, pos.y + size.y + 1, pos.x + size.x, pos.y + size.y + 1	};
+	IRegion2D	bottomHorizontal2 = { pos.x, pos.y + size.y, pos.x + size.x, pos.y + size.y };
+	IRegion2D	bottomHorizontal2drop = { pos.x, pos.y + size.y + 1, pos.x + size.x, pos.y + size.y + 1 };
 
-	IRegion2D	verticle1 ={pos.x + (size.x * .295), pos.y , pos.x + (size.x * .295), height 	};
-	IRegion2D	verticle2 ={pos.x + (size.x * .59), pos.y, pos.x + (size.x * .59), height 	};
-	//IRegion2D	verticle3 ={pos.x + (size.x * .6662), pos.y, pos.x + (size.x * .6662), height 	};
-	IRegion2D	verticle4 ={pos.x + (size.x * .885), pos.y , pos.x + (size.x * .885), height 	};
+	IRegion2D	verticle1 = { static_cast<Int>(floor(pos.x + (size.x * .295))), pos.y , static_cast<Int>(floor(pos.x + (size.x * .295))), height };
+	IRegion2D	verticle2 = { static_cast<Int>(floor(pos.x + (size.x * .59))), pos.y, static_cast<Int>(floor(pos.x + (size.x * .59))), height };
+	//IRegion2D	verticle3 ={static_cast<Int>(floor(pos.x + (size.x * .6662))), pos.y, static_cast<Int>(floor(pos.x + (size.x * .6662))), height 	};
+	IRegion2D	verticle4 = { static_cast<Int>(floor(pos.x + (size.x * .885))), pos.y , static_cast<Int>(floor(pos.x + (size.x * .885))), height 	};
 //	static IRegion2D	verticle5 ={pos.x + (size.x * .7250), pos.y + (size.y * .12), pos.x + (size.x * .7250), pos.y + (size.y * .86) 	};
 //	static IRegion2D	verticle6 ={pos.x + (size.x * .9062), pos.y + (size.y * .12), pos.x + (size.x * .9062), pos.y + (size.y * .86) 	};
 
