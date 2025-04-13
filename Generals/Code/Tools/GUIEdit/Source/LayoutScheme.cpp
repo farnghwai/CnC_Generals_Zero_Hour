@@ -75,6 +75,13 @@
 	#include <cstdio>
 	#include <cstdarg>
 
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
 	inline int safe_sprintf(char* buffer, const char* format, ...) {
 		va_list args;
 		va_start(args, format);
@@ -97,6 +104,8 @@
 		va_end(args);
 		return result;
 	}
+
+	#define strcpy safe_strcpy
 	#define sprintf safe_sprintf
 	#define fopen safe_fopen
 	#define fscanf safe_fscanf

@@ -81,6 +81,7 @@ Max4Hybrid
 /Code/Libraries/Lib/WWUtilDebugW3D.lib
 /Code/Libraries/Lib/WWUtilInternal.lib
 /Code/Libraries/Lib/WWUtilProfile.lib
+/Code/Libraries/Lib/CompressionDebug.lib
 
 # Generated files
 generatedVersion.h
@@ -90,6 +91,7 @@ BrowserDispatch_i.c
 BrowserDispatch.h
 BrowserDispatch.tlb
 /Code/Tools/CRCDiff/out.html
+/Code/Main/buildVersion.h
 
 # Visual C++ files
 *.ncb

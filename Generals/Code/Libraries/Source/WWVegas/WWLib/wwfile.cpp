@@ -45,9 +45,23 @@
 	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
 	#include <cstdio>
 	#include <cstdarg>
+	#include <cstring>
 
 	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
-		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+		if (!buffer || !format || count == 0) {
+			return -1;
+		}
+
+		// _TRUNCATE tells _vsnprintf_s to null-terminate the buffer if possible
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		// _vsnprintf returns -1 on truncation; match that behavior
+		if (result == -1) {
+			return static_cast<int>(count - 1); // truncated, but safe
+		}
+
+		return result;
+		//return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
 	}
 
 	#define _vsnprintf safe_vsnprintf

@@ -142,9 +142,9 @@ Bool g_debugSlots = FALSE;
 std::list<PeerResponse> TheLobbyQueuedUTMs;
 
 // Slash commands -------------------------------------------------------------------------
-extern "C" {
-int getQR2HostingStatus(void);
-}
+//extern "C" {
+//int getQR2HostingStatus(void);
+//}
 extern int isThreadHosting;
 
 Bool handleLobbySlashCommands(UnicodeString uText)
@@ -165,7 +165,8 @@ Bool handleLobbySlashCommands(UnicodeString uText)
 	if (token == "host")
 	{
 		UnicodeString s;
-		s.format(L"Hosting qr2:%d thread:%d", getQR2HostingStatus(), isThreadHosting);
+		//s.format(L"Hosting qr2:%d thread:%d", getQR2HostingStatus(), isThreadHosting);
+		s.format(L"Hosting qr2:%d thread:%d", isThreadHosting);
 		TheGameSpyInfo->addText(s, GameSpyColor[GSCOLOR_DEFAULT], NULL);
 		return TRUE; // was a slash command
 	}

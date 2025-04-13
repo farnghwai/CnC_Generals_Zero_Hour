@@ -37,6 +37,7 @@
 
 #include	"bittype.h"
 #include	"wwstring.h"
+#include <Windows.h>
 
 const float MISCUTIL_EPSILON = 0.0001f;
 

@@ -3492,8 +3492,8 @@ void initMemoryManager()
 	linktest = new char[8];
 	delete [] linktest;
 
-	//linktest = new char("",1); //TO-FIX unknown usage, temporary disable
-	//delete linktest;
+	linktest = new char(1); //TO-FIX unknown usage, temporary disable
+	delete linktest;
 
 #ifdef MEMORYPOOL_OVERRIDE_MALLOC
 	linktest = (char*)malloc(1);

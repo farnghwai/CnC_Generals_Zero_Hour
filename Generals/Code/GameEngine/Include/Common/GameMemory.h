@@ -878,10 +878,8 @@ extern void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocatio
 	// additional overloads for 'placement new'
 	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
 	//inline void __cdecl operator delete						(void *, void *p)		{ }
-	//inline void* __cdecl operator new[]						(size_t s, void *p) { return p; }
-	//inline void __cdecl operator delete[]					(void *, void *p)		{ }
-	inline void* __cdecl operator new[](size_t s, void* p); //TO-FIX sync with GameMemory.h
-	inline void __cdecl operator delete[](void*, void* p); //TO-FIX sync with GameMemory.h
+	extern void* __cdecl operator new[](size_t s, void* p); /* { return p; }*/
+	extern void __cdecl operator delete[](void*, void* p); /* {}*/
 
 #endif
 

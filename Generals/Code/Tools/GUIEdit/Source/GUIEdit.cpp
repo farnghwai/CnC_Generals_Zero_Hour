@@ -110,13 +110,6 @@
 		return result;
 	}
 
-	inline char* safe_strcpy(char* dest, const char* src) {
-		if (dest && src) {
-			strcpy_s(dest, strlen(src) + 1, src);
-		}
-		return dest;
-	}
-
 	inline FILE* safe_fopen(const char* filename, const char* mode) {
 		FILE* file = nullptr;
 		fopen_s(&file, filename, mode);
@@ -132,8 +125,16 @@
 		return result;
 	}
 
-	#define sprintf safe_sprintf
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
 	#define strcpy safe_strcpy
+
+	#define sprintf safe_sprintf
 	#define fopen safe_fopen
 	#define fscanf safe_fscanf
 #endif
@@ -3591,10 +3592,10 @@ void GUIEdit::stripNameDecorations( GameWindow *root )
 	if( !instData->m_decoratedNameString.isEmpty() )
 	{
 		char nameOnly[ MAX_WINDOW_NAME_LEN ];
-		char *c;
+		//char *c;
 
 		// skip past the "filename.wnd:" to the name only
-		c = strchr( instData->m_decoratedNameString.str(), ':' );
+		const char * c = strchr( instData->m_decoratedNameString.str(), ':' );
 		if( c )
 		{
 

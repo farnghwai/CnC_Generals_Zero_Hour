@@ -64,6 +64,7 @@
 	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
 	#include <cstdio>
 	#include <cstdarg>
+	#include <cstring>
 
 	inline char* safe_strcpy(char* dest, const char* src) {
 		if (dest && src) {
@@ -94,7 +95,20 @@
 	}
 
 	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
-		return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+		if (!buffer || !format || count == 0) {
+			return -1;
+		}
+
+		// _TRUNCATE tells _vsnprintf_s to null-terminate the buffer if possible
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		// _vsnprintf returns -1 on truncation; match that behavior
+		if (result == -1) {
+			return static_cast<int>(count - 1); // truncated, but safe
+		}
+
+		return result;
+		//return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
 	}
 
 	inline int safe_snprintf(char* buffer, size_t count, const char* format, ...) {
@@ -107,11 +121,22 @@
 		return result;
 	}
 
-	inline int safe_vsprintf(char* buffer, const char* format, ...) {
-		va_list args;
-		va_start(args, format);
-		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
-		va_end(args);
+	inline int safe_vsprintf(char* buffer, const char* format, va_list argptr) {
+		if (!buffer || !format) {
+			return -1;
+		}
+
+		// Reasonable buffer safety limit
+		const size_t SAFE_VSPRINTF_MAX = 4096;
+
+		// Use _TRUNCATE for graceful truncation
+		int result = _vsnprintf_s(buffer, SAFE_VSPRINTF_MAX, _TRUNCATE, format, argptr);
+
+		if (result < 0) {
+			buffer[0] = '\0'; // ensure null termination
+			return -1;
+		}
+
 		return result;
 	}
 

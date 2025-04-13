@@ -38,6 +38,36 @@
 #define NUMFMT "#define %s %d\n"
 #define NUMFMT_MINOR "#define %s %d			///< This effects the replay version number.\n"
 
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr; // Static variable to maintain context
+		return strtok_s(str, delim, &context);
+	}
+
+	#define strcpy safe_strcpy
+	#define fopen safe_fopen
+	#define strtok safe_strtok
+#endif
+
 static void writeVersion(char *file, int major, int minor, int build)
 {
 	FILE *filePtr = fopen(file, "w");
@@ -108,10 +138,10 @@ static char* strtrim(char* buffer)
 	return buffer;
 }
 
-int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
+int APIENTRY WinMain(_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR lpCmdLine,
+	_In_ int nShowCmd)
 {
 	/*
 	** Convert WinMain arguments to simple main argc and argv

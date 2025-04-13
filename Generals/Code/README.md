@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 67% (18 / 27)
+Completion: 70% (19 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -14,8 +14,8 @@ DatGen | Tools\Launcher\DatGen\DatGen.vcxproj | Done | See note 2
 DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
 GameEngine | GameEngine\GameEngine.vcxproj | Done | See note 7
-GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done* | see note 8 and 9
-GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Halt* | Reference to WW3D2Debug.lib
+GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done | see note 8 and 9
+GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Done* 
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
 launcher | Tools\Launcher\launcher.vcxproj | Not Started
 MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Not Started
@@ -32,7 +32,7 @@ wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Done
 wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done | See note 3
 wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done
 wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done
-RTS | RTS.vcxproj | Not Started
+RTS | RTS.vcxproj | Work-in-progress
 Solution | RTS.sln | Not Started
 
 ## Excluded
