@@ -1244,6 +1244,9 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(int resx,int resy,int bitdepth,D3DFORMAT 
 		*set_backbuffer=*set_colorbuffer = format_table[format_index];
 	}
 
+	//[DX9]
+	// refer for mode that support fullscreen https://learn.microsoft.com/en-us/windows/win32/direct3d9/d3dformat
+	// temporary disable as mode D3DFMT_X8R8G8B8 able support
 	if (bitdepth==32 && *set_colorbuffer == D3DFMT_X8R8G8B8 && D3DInterface->CheckDeviceType(0,D3DDEVTYPE_HAL,*set_colorbuffer,D3DFMT_A8R8G8B8, TRUE) == D3D_OK)
 	{	//promote 32-bit modes to include destination alpha when supported
 		*set_backbuffer = D3DFMT_A8R8G8B8;
@@ -1260,48 +1263,53 @@ bool DX8Wrapper::Find_Color_And_Z_Mode(int resx,int resy,int bitdepth,D3DFORMAT 
 // refresh rate
 bool DX8Wrapper::Find_Color_Mode(D3DFORMAT colorbuffer, int resx, int resy, UINT *mode)
 {
-	UINT i,j,modemax;
-	UINT rx,ry;
-	D3DDISPLAYMODE dmode;
-	::ZeroMemory(&dmode, sizeof(D3DDISPLAYMODE));
+	//UINT i,j,modemax;
+	UINT modemax;
+	//UINT rx,ry;
+	//D3DDISPLAYMODE dmode;
+	//::ZeroMemory(&dmode, sizeof(D3DDISPLAYMODE));
 
-	rx=(unsigned int) resx;
-	ry=(unsigned int) resy;
+	//rx=(unsigned int) resx;
+	//ry=(unsigned int) resy;
 
 	bool found=false;
-	D3DFORMAT format = DisplayFormat;
+	//D3DFORMAT format = DisplayFormat;
 
-	modemax=D3DInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT, format);
-
-	i=0;
-
-	while (i<modemax && !found)
+	modemax=D3DInterface->GetAdapterModeCount(D3DADAPTER_DEFAULT, colorbuffer);
+	// [DX9] -simplified checking so that it can work in VM
+	if (modemax > 0)
 	{
-		D3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, format, i, &dmode);
-		if (dmode.Width==rx && dmode.Height==ry && dmode.Format==colorbuffer)
-			found=true;
-		i++;
+		found = true;
 	}
+	//i=0;
 
-	i--; // this is the first valid mode
+	//while (i<modemax && !found)
+	//{
+	//	D3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, format, i, &dmode);
+	//	//if (dmode.Width==rx && dmode.Height==ry && dmode.Format==colorbuffer)
+	//		found=true;
+	//	i++;
+	//}
+
+	//i--; // this is the first valid mode
 
 	// no match
 	if (!found) return false;
 
 	// go to the highest refresh rate in this mode
-	bool stillok=true;
+	//bool stillok=true;
 
-	j=i;
-	while (j<modemax && stillok)
-	{
-		D3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, format, j, &dmode);
-		if (dmode.Width==rx && dmode.Height==ry && dmode.Format==colorbuffer)
-			stillok=true; else stillok=false;
-		j++;
-	}
+	//j=i;
+	//while (j<modemax && stillok)
+	//{
+	//	D3DInterface->EnumAdapterModes(D3DADAPTER_DEFAULT, format, j, &dmode);
+	//	if (dmode.Width==rx && dmode.Height==ry && dmode.Format==colorbuffer)
+	//		stillok=true; else stillok=false;
+	//	j++;
+	//}
 
-	if (stillok==false) *mode=j-2;
-	else *mode=i;
+	//if (stillok==false) *mode=j-2;
+	//else *mode=i;
 
 	return true;
 }
@@ -2754,9 +2762,9 @@ HRESULT DX8Wrapper::D3D9LoadSurfaceFromSurface(
 
 // [DX9][Newly added] - by Claude 3.7 Sonnet
 // Precise replacement for D3DXFilterTexture with D3DX_FILTER_BOX behavior
-// Implements exact 2×2 box filter averaging when dimensions are halved
+// Implements exact 2ï¿½2 box filter averaging when dimensions are halved
 // Replacement for legacy D3DXFilterTexture with D3DX_FILTER_BOX
-// Implements 2×2 box filter averaging for DirectX 9 (which lacks D3DTEXF_BOX)
+// Implements 2ï¿½2 box filter averaging for DirectX 9 (which lacks D3DTEXF_BOX)
 HRESULT DX8Wrapper::CustomFilterTexture(
 	LPDIRECT3DTEXTURE9 pTexture,    // [in] Texture to be filtered
 	UINT iMipLevels = 0             // [in] Number of mip levels to generate, 0 for all levels

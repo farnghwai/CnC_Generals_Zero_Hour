@@ -237,29 +237,29 @@ void AudioManager::init()
 	// If they don't exist, then attempt to load them from the CD. 
 	if (!isMusicAlreadyLoaded()) 
 	{
-		m_musicPlayingFromCD = TRUE;
-		while (TRUE) 
-		{
-			// @todo Unload any files from CD first. - jkmcd
-
-			TheFileSystem->loadMusicFilesFromCD();
-			if (isMusicAlreadyLoaded()) 
-			{
-				break;
-			}
-			// We loop infinitely on the splash screen if we don't allow breaking out of this loop.
-//#if !defined( _DEBUG ) && !defined( _INTERNAL )
-			else
-			{
-				// Display the warning.
-				
-				if (OSDisplayWarningBox("GUI:InsertCDPrompt", "GUI:InsertCDMessage", OSDBT_OK | OSDBT_CANCEL, OSDOF_SYSTEMMODAL | OSDOF_EXCLAMATIONICON) == OSDBT_CANCEL) {
-					//TheGameEngine->setQuitting(TRUE);  // Can't do this to WorldBuilder
-					break;
-				}
-			}
-//#endif
-		}
+//		m_musicPlayingFromCD = TRUE;
+//		while (TRUE) 
+//		{
+//			// @todo Unload any files from CD first. - jkmcd
+//
+//			TheFileSystem->loadMusicFilesFromCD();
+//			if (isMusicAlreadyLoaded()) 
+//			{
+//				break;
+//			}
+//			// We loop infinitely on the splash screen if we don't allow breaking out of this loop.
+////#if !defined( _DEBUG ) && !defined( _INTERNAL )
+//			else
+//			{
+//				// Display the warning.
+//				
+//				if (OSDisplayWarningBox("GUI:InsertCDPrompt", "GUI:InsertCDMessage", OSDBT_OK | OSDBT_CANCEL, OSDOF_SYSTEMMODAL | OSDOF_EXCLAMATIONICON) == OSDBT_CANCEL) {
+//					//TheGameEngine->setQuitting(TRUE);  // Can't do this to WorldBuilder
+//					break;
+//				}
+//			}
+////#endif
+//		}
 	}
 	
 	m_music = NEW MusicManager;

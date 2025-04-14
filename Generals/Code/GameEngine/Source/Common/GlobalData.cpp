@@ -613,7 +613,7 @@ GlobalData::GlobalData()
 	m_dumpAssetUsage = FALSE;
 	m_framesPerSecondLimit = 0;
 	m_chipSetType = 0;
-	m_windowed = 0;
+	m_windowed = TRUE;// 0; // Change Default to Windowed instead of Fullscreen
 	m_xResolution = 800;
 	m_yResolution = 600;
 	m_maxShellScreens = 0;

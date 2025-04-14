@@ -283,7 +283,8 @@ void LANAPI::handleRequestJoin( LANMessage *msg, UnsignedInt senderIP )
 				s.clear();
 				if (player == 0)
 				{
-					GetStringFromRegistry("\\ergc", "", s);
+					//[DX9] - Remove reference to Registry
+					//GetStringFromRegistry("\\ergc", "", s);
 				}
 				else if (slot->isHuman())
 				{

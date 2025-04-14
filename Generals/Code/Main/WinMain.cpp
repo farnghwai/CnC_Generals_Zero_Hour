@@ -101,7 +101,7 @@
 // GLOBALS ////////////////////////////////////////////////////////////////////
 HINSTANCE ApplicationHInstance = NULL;  ///< our application instance
 HWND ApplicationHWnd = NULL;  ///< our application window handle
-Bool ApplicationIsWindowed = false;
+Bool ApplicationIsWindowed = true; //[DX9] original value is "false"; Change to use Windowed Mode instead of FullScreen Mode
 Win32Mouse *TheWin32Mouse= NULL;  ///< for the WndProc() only
 DWORD TheMessageTime = 0;	///< For getting the time that a message was posted from Windows.
 

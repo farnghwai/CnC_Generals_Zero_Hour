@@ -150,20 +150,22 @@ AsciiString GetRegistryLanguage(void)
 {
 	static Bool cached = FALSE;
 	static AsciiString val = "english";
-	if (cached) {
-		return val;
-	} else {
-		cached = TRUE;
-	}
+	//[DX9] - Remove reference to Registry
+	//if (cached) {
+	//	return val;
+	//} else {
+	//	cached = TRUE;
+	//}
 
-	GetStringFromRegistry("", "Language", val);
+	//GetStringFromRegistry("", "Language", val);
 	return val;
 }
 
 AsciiString GetRegistryGameName(void)
 {
 	AsciiString val = "GeneralsMPTest";
-	GetStringFromRegistry("", "SKU", val);
+	//[DX9] - Remove reference to Registry
+	//GetStringFromRegistry("", "SKU", val);
 	return val;
 }
 
