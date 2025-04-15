@@ -862,9 +862,11 @@ extern void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocatio
 
 	#define _OPERATOR_NEW_DEFINED_
 
+	_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(size) _VCRT_ALLOCATOR
 	extern void * __cdecl operator new		(size_t size);
 	extern void __cdecl operator delete		(void *p);
 
+	_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(size) _VCRT_ALLOCATOR
 	extern void * __cdecl operator new[]	(size_t size);
 	extern void __cdecl operator delete[]	(void *p);
 
@@ -875,11 +877,9 @@ extern void userMemoryAdjustPoolSize(const char *poolName, Int& initialAllocatio
 	extern void* __cdecl operator new[](size_t nSize, const char *, int);
 	extern void __cdecl operator delete[](void *, const char *, int);
 
-	// additional overloads for 'placement new'
-	//inline void* __cdecl operator new							(size_t s, void *p) { return p; }
-	//inline void __cdecl operator delete						(void *, void *p)		{ }
-	extern void* __cdecl operator new[](size_t s, void* p); /* { return p; }*/
-	extern void __cdecl operator delete[](void*, void* p); /* {}*/
+	_NODISCARD _Ret_notnull_ _Post_writable_byte_size_(s) _Post_satisfies_(return == p)
+		extern void* __cdecl operator new[](size_t s, _Writable_bytes_(s) void* p) noexcept;
+	extern void __cdecl operator delete[](void*, void* p);
 
 #endif
 

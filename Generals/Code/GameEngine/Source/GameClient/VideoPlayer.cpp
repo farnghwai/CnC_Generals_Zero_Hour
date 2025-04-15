@@ -345,7 +345,7 @@ Int VideoPlayer::getNumVideos( void )
 }
 
 //============================================================================
-// VideoPlayer::removeVideo
+// VideoPlayer::getVideo
 //============================================================================
 const Video* VideoPlayer::getVideo( AsciiString movieTitle )
 {

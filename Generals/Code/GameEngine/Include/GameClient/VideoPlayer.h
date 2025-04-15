@@ -249,7 +249,7 @@ class VideoPlayerInterface : public SubsystemInterface
 		virtual void	removeVideo( Video* videoToRemove ) = 0;		///< Remove a video to the list of videos we can play
 		virtual Int getNumVideos( void ) = 0;											///< Retrieve info about the number of videos currently listed
 		virtual const Video* getVideo( AsciiString movieTitle ) = 0;	///< Retrieve info about a movie based on internal name
-		virtual const Video* getVideo( Int index ) = 0;						///< Retrieve info about a movie based on index
+		virtual const Video* getVideo( size_t index ) = 0;						///< Retrieve info about a movie based on index
 
 		virtual const FieldParse *getFieldParse( void ) const = 0;		///< Return the field parse info
 
