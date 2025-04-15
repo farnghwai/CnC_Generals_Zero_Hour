@@ -31,6 +31,21 @@
 #include "Common/ThingFactory.h"
 #include "Common/ThingSort.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 // PickUnitDialog dialog
 
@@ -313,7 +328,8 @@ void PickUnitDialog::addObject( MapObject *mapObject, const char *pPath, Int ind
 		parent = findOrAdd( parent, buffer );
 
 		// next tier uses the editor sorting that design can specify in the INI
-		for( EditorSortingType i = ES_FIRST; 
+		EditorSortingType i = ES_FIRST;
+		for( ; 
 				 i < ES_NUM_SORTING_TYPES;
 				 i = (EditorSortingType)(i + 1) )
 		{

@@ -205,7 +205,7 @@ private:
 	Bool										m_showAmbientSounds;	///< Flag whether to show all the ambient sounds or not
 
 
-	ID3DXFont*							m3DFont;
+	// ID3DXFont*							m3DFont;
 	Int											m_pickPixels;
 	Int											m_partialMapSize;
 

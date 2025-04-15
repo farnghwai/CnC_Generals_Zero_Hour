@@ -76,7 +76,7 @@ void RampOptions::OnWidthChange()
 	}
 
 	pWnd->GetWindowText(str);
-	m_rampWidth = atof(str.GetBuffer(0));
+	m_rampWidth = float(atof(str.GetBuffer(0)));
 }
 
 extern RampOptions* TheRampOptions = NULL;

@@ -77,16 +77,53 @@
 #include "W3DDevice/Common/W3DModuleFactory.h"
 #include "W3DDevice/GameClient/W3DParticleSys.h"
 #include "MilesAudioDevice/MilesAudioManager.h"
+#include "VideoDevice/Bink/BinkVideoPlayer.h"
 
 #include <io.h>
 #include "win32device/GameClient/Win32Mouse.h"
 #include "Win32Device/Common/Win32LocalFileSystem.h"
 #include "Win32Device/Common/Win32BIGFileSystem.h"
 
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#endif
+
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf
+	#define strcat safe_strcat
 #endif
 
 static SubsystemInterfaceList TheSubsystemListRecord;
@@ -307,11 +344,11 @@ BOOL CWorldBuilderApp::InitInstance()
 	TheNameKeyGenerator = new NameKeyGenerator;
 	TheNameKeyGenerator->init();
 
-#ifdef _AFXDLL
-	Enable3dControls();			// Call this when using MFC in a shared DLL
-#else
-	Enable3dControlsStatic();	// Call this when linking to MFC statically
-#endif
+//#ifdef _AFXDLL
+//	Enable3dControls();			// Call this when using MFC in a shared DLL
+//#else
+//	Enable3dControlsStatic();	// Call this when linking to MFC statically
+//#endif
 
 	// Set the current directory to the app directory.
 	char buf[_MAX_PATH];
@@ -381,8 +418,8 @@ BOOL CWorldBuilderApp::InitInstance()
 	// need this before TheAudio in case we're running off of CD - TheAudio can try to open Music.big on the CD...
 	initSubsystem(TheCDManager, CreateCDManager(), NULL);
 	initSubsystem(TheAudio, (AudioManager*)new MilesAudioManager());
-	if (!TheAudio->isMusicAlreadyLoaded())
-		return FALSE;
+	//if (!TheAudio->isMusicAlreadyLoaded())
+	//	return FALSE;
 
 	initSubsystem(TheVideoPlayer, (VideoPlayerInterface*)(new VideoPlayer()));
 	initSubsystem(TheModuleFactory, (ModuleFactory*)(new W3DModuleFactory()));

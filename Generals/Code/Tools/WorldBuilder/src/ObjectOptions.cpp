@@ -41,6 +41,30 @@
 
 #include <list>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+#endif
+
+
 ObjectOptions *ObjectOptions::m_staticThis = NULL;
 Bool ObjectOptions::m_updating = false;
 char ObjectOptions::m_currentObjectName[NAME_MAX_LEN];
@@ -431,7 +455,7 @@ HTREEITEM ObjectOptions::_FindOrDont(const char* pLabel, HTREEITEM startPoint)
 			item.cchTextMax = sizeof(buffer)-2;				
 			m_objectTreeView.GetItem(&item);
 
-			char* strToTest = strrchr(pLabel, '/');
+			const char* strToTest = strrchr(pLabel, '/');
 //		if (strstr((strToTest ? strToTest : pLabel), buffer)) 
 			if (strcmp((strToTest ? strToTest : pLabel), buffer) == 0) 
 			{
@@ -486,7 +510,8 @@ void ObjectOptions::addObject( MapObject *mapObject, const char *pPath,
 		parent = findOrAdd( parent, buffer );
 
 		// next tier uses the editor sorting that design can specify in the INI
-		for( EditorSortingType i = ES_FIRST; 
+		EditorSortingType i = ES_FIRST;
+		for( ; 
 				 i < ES_NUM_SORTING_TYPES;
 				 i = (EditorSortingType)(i + 1) )
 		{

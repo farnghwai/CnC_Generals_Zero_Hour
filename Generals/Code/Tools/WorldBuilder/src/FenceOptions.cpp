@@ -45,6 +45,21 @@ so forth is all handled in the object options panel.  jba. */
 
 #include <list>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+#endif
+
 FenceOptions *FenceOptions::m_staticThis = NULL;
 Bool FenceOptions::m_updating = false;
 Int FenceOptions::m_currentObjectIndex=-1;
@@ -268,7 +283,8 @@ void FenceOptions::addObject( MapObject *mapObject, const char *pPath, const cha
 		parent = findOrAdd( parent, buffer );
 
 		// next tier uses the editor sorting that design can specify in the INI
-		for( EditorSortingType i = ES_FIRST; 
+		EditorSortingType i = ES_FIRST;
+		for( ; 
 				 i < ES_NUM_SORTING_TYPES;
 				 i = (EditorSortingType)(i + 1) )
 		{

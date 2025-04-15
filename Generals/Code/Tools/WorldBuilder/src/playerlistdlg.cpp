@@ -33,6 +33,30 @@
 #include "GameClient/GameText.h"
 #include "Common/UnicodeString.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+#endif
+
 static const char* NEUTRAL_NAME_STR = "(neutral)";
 
 static Int thePrevCurPlyr = 0;
@@ -524,13 +548,13 @@ void PlayerListDlg::updateTheUI(void)
 		factions->ResetContent();
 		if (ThePlayerTemplateStore)
 		{
-			for (i = 0; i < ThePlayerTemplateStore->getPlayerTemplateCount(); i++)
+			for (int i = 0; i < ThePlayerTemplateStore->getPlayerTemplateCount(); i++)
 			{
 				AsciiString nm = ThePlayerTemplateStore->getNthPlayerTemplate(i)->getName();
 				factions->AddString(nm.str());
 			}
 		}
-		i = factions->FindStringExact(-1, pdict->getAsciiString(TheKey_playerFaction).str());
+		int i = factions->FindStringExact(-1, pdict->getAsciiString(TheKey_playerFaction).str());
 		factions->SetCurSel(i);
 	}
 
@@ -554,7 +578,7 @@ void PlayerListDlg::updateTheUI(void)
 	regardMe->ResetContent();
 	const char* rstr;
 	AsciiString pname;
-	for (i = 0; i < m_sides.getNumSides(); i++)
+	for (int i = 0; i < m_sides.getNumSides(); i++)
 	{
 		pname = m_sides.getSideInfo(i)->getDict()->getAsciiString(TheKey_playerName);
 		if (pname.isEmpty() || pname == cur_pname)
@@ -702,7 +726,7 @@ void PlayerListDlg::OnSelectPlayerColor()
 			}
 		}
 		if (index >= 0) {
-			Int color = TheMultiplayerSettings->getColor(c)->getColor();
+			Int color = TheMultiplayerSettings->getColor(index)->getColor();
 			playerDict->setInt(TheKey_playerColor, color);
 		}
 	}

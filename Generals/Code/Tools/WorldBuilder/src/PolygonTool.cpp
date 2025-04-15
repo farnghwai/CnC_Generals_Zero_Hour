@@ -127,6 +127,7 @@ Bool PolygonTool::poly_pickPoly(PolygonTrigger *pTrig, Coord3D loc, Int toleranc
 
 // Pick a polygon.
 PolygonTrigger *PolygonTool::pickPolygon(Coord3D loc, CPoint viewPt, WbView* pView) {
+	PolygonTrigger* pTrig;
 	for (PolygonTrigger *pTrig=PolygonTrigger::getFirstPolygonTrigger(); pTrig; pTrig = pTrig->getNext()) {
 		// For water, only do water
 		if (WaterTool::isActive() && !pTrig->isWaterArea()) {

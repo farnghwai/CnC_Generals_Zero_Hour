@@ -95,12 +95,36 @@
 #include "ImpassableOptions.h"
 
 
-#include <d3dx8.h>
+#include <d3d9.h>
 
 #ifdef _INTERNAL
 // for occasional debugging...
 //#pragma optimize("", off)
 //#pragma MESSAGE("************************************** WARNING, optimization disabled for debugging purposes")
+#endif
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define sprintf safe_sprintf	
+	#define strcpy safe_strcpy
 #endif
 
 // ----------------------------------------------------------------------------
@@ -491,10 +515,10 @@ void WbView3d::shutdownWW3D(void)
 		delete m_buildLayer;
 		m_buildLayer = NULL;
 	}
-	if (m3DFont) {
-		m3DFont->Release();
-		m3DFont = NULL;
-	}
+	// if (m3DFont) {
+	// 	m3DFont->Release();
+	// 	m3DFont = NULL;
+	// }
 }
 
 //=============================================================================
@@ -507,10 +531,10 @@ void WbView3d::ReleaseResources(void)
 	if (TheTerrainRenderObject) {
 		TheTerrainRenderObject->ReleaseResources();
 	}
-	if (m3DFont) {
-		m3DFont->Release();
-	}
-	m3DFont = NULL;
+	// if (m3DFont) {
+	// 	m3DFont->Release();
+	// }
+	// m3DFont = NULL;
 }
 
 //=============================================================================
@@ -525,7 +549,7 @@ void WbView3d::ReAcquireResources(void)
 		TheTerrainRenderObject->loadRoadsAndBridges(NULL,FALSE);
 		TheTerrainRenderObject->worldBuilderUpdateBridgeTowers( m_assetManager, m_scene );
 	}
-	IDirect3DDevice8* pDev = DX8Wrapper::_Get_D3D_Device8();
+	IDirect3DDevice9* pDev = DX8Wrapper::_Get_D3D_Device8();
 	if (pDev) {
 
 //		CDC* pDC = GetDC();
@@ -545,17 +569,18 @@ void WbView3d::ReAcquireResources(void)
 		logFont.lfPitchAndFamily = DEFAULT_PITCH;
 		strcpy(logFont.lfFaceName, "Arial");
 
-		HFONT hFont = CreateFontIndirect(&logFont);
-		if (hFont) {
-			D3DXCreateFont(pDev, hFont, &m3DFont);
-			DeleteObject(hFont);
-		} else {
-			m3DFont = NULL;
-		}
+		// HFONT hFont = CreateFontIndirect(&logFont);
+		// if (hFont) {
+		// 	D3DXCreateFont(pDev, hFont, &m3DFont);
+		// 	DeleteObject(hFont);
+		// } else {
+		// 	m3DFont = NULL;
+		// }
 		
-	} else {
-		m3DFont = NULL;
 	}
+	// } else {
+	// 	m3DFont = NULL;
+	// }
 
 }
 
@@ -2047,9 +2072,9 @@ void WbView3d::render()
 		// Draw the 3d obj icons on top of the rest of the data.
 		WW3D::Render(m_overlayScene,m_camera);	
 		//if (mytext) mytext->Render();
-		if (m3DFont) {
-			drawLabels(NULL);
-		}
+		// if (m3DFont) {
+		// 	drawLabels(NULL);
+		// }
 
 		
 		WW3D::End_Render();
@@ -2176,7 +2201,7 @@ void WbView3d::initWW3D()
 			}
 		}
 
-		IDirect3DDevice8* pDev = DX8Wrapper::_Get_D3D_Device8();
+		IDirect3DDevice9* pDev = DX8Wrapper::_Get_D3D_Device8();
 		if (pDev) {
 
 //			CDC* pDC = GetDC();
@@ -2196,17 +2221,17 @@ void WbView3d::initWW3D()
 			logFont.lfPitchAndFamily = DEFAULT_PITCH;
 			strcpy(logFont.lfFaceName, "Arial");
 
-			HFONT hFont = CreateFontIndirect(&logFont);
-			if (hFont) {
-				D3DXCreateFont(pDev, hFont, &m3DFont);
-				DeleteObject(hFont);
-			} else {
-				m3DFont = NULL;
-			}
-			
-		} else {
-			m3DFont = NULL;
-		}
+			// HFONT hFont = CreateFontIndirect(&logFont);
+			// if (hFont) {
+			// 	D3DXCreateFont(pDev, hFont, &m3DFont);
+			// 	DeleteObject(hFont);
+			// } else {
+			// 	m3DFont = NULL;
+			// }
+		}	
+		// } else {
+		// 	m3DFont = NULL;
+		// }
 
 		WW3D::Enable_Static_Sort_Lists(true);
 		WW3D::Set_Texture_Compression_Mode(WW3D::TEXTURE_COMPRESSION_ENABLE);
@@ -2383,23 +2408,23 @@ void WbView3d::drawLabels(HDC hdc)
 							red = 255, green = 0;
 						}
 
-						if (m3DFont && !hdc) {
-							RECT rct;
-							pt.y -= 5;
-							pt.x += 1;
-							rct.top = rct.bottom = pt.y;
-							rct.left = rct.right = pt.x;
-							m3DFont->DrawText(name.str(), name.getLength(), &rct, 
-								DT_LEFT | DT_NOCLIP | DT_TOP | DT_SINGLELINE, 0xAF000000 + (red<<16) + (green<<8)); 
+						// if (m3DFont && !hdc) {
+						// 	RECT rct;
+						// 	pt.y -= 5;
+						// 	pt.x += 1;
+						// 	rct.top = rct.bottom = pt.y;
+						// 	rct.left = rct.right = pt.x;
+						// 	m3DFont->DrawText(name.str(), name.getLength(), &rct, 
+						// 		DT_LEFT | DT_NOCLIP | DT_TOP | DT_SINGLELINE, 0xAF000000 + (red<<16) + (green<<8)); 
 
-						} else if (!m3DFont) {
+						// } else if (!m3DFont) {
 							//docToViewCoords(pos, &pt);
 							::SetBkMode(hdc, TRANSPARENT);
 							pt.y -= 5;
 							pt.x += 1;
 							::SetTextColor(hdc, RGB(red,green,0));
 							::TextOut(hdc, pt.x, pt.y, name.str(), name.getLength());
-						}
+						// }
 					}
 				}
 			}

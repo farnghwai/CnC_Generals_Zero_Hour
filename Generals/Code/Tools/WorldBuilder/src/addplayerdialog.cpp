@@ -18,7 +18,6 @@
 
 // addplayerdialog.cpp : implementation file
 //
-
 #include "stdafx.h"
 #include "worldbuilder.h"
 #include "addplayerdialog.h"

@@ -30,6 +30,29 @@
 #include "WorldBuilderDoc.h"
 #include "Common/TerrainTypes.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+		if (dest && src) {
+			strncpy_s(dest, n, src, _TRUNCATE);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define strncpy safe_strncpy
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 // TerrainModal dialog
 

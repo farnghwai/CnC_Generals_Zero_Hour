@@ -67,8 +67,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -84,22 +82,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <MinimalRebuild>true</MinimalRebuild>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>./include;./res;../../libraries/include;../../gameengine/include;../../gameenginedevice/include/;../../libraries/source/wwvegas;../../libraries/source/wwvegas/ww3d2;../../libraries/source/wwvegas/wwdebug;../../libraries/source/wwvegas/wwlib;../../libraries/source/wwvegas/wwmath;../../libraries/source/wwvegas/wwsaveload;../../Libraries/Source/Compression;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WWDEBUG;_DEBUG;EDITOR;WIN32;_WINDOWS;REGEX_MALLOC;STDC_HEADERS;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
-      <BrowseInformation>true</BrowseInformation>
-      <PrecompiledHeaderOutputFile>.\Debug\WorldBuilder.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\Debug\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <PreprocessorDefinitions>WWDEBUG;_DEBUG;EDITOR;WIN32;_WINDOWS;REGEX_MALLOC;STDC_HEADERS;WIN32_LEAN_AND_MEAN;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -112,18 +105,12 @@
       <Culture>0x0409</Culture>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug\WorldBuilder.bsc</OutputFile>
-    </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>../../../Run/WorldBuilderD.exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\Libraries\Lib;..\..\GameEngine\Lib;..\..\GameEngineDevice\Lib;..\..\GameEngine;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BenchmarkD.lib;dinput.lib;ddraw.lib;d3dx8.lib;mss32.lib;d3d8.lib;winmm.lib;vfw32.lib;dsound.lib;wsock32.lib;imm32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>dinput8.lib;ddraw.lib;d3d9.lib;winmm.lib;vfw32.lib;dsound.lib;wsock32.lib;imm32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -553,6 +540,38 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Internal|Win32'">res;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GameEngineDevice\GameEngineDevice.vcxproj">
+      <Project>{923acd1d-278b-4429-9c43-29b2a1f496fe}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GameEngine\GameEngine.vcxproj">
+      <Project>{b79fa8e9-eec8-417e-a8c1-14fb1987f791}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\Compression\Compression.vcxproj">
+      <Project>{7f44bab3-1e35-4582-ac46-a8b0f57fcff1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj">
+      <Project>{d0cdca71-72eb-48eb-8cf1-4e70b33a6db1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj">
+      <Project>{a28f173e-57a4-42d8-80e4-549bffb5bdf1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj">
+      <Project>{9f5a741d-c7ad-4418-8fdb-49a84914f8a6}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWLib\wwlib.vcxproj">
+      <Project>{2e3dfa46-cfc3-4470-a1e1-e8b0e7082237}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWMath\wwmath.vcxproj">
+      <Project>{c6800bbd-6f3c-4db0-a82e-b348a819c8ff}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj">
+      <Project>{5a00c199-96e2-4f30-aa93-f51c72f11db5}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\ParticleEditor\ParticleEditor.vcxproj">
+      <Project>{3b64713b-f9fc-4b59-b52d-74eb38eb1af0}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

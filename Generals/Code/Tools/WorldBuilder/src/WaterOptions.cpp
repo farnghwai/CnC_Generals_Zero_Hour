@@ -34,6 +34,33 @@
 #include "Common/WellKnownKeys.h"
 #include "LayersList.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sprintf safe_sprintf
+	#define sscanf safe_sscanf
+#endif
+
 WaterOptions *WaterOptions::m_staticThis = NULL;
 Int WaterOptions::m_waterHeight = 7;
 Int WaterOptions::m_waterPointSpacing = MAP_XY_FACTOR;

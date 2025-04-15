@@ -43,6 +43,38 @@
 
 #include "common/DataChunk.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf
+	#define strcat safe_strcat
+#endif
+
 int WorldHeightMapEdit::m_numGlobalTextureClasses=0;
 TGlobalTextureClass WorldHeightMapEdit::m_globalTextureClasses[NUM_TEXTURE_CLASSES];
 /** Destructor -.
@@ -792,7 +824,7 @@ void WorldHeightMapEdit::saveToFile(DataChunkOutput &chunkWriter)
 				chunkWriter.writeReal(TheGlobalData->m_terrainObjectsLighting[i+TIME_OF_DAY_FIRST][j].lightPos.y);
 				chunkWriter.writeReal(TheGlobalData->m_terrainObjectsLighting[i+TIME_OF_DAY_FIRST][j].lightPos.z);
 			}
-			for (j=1; j<MAX_GLOBAL_LIGHTS; j++)
+			for (Int j=1; j<MAX_GLOBAL_LIGHTS; j++)
 			{
 				chunkWriter.writeReal(TheGlobalData->m_terrainLighting[i+TIME_OF_DAY_FIRST][j].ambient.red);
 				chunkWriter.writeReal(TheGlobalData->m_terrainLighting[i+TIME_OF_DAY_FIRST][j].ambient.green);
@@ -3030,7 +3062,7 @@ void WorldHeightMapEdit::updateForAdjacentCliffs(Int xIndex, Int yIndex,
 		Real smallU = TEX_PER_CELL/10.0f;
 		Real cliffAvgU;
 		Real tmpAvgU;
-		Real minUDelta = TEX_PER_CELL*0.7;
+		Real minUDelta = TEX_PER_CELL*0.7f;
 		Real uDelta;
 		// Adjust for "vertical" edges
 		if (lockCount==2) {
@@ -3350,7 +3382,7 @@ Int WorldHeightMapEdit::getNumBoundaries(void) const
 
 void WorldHeightMapEdit::getBoundary(Int ndx, ICoord2D* border) const
 {
-	if (!border || ndx < 0 || ndx >= m_boundaries.size()) {
+	if (!border || ndx < 0 || (size_t)ndx >= m_boundaries.size()) {
 		DEBUG_CRASH(("Invalid border request. jkmcd"));
 		return;
 	}
@@ -3370,7 +3402,7 @@ void WorldHeightMapEdit::addBoundary(ICoord2D* boundaryToAdd)
 
 void WorldHeightMapEdit::changeBoundary(Int ndx, ICoord2D *border)
 {
-	if (!border || ndx < 0 || ndx >= m_boundaries.size()) {
+	if (!border || ndx < 0 || (size_t)ndx >= m_boundaries.size()) {
 		DEBUG_CRASH(("Invalid border change request. jkmcd"));
 		return;
 	}
@@ -3385,7 +3417,8 @@ void WorldHeightMapEdit::removeLastBoundary(void)
 		return;
 	}
 	
-	m_boundaries.erase(&m_boundaries.back());
+	//m_boundaries.erase(& m_boundaries.back());
+	m_boundaries.pop_back();
 }
 
 void WorldHeightMapEdit::findBoundaryNear(Coord3D *pt, float okDistance, Int *outNdx, Int *outHandle)

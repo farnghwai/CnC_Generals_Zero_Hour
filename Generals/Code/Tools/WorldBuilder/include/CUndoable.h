@@ -219,7 +219,7 @@ public:
 class DictItemUndoable : public Undoable
 {
 protected:
-	Int m_numDictsToModify;
+	size_t m_numDictsToModify;
 	std::vector<Dict*> m_dictToModify;
 	std::vector<Dict> m_oldDictData;
 	Dict m_newDictData;

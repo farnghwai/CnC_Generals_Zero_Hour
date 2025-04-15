@@ -59,6 +59,36 @@
 #include "WorldBuilderView.h"
 #include "MapPreview.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define fopen safe_fopen
+	#define strcat safe_strcat
+#endif
+
 // Can't currently have multiple open... jba.
 #define notONLY_ONE_AT_A_TIME
 
@@ -2359,7 +2389,7 @@ writeRawDict( theLogFile, "TeamInfo",ti->getDict() );
 					AsciiString trigger = ti->getDict()->getAsciiString(TheKey_teamProductionCondition, &exists);
 
 					fprintf(theLogFile, "TEAM %s home '%s', priority %s, condition '%s',\n", teamName.str(),
-						waypoint.str(), pri, trigger.str());
+						waypoint.str(), pri.GetString(), trigger.str());
 					fprintf(theLogFile, "  UNITS:");
 					fprintUnit(theLogFile, ti->getDict(), TheKey_teamUnitMinCount1, TheKey_teamUnitMaxCount1, TheKey_teamUnitType1);
 					fprintUnit(theLogFile, ti->getDict(), TheKey_teamUnitMinCount2, TheKey_teamUnitMaxCount2, TheKey_teamUnitType2);

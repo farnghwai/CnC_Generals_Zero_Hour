@@ -27,6 +27,24 @@
 #include "ShadowOptions.h"
 #include "W3DDevice/GameClient/W3DShadow.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sscanf safe_sscanf
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 // ShadowOptions dialog
 

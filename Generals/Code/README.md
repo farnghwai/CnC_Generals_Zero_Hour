@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 70% (19 / 27)
+Completion: 81% (22 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -15,8 +15,8 @@ DebugWindow | doneTools\DebugWindow\DebugWindow.vcxproj | Done
 EABrowserDispatch | doneLibraries\Source\EABrowserDispatch\EABrowserDispatch.vcxproj | Done
 GameEngine | GameEngine\GameEngine.vcxproj | Done | See note 7
 GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done | see note 8 and 9
-GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Done* 
-ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Halt* | Reference to WW3D2Debug.lib
+GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Done*
+ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Done*
 launcher | Tools\Launcher\launcher.vcxproj | Not Started
 MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Not Started
 max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started | 3DSMax
@@ -24,7 +24,7 @@ ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | Done
 pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
 textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
-WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Not Started
+WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Done*
 ww3d2 | Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj | Done | See note 5 and 6
 wwdebug | Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj | Done
 WWDownload | Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj | Done
@@ -32,7 +32,7 @@ wwlib | Libraries\Source\WWVegas\WWLib\wwlib.vcxproj | Done
 wwmath | ibraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done | See note 3
 wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done
 wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done
-RTS | RTS.vcxproj | Work-in-progress
+RTS | RTS.vcxproj | Done*
 Solution | RTS.sln | Not Started
 
 ## Excluded

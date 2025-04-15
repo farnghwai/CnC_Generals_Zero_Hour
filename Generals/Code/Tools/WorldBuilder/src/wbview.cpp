@@ -918,12 +918,19 @@ void WbView::OnValidationFixTeams()
 		allTeamDicts.push_back(TheSidesList->getTeamInfo(i)->getDict());
 	}
 
+	// ---> FIX: Add check for empty vector <---
+	if (allTeamDicts.empty())
+	{
+		AfxMessageBox("No valid teams found to modify."); // Inform the user
+		return; // Nothing to do
+	}
+
 	Dict newDict;
 	newDict.setBool(TheKey_teamExecutesActionsOnCreate, false);
 
 	// Now, do the Undoable
 	CWorldBuilderDoc* pDoc = CWorldBuilderDoc::GetActiveDoc();
-	DictItemUndoable *pUndo = new DictItemUndoable(allTeamDicts.begin(), newDict, newDict.getNthKey(0), allTeamDicts.size(), pDoc, true);
+	DictItemUndoable *pUndo = new DictItemUndoable(&allTeamDicts[0], newDict, newDict.getNthKey(0), allTeamDicts.size(), pDoc, true);
 	pDoc->AddAndDoUndoable(pUndo);
 	REF_PTR_RELEASE(pUndo); // belongs to pDoc now.
 	

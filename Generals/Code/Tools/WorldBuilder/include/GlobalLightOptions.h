@@ -28,6 +28,7 @@
 #include "WBPopupSlider.h"
 #include "resource.h"
 #include "CButtonShowColor.h"
+#include "wwmath.h"
 /////////////////////////////////////////////////////////////////////////////
 /// GlobalLightOptions modeless (floating) dialog - allows entry and display of brush width and feather.
 
@@ -92,7 +93,7 @@ private:
 			if (component <= 0) {
 				return 0.0;
 			}
-			percent = (Real)component/255.0;
+			percent = (Real)component/255.0f;
 			return percent;
 	}
 	Int		PercentToComponent(Real percent)
@@ -104,7 +105,7 @@ private:
 			if (percent <= 0.0) {
 				return 0;
 			}
-			component = (percent * 255.0);
+			component = WWMath::Float_To_Int_Floor(percent * 255.0f);
 			return component;
 	};
 	BOOL	GetInt(Int ctrlID, Int *rVal);

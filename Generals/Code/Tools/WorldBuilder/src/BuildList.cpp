@@ -37,6 +37,56 @@
 #include "Common/WellKnownKeys.h"
 #include "WbView3D.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	#define strcpy safe_strcpy
+	#define sprintf safe_sprintf
+	#define fopen safe_fopen
+	#define sscanf safe_sscanf
+	#define strcat safe_strcat
+#endif
+
 BuildList *BuildList::m_staticThis = NULL;
 Bool BuildList::m_updating = false;
 

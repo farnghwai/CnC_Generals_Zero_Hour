@@ -768,7 +768,7 @@ DictItemUndoable::DictItemUndoable(Dict **d, Dict data, NameKeyType key, Int dic
 	m_dictToModify.resize(m_numDictsToModify);
 	m_oldDictData.resize(m_numDictsToModify);
 
-	for (int i = 0; i < m_numDictsToModify; ++i) {
+	for (size_t i = 0; i < m_numDictsToModify; ++i) {
 		m_dictToModify[i] = d[i];
 		if (m_key == NAMEKEY_INVALID)
 			m_oldDictData[i] = *d[i];
@@ -787,7 +787,7 @@ DictItemUndoable::~DictItemUndoable()
 
 void DictItemUndoable::Do(void)
 {
-	for (int i = 0; i < m_numDictsToModify; ++i) {
+	for (size_t i = 0; i < m_numDictsToModify; ++i) {
 		if (m_key == NAMEKEY_INVALID)
 			*m_dictToModify[i] = m_newDictData;
 		else
@@ -804,7 +804,7 @@ void DictItemUndoable::Do(void)
 
 void DictItemUndoable::Undo(void)
 {
-	for (int i = 0; i < m_numDictsToModify; ++i) {
+	for (size_t i = 0; i < m_numDictsToModify; ++i) {
 		if (m_key == NAMEKEY_INVALID)
 			*m_dictToModify[i] = m_oldDictData[i];
 		else

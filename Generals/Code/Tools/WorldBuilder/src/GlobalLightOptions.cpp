@@ -27,6 +27,24 @@
 #include "common/GlobalData.h"
 #include "WbView3D.h"
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdlib>
+	#include <cstdarg>
+
+	inline int safe_sscanf(const char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+
+		int result = vsscanf_s(buffer, format, args);
+
+		va_end(args);
+		return result;
+	}
+
+	#define sscanf safe_sscanf
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 /// GlobalLightOptions dialog trivial construstor - Create does the real work.
 
@@ -197,7 +215,7 @@ static void SpitLights()
 	}
 
 	DEBUG_LOG(("GlobalLighting Code\n\n"));
-	for (time=0; time<4; time++) {
+	for (Int time=0; time<4; time++) {
 		for (Int light=0; light<3; light++) {
 			Int theTime = time+TIME_OF_DAY_FIRST;
 			GlobalData::TerrainLighting tl = TheGlobalData->m_terrainLighting[theTime][light];
