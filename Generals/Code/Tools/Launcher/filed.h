@@ -21,6 +21,20 @@
 
 #include "odevice.h"
 
+#ifdef _MSC_VER
+    //#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+    #include <cstdio>
+    #include <cstdarg>
+
+    inline FILE* safe_fopen(const char* filename, const char* mode) {
+	    FILE* file = nullptr;
+	    fopen_s(&file, filename, mode);
+	    return file;
+    }
+
+    #define fopen safe_fopen
+#endif
+
 class FileD : public OutputDevice
 {
  public:

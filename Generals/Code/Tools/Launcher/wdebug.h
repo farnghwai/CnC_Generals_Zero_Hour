@@ -53,12 +53,29 @@ will you be ready to leave grasshopper.
 #ifndef WDEBUG_HEADER
 #define WDEBUG_HEADER
 
-#include <iostream.h>
+#include <iostream>
 #include "odevice.h"
 #include "streamer.h"
 #include <time.h>
 
+#ifdef _MSC_VER
+    #include <ctime>
+    #include <cstring>
 
+    inline char* safe_ctime(const time_t* time) {
+        if (time == nullptr) {
+            return nullptr;
+        }
+
+        // Use thread-local to mimic static internal buffer behavior of ctime
+        thread_local char buffer[26] = {}; // ctime returns 26 bytes, including '\n' and '\0'
+
+        errno_t err = ctime_s(buffer, sizeof(buffer), time);
+        return (err == 0) ? buffer : nullptr;
+    }
+
+    #define ctime safe_ctime
+#endif
 
 // Print an information message
 #define INFMSG(X)\

@@ -41,6 +41,77 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	#include <cstdarg>
+	#include <cwchar>
+
+	inline wchar_t* safe_wcscpy(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr; // Handle null pointers safely
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1; // Estimate required size
+		if (wcscpy_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+
+		return dest;
+	}
+
+	wchar_t* safe_wcscat(wchar_t* dest, const wchar_t* src) {
+		if (dest == nullptr || src == nullptr) {
+			return nullptr;
+		}
+
+		size_t dest_size = wcslen(dest) + wcslen(src) + 1;
+		if (wcscat_s(dest, dest_size, src) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	inline wchar_t* safe_wcsncpy(wchar_t* dest, const wchar_t* src, size_t count) {
+		if (wcsncpy_s(dest, count, src, _TRUNCATE) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return dest;
+	}
+
+	inline wchar_t* safe_wcslwr(wchar_t* str) {
+		if (str == nullptr) {
+			return nullptr;
+		}
+
+		// _wcslwr_s modifies the string in-place and returns an error code
+		// But we need to mimic the old behavior: return str
+		size_t len = wcslen(str);
+		if (_wcslwr_s(str, len + 1) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return str; // Return str on success, NULL on error
+	}
+
+	inline wchar_t* safe_wcsupr(wchar_t* str) {
+		if (str == nullptr) {
+			return nullptr;
+		}
+
+		size_t len = wcslen(str);
+		if (_wcsupr_s(str, len + 1) != 0) {
+			return nullptr; // Return nullptr on failure
+		}
+		return str; // Return str on success, NULL on error
+	}
+
+	#define wcscpy safe_wcscpy	
+	#define wcscat safe_wcscat
+	#define wcsncpy safe_wcsncpy
+	#define wcslwr safe_wcslwr
+	#define wcsupr safe_wcsupr
+#endif
+
 // Convert character to lowercase
 template<typename T> T CharToLower(const T ch)
 	{
@@ -707,7 +778,7 @@ Int UString::CompareNoCase(const Char* s) const
 
 Int UString::CompareNoCase(const WChar* ws) const
 	{
-	return wcsicmp(ws, Get());
+	return _wcsicmp(ws, Get());
 	}
 
 
@@ -776,7 +847,7 @@ Int UString::Find(Char c) const
 
 Int UString::Find(WChar c) const
 	{
-	WChar* ptr = wcschr(Get(), c);
+	const WChar* ptr = wcschr(Get(), c);
 
 	// Not found?
 	if (ptr == NULL)
@@ -1045,7 +1116,7 @@ void UString::Reverse(void)
 	{
 	if (mData != NULL)
 		{
-		wcsrev(mData);
+		_wcsrev(mData);
 		}
 	}
 

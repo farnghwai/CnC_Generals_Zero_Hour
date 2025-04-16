@@ -18,6 +18,39 @@
 
 #include "findpatch.h"
 
+#ifdef _MSC_VER
+    //#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+    #include <cstdio>
+    #include <cstdarg>
+
+    inline int safe_sprintf(char* buffer, const char* format, ...) {
+        va_list args;
+        va_start(args, format);
+        int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+        va_end(args);
+        return result;
+    }
+
+    inline char* safe_strcat(char* dest, const char* src) {
+        if (dest && src) {
+            strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+        }
+        return dest;
+    }
+
+    inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+        if (dest && src) {
+            strncpy_s(dest, n, src, _TRUNCATE);
+        }
+        return dest;
+    }
+
+    #define sprintf safe_sprintf
+    #define strcat safe_strcat
+    #define strncpy safe_strncpy
+#endif
+
+
 //
 // Locate a patch file
 //  If a patch can be found then TRUE is returned and the name is filled in,

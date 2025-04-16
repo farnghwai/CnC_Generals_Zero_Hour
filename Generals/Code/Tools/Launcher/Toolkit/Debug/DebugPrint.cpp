@@ -71,7 +71,11 @@ void __cdecl DebugPrint(const char* string, ...)
 		// Format string
 		va_list	va;
 		va_start(va, string);
-		vsprintf(&_buffer[0], string, va);
+		//Check the return value of vsprintf_s
+		int result = vsprintf_s(_buffer, sizeof(_buffer), string, va);
+		if (result < 0 || result >= sizeof(_buffer)) {
+			OutputDebugString("Error: vsprintf_s failed or buffer overflow!\n");
+		}
 		va_end(va);
 
 		// Open log file
@@ -84,8 +88,18 @@ void __cdecl DebugPrint(const char* string, ...)
 			char dir[_MAX_DIR];
 
 			GetModuleFileName(GetModuleHandle(NULL), &path[0], sizeof(path));
-			_splitpath(path, drive, dir, NULL, NULL);
-			_makepath(_filename, drive, dir, debugLogName, "txt");
+			// Correctly using _splitpath_s with buffer size specifications
+			errno_t err = _splitpath_s(path, drive, _MAX_DRIVE, dir, _MAX_DIR, nullptr, 0, nullptr, 0);
+			if (err != 0) {
+				OutputDebugString("Error: _splitpath_s failed!\n");
+				return; // Or handle the error appropriately
+			}
+			//Correctly using _makepath_s
+			err = _makepath_s(_filename, sizeof(_filename), drive, dir, debugLogName, "txt");
+			if (err != 0) {
+				OutputDebugString("Error: _makepath_s failed!\n");
+				return;
+			}
 
 			OutputDebugString("Creating ");
 			OutputDebugString(_filename);
@@ -167,7 +181,10 @@ void __cdecl PrintWin32Error(const char* string, ...)
 		// Format string
 		va_list	va;
 		va_start(va, string);
-		vsprintf(&_buffer[0], string, va);
+		int result = vsprintf_s(_buffer, sizeof(_buffer), string, va);
+		if (result < 0 || result >= sizeof(_buffer)) {
+			OutputDebugString("Error: vsprintf_s failed or buffer overflow!\n");
+		}
 		va_end(va);
 
 		LPVOID lpMsgBuf;

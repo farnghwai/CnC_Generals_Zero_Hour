@@ -65,7 +65,65 @@
 #ifdef COPY_PROTECT
 #include "Protect.h"
 #endif
-#include <Debug\DebugPrint.h>
+#include <DebugPrint\DebugPrint.h>
+
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <stdio.h>
+	#include <cstdio>
+	#include <cstdarg>
+
+	inline int safe_sprintf(char* buffer, const char* format, ...) {
+		va_list args;
+		va_start(args, format);
+		int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+		va_end(args);
+		return result;
+	}
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline char* safe_strcat(char* dest, const char* src) {
+		if (dest && src) {
+			strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline void safe_splitpath(const char* path, char* drive, char* dir, char* fname, char* ext) {
+		// Define buffer sizes based on _MAX constants from <cstdlib>
+		const size_t DRIVE_SIZE = _MAX_DRIVE;
+		const size_t DIR_SIZE = _MAX_DIR;
+		const size_t FNAME_SIZE = _MAX_FNAME;
+		const size_t EXT_SIZE = _MAX_EXT;
+
+		// Call _splitpath_s with the correct buffer sizes
+		errno_t err = _splitpath_s(path,
+			drive, drive ? DRIVE_SIZE : 0,
+			dir, dir ? DIR_SIZE : 0,
+			fname, fname ? FNAME_SIZE : 0,
+			ext, ext ? EXT_SIZE : 0);
+	}
+
+	inline void safe_makepath(char* path, const char* drive, const char* dir, const char* fname, const char* ext) {
+		if (path == NULL) return;
+
+		// Assume max path length is _MAX_PATH
+		errno_t err = _makepath_s(path, _MAX_PATH, drive, dir, fname, ext);
+	}
+
+	#define sprintf safe_sprintf
+	#define strcpy safe_strcpy
+	#define strcat safe_strcat
+	#define _splitpath safe_splitpath  
+	#define _makepath safe_makepath
+#endif
+
 
 #define UPDATE_RETVAL 123456789  // if a program returns this it means it wants to check for patches
 
@@ -368,10 +426,10 @@ void CreatePrimaryWin(char *prefix)
 //
 void myChdir(char *path)
 {
-	char drive[10];
-	char dir[255];
-	char file[255];
-	char ext[64];
+	char drive[_MAX_DRIVE];
+	char dir[_MAX_DIR];
+	char file[_MAX_FNAME];
+	char ext[_MAX_EXT];
 	char filepath[513];
 	int  abc;
 	
@@ -385,7 +443,7 @@ void myChdir(char *path)
 	abc = (unsigned)( toupper( filepath[0] ) - 'A' + 1 ); 
 	if ( !_chdrive( abc )) 
 	{
-		abc = chdir( filepath );  // Will fail with ending '\\'
+		abc = _chdir( filepath );  // Will fail with ending '\\'
 	}
 	// should be in proper folder now....
 }

@@ -35,7 +35,44 @@ This is where all the code is for applying various types of patches.
 #include <shellapi.h>
 #include <direct.h>
 
+#ifdef _MSC_VER
+    //#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+    #include <cstdio>
+    #include <cstdarg>
 
+    inline int safe_sprintf(char* buffer, const char* format, ...) {
+        va_list args;
+        va_start(args, format);
+        int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+        va_end(args);
+        return result;
+    }
+
+    inline char* safe_strcpy(char* dest, const char* src) {
+        if (dest && src) {
+            strcpy_s(dest, strlen(src) + 1, src);
+        }
+        return dest;
+    }
+
+    inline char* safe_strcat(char* dest, const char* src) {
+        if (dest && src) {
+            strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+        }
+        return dest;
+    }  
+
+    inline FILE* safe_fopen(const char* filename, const char* mode) {
+        FILE* file = nullptr;
+        fopen_s(&file, filename, mode);
+        return file;
+    }
+
+    #define sprintf safe_sprintf
+    #define strcpy safe_strcpy
+    #define strcat safe_strcat
+    #define fopen safe_fopen
+#endif
 //
 // For the text box showing patch info
 //

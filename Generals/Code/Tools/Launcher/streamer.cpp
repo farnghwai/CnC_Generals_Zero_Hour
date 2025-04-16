@@ -18,21 +18,23 @@
 
 
 #include "streamer.h"
-#ifdef _WIN32
-  #include <windows.h>
-#endif
+//#ifdef _WIN32
+//  #include <windows.h>
+//#endif
+#include <windows.h>
 
 
 Streamer::Streamer() : streambuf()
 {
-  int state=unbuffered();
-  unbuffered(0);  // 0 = buffered, 1 = unbuffered
+  //int state=unbuffered();
+  //unbuffered(0);  // 0 = buffered, 1 = unbuffered
 }
  
 Streamer::~Streamer()
 {
   sync();
-  delete[](base());
+  //delete[](base());
+  delete[](eback());
 }
 
 int Streamer::setOutputDevice(OutputDevice *device)
@@ -74,11 +76,16 @@ int Streamer::overflow(int c)
   if((pptr() >= epptr()) && (sync()==EOF))
     return(EOF);
   else {
-    sputc(c);
+    /*sputc(c);
     if ((unbuffered() && c=='\n' || pptr() >= epptr())
         && sync()==EOF) {
       return(EOF);
+    }*/
+
+    if (sputc(c) == EOF) { // Or std::streambuf::sputc, std::char_traits<char>::eof()
+        return EOF; // Or std::char_traits<char>::eof()
     }
+
     return(c);
   }
 }
@@ -92,26 +99,38 @@ int Streamer::underflow(void)
 int Streamer::doallocate()
 {
 
-  if (base()==NULL)
+  if (eback()==NULL)
   {
     char *buf=new char[(2*STREAMER_BUFSIZ)];   // deleted by destructor
     memset(buf,0,2*STREAMER_BUFSIZ);
 
-    // Buffer
-    setb(
-       buf,         // base pointer
-       buf+STREAMER_BUFSIZ,  // ebuf pointer (end of buffer);
-       0);          // 0 = manual deletion of buff 
+    //// Buffer
+    //setb(
+    //   buf,         // base pointer
+    //   buf+STREAMER_BUFSIZ,  // ebuf pointer (end of buffer);
+    //   0);          // 0 = manual deletion of buff 
 
-    // Get area
-    setg(
-        buf,   // eback 
-        buf,   // gptr
-        buf);  // egptr
+    //// Get area
+    //setg(
+    //    buf,   // eback 
+    //    buf,   // gptr
+    //    buf);  // egptr
 
-    buf+=STREAMER_BUFSIZ;
-    // Put area
-    setp(buf,buf+STREAMER_BUFSIZ);
+    //buf+=STREAMER_BUFSIZ;
+    //// Put area
+    //setp(buf,buf+STREAMER_BUFSIZ);
+
+    char* get_area_start = buf;
+    char* put_area_start = buf + STREAMER_BUFSIZ;
+    char* buffer_end = buf + 2 * STREAMER_BUFSIZ;
+
+    // Set up the buffer pointers correctly for standard streambuf
+    // Set get area pointers (eback, gptr, egptr) - not really used for writing
+    setg(get_area_start, get_area_start, get_area_start);
+
+    // Set put area pointers (pbase, pptr, epptr)
+    setp(put_area_start, put_area_start + STREAMER_BUFSIZ); // pptr starts at pbase, ends at epptr
+
     return(1);
   }
   else
@@ -132,11 +151,13 @@ int Streamer::sync()
     Output_Device->print(pbase(),wlen);
   }
 
-  if (unbuffered()) {
-    setp(pbase(),pbase());
-  }
-  else {
-    setp(pbase(),pbase()+STREAMER_BUFSIZ);
-  }
+  //if (unbuffered()) {
+  //  setp(pbase(),pbase());
+  //}
+  //else {
+  //  setp(pbase(),pbase()+STREAMER_BUFSIZ);
+  //}
+  setp(pbase(), pbase() + STREAMER_BUFSIZ);
+
   return(0);
 }

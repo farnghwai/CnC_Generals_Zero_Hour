@@ -36,6 +36,48 @@ string to it's own memory (for assignment or construction).
 
 #include "wstring.h"
 
+#ifdef _MSC_VER
+    //#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+    #include <cstdio>
+    #include <cstdarg>
+
+    inline char* safe_strcpy(char* dest, const char* src) {
+        if (dest && src) {
+            strcpy_s(dest, strlen(src) + 1, src);
+        }
+        return dest;
+    }
+
+    inline char* safe_strcat(char* dest, const char* src) {
+        if (dest && src) {
+            strcat_s(dest, strlen(dest) + strlen(src) + 1, src);
+        }
+        return dest;
+    }
+
+    inline char* safe_strncpy(char* dest, const char* src, size_t n) {
+        if (dest && src) {
+            strncpy_s(dest, n, src, _TRUNCATE);
+        }
+        return dest;
+    }
+
+    char* safe_strncat(char* dest, const char* src, size_t count) {
+        size_t dest_len = strlen(dest);
+        size_t dest_size = dest_len + count + 1; // total buffer size required
+
+        if (strncat_s(dest, dest_size, src, count) != 0) {
+            return nullptr; // Return nullptr on failure
+        }
+        return dest;
+    }
+
+    #define strcpy safe_strcpy
+    #define strcat safe_strcat
+    #define strncpy safe_strncpy
+    #define strncat safe_strncat
+#endif
+
 Wstring::Wstring():str(NULL)
 { }
 

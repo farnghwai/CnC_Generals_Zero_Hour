@@ -22,7 +22,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <iostream.h>
+#include <iostream>
+#include <streambuf>
 #include <string.h>
 
 #include "odevice.h"
@@ -34,6 +35,7 @@
  #define STREAMER_BUFSIZ 2048
 #endif
 
+using namespace std;
 
 // Provide a streambuf interface for a class that can 'print'
 class Streamer : public streambuf

@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 85% (22 / 27)
+Completion: 89% (24 / 27)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -17,7 +17,7 @@ GameEngine | GameEngine\GameEngine.vcxproj | Done | See note 7
 GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done | see note 8 and 9
 GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Done
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Done
-launcher | Tools\Launcher\launcher.vcxproj | Not Started
+launcher | Tools\Launcher\launcher.vcxproj | Done*
 MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Done*
 max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started | 3DSMax
 ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | Done

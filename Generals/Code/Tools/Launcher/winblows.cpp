@@ -25,6 +25,22 @@
 
 #include "winblows.h"
 
+#ifdef _MSC_VER
+    //#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+    #include <cstdio>
+    #include <cstdarg>
+
+    inline int safe_sprintf(char* buffer, const char* format, ...) {
+        va_list args;
+        va_start(args, format);
+        int result = vsprintf_s(buffer, _TRUNCATE, format, args);
+        va_end(args);
+        return result;
+    }
+
+    #define sprintf safe_sprintf
+#endif
+
 
 HINSTANCE Global_instance;
 LPSTR     Global_commandline;
@@ -34,19 +50,24 @@ int       Global_commandshow;
 /*
  * WinMain - initialization, message loop
  */
-int PASCAL WinMain( HINSTANCE instance, HINSTANCE, char *command_line, int command_show)
+//int PASCAL WinMain( HINSTANCE instance, HINSTANCE, char *command_line, int command_show)
+int PASCAL WinMain(_In_ HINSTANCE hInstance,
+    _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPSTR lpCmdLine,
+    _In_ int nShowCmd
+)
 {
     //////MSG         msg;
 
-    Global_instance = instance;
-    Global_commandline = command_line;
-    Global_commandshow = command_show;
+    Global_instance = hInstance;
+    Global_commandline = lpCmdLine;
+    Global_commandshow = nShowCmd;
 
     int         argc;
     char       *argv[64];
 
     char        path_to_exe[512];
-    GetModuleFileName(instance,(char *)&path_to_exe,512);
+    GetModuleFileName(hInstance,(char *)&path_to_exe,512);
     argc=1;
     argv[0]=path_to_exe;
 
@@ -60,21 +81,21 @@ int PASCAL WinMain( HINSTANCE instance, HINSTANCE, char *command_line, int comma
       */
       do 
       {
-        command_char = *( command_line+command_scan++ );
+        command_char = *( lpCmdLine+command_scan++ );
       } while ( command_char==' ' );
 
       if ( command_char!=0 && command_char != 13 )
       {
-        argv[argc++]=command_line+command_scan-1;
+        argv[argc++]=lpCmdLine+command_scan-1;
 
         /*
         ** Scan for space character on command line
         */
         do
         {
-          command_char = *( command_line+command_scan++ );
+          command_char = *( lpCmdLine+command_scan++ );
         } while ( command_char!=' ' && command_char != 0 && command_char!=13);
-                *( command_line+command_scan-1 ) = 0;
+                *( lpCmdLine+command_scan-1 ) = 0;
       }
 
     } while ( command_char != 0 && command_char != 13 && argc<20 );

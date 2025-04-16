@@ -39,6 +39,7 @@
 
 #include "UTypes.h"
 #include "RefCounted.h"
+#include <windows.h>
 
 class UString
 	: public RefCounted
@@ -137,7 +138,9 @@ class UString
 		bool Resize(UInt size);
 
 		const WChar* Get(void) const
-			{return (mData != NULL) ? mData : L"";}
+		{
+			return (mData != NULL) ? mData : L"";
+		}
 
 		//! Assignment operator
 		UString operator=(const Char* s)
