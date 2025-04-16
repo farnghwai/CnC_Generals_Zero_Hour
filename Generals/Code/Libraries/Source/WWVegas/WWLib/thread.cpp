@@ -16,7 +16,8 @@
 **	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define _WIN32_WINNT 0x0400
+// #define _WIN32_WINNT 0x0400
+#define WINVER 0x0601
 
 #include "thread.h"
 #include "wwdebug.h"
