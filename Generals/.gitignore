@@ -2,20 +2,33 @@
 # Ignore RUNable folder
 [Rr]un
 
-# Build output folders
-[Rr]elease*
-[Pp]rofile*
-[Ii]nternal*
-[Dd]ebug*
-[Hh]ybrid*
-[Ee]nglish
-[Ff]rench
-[Gg]erman
-[Ss]panish
-Max4Release
-Max4Hybrid
+!/Code/Tools/Launcher/Toolkit/[Dd]ebug/
 
-!Code/Tools/[Dd]ebugWindow/
+# Build output folders
+[Rr]elease/
+[Pp]rofile/
+[Ii]nternal/
+[Dd]ebug/
+[Hh]ybrid/
+[Ee]nglish/
+[Ff]rench/
+[Gg]erman/
+[Ss]panish/
+Max4Release/
+Max4Hybrid/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
 # Explicitly ignore these as the depo already contains prebuilt 3rd party .lib files
 /Code/gameengine/Lib/GameEngine.lib
