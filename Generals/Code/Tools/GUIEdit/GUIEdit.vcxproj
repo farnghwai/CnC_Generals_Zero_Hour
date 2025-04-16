@@ -22,6 +22,7 @@
     <SccProjectName>GUIEdit</SccProjectName>
     <SccLocalPath>.</SccLocalPath>
     <ProjectGuid>{F1E92195-E6AC-46F1-8C46-4E8EE277EA14}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'" Label="Configuration">
@@ -66,8 +67,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\Debug\</OutDir>
-    <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +82,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -93,10 +91,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>.\Include;.\Resource;..\..\Libraries\Include;..\..\GameEngine\Include;..\..\GameEngineDevice\Include;..\..\Libraries\Source\WWVegas;..\..\Libraries\Source\WWVegas\WWLib;..\..\Libraries\Source\WWVegas\WWMath;..\..\Libraries\Source\WWVegas\WWDebug;..\..\Libraries\Source\WWVegas\WWSaveLoad;..\..\Libraries\Source\WWVegas\WW3D2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
-      <PrecompiledHeaderOutputFile>.\Debug\GUIEdit.pch</PrecompiledHeaderOutputFile>
-      <ObjectFileName>.\Debug\</ObjectFileName>
-      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
     </ClCompile>
     <Midl>
@@ -110,18 +104,12 @@
       <Culture>0x0409</Culture>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
-    <Bscmake>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <OutputFile>.\Debug\GUIEdit.bsc</OutputFile>
-    </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <IgnoreSpecificDefaultLibraries>libcd;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <OutputFile>..\..\..\Run\GUIEditD.exe</OutputFile>
-      <AdditionalLibraryDirectories>..\..\GameEngine\Lib;..\..\GameEngineDevice\Lib;..\..\Libraries\Lib;..\..\GameEngine;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>WW3D2Debug.lib;WWDebugDebug.lib;WWUtilDebug.lib;WWLibDebug.lib;WWMathDebug.lib;WWDownloadDebug.lib;GameEngineDebug.lib;GameEngineDeviceDebug.lib;wsock32.lib;ws2_32.lib;dxguid.lib;dinput8.lib;d3d9.lib;odbc32.lib;odbccp32.lib;vfw32.lib;winmm.lib;dsound.lib;comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>wsock32.lib;ws2_32.lib;dxguid.lib;dinput8.lib;d3d9.lib;odbc32.lib;odbccp32.lib;vfw32.lib;winmm.lib;dsound.lib;comctl32.lib;imm32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -278,6 +266,12 @@
     <ProjectReference Include="..\..\Libraries\Source\WWVegas\WW3D2\ww3d2.vcxproj">
       <Project>{d0cdca71-72eb-48eb-8cf1-4e70b33a6db1}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWDebug\wwdebug.vcxproj">
+      <Project>{a28f173e-57a4-42d8-80e4-549bffb5bdf1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWDownload\WWDownload.vcxproj">
+      <Project>{9f5a741d-c7ad-4418-8fdb-49a84914f8a6}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Source\WWVegas\WWLib\wwlib.vcxproj">
       <Project>{2e3dfa46-cfc3-4470-a1e1-e8b0e7082237}</Project>
