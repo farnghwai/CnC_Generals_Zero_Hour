@@ -96,6 +96,7 @@
       <AdditionalIncludeDirectories>../../Libraries/Source;../../Libraries/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;WIN32;_CONSOLE;Z_PREFIX;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Debug\Compress.tlb</TypeLibraryName>

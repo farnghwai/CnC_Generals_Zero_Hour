@@ -37,6 +37,54 @@
 #include <sys/stat.h>
 #include <sys/utime.h>
 
+#ifdef _MSC_VER
+	//#define _CRT_SECURE_NO_WARNINGS  // Suppress warnings about unsafe functions
+	#include <cstdio>
+	//#include <cstdarg>
+	#include <cstring>
+
+	inline char* safe_strcpy(char* dest, const char* src) {
+		if (dest && src) {
+			strcpy_s(dest, strlen(src) + 1, src);
+		}
+		return dest;
+	}
+
+	inline FILE* safe_fopen(const char* filename, const char* mode) {
+		FILE* file = nullptr;
+		fopen_s(&file, filename, mode);
+		return file;
+	}
+
+	inline int safe_vsnprintf(char* buffer, size_t count, const char* format, va_list args) {
+		if (!buffer || !format || count == 0) {
+			return -1;
+		}
+
+		// _TRUNCATE tells _vsnprintf_s to null-terminate the buffer if possible
+		int result = _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+
+		// _vsnprintf returns -1 on truncation; match that behavior
+		if (result == -1) {
+			return static_cast<int>(count - 1); // truncated, but safe
+		}
+
+		return result;
+		//return _vsnprintf_s(buffer, count, _TRUNCATE, format, args);
+	}
+
+	inline char* safe_strtok(char* str, const char* delim) {
+		static char* context = nullptr; // Static variable to maintain context
+		return strtok_s(str, delim, &context);
+	}
+	
+
+	#define strcpy safe_strcpy
+	#define fopen safe_fopen
+	#define _vsnprintf safe_vsnprintf
+	#define strtok safe_strtok
+#endif
+
 static const char *nodxtPrefix[] = {
 	"zhca",
 	"caust",
@@ -166,7 +214,7 @@ static void TimetToFileTime( time_t t, FILETIME& ft )
 
 static time_t FileTimeToTimet( const FILETIME& ft )
 {
-	LONGLONG ll = (ft.dwHighDateTime << 32) + ft.dwLowDateTime - 116444736000000000;
+	LONGLONG ll = ((LONGLONG)ft.dwHighDateTime << 32) + ft.dwLowDateTime - 116444736000000000;
 	ll /= 10000000;
 	return (time_t)ll;
 }
@@ -176,10 +224,11 @@ static time_t FileTimeToTimet( const FILETIME& ft )
 void FileInfo::set( const WIN32_FIND_DATA& info )
 {
 	filename = info.cFileName;
-	for (int i=0; i<filename.size(); ++i)
+	for (size_t i=0; i<filename.size(); ++i)
 	{
-		char c[2] = { tolower(info.cFileName[i]), 0 };
-		filename.replace(i, 1, c, 1);
+		//char c[2] = { tolower(info.cFileName[i]), 0 };
+		//filename.replace(i, 1, c, 1);
+		filename[i] = static_cast<char>(std::tolower(static_cast<unsigned char>(filename[i])));
 	}
 	creationTime = FileTimeToTimet(info.ftCreationTime);
 	accessTime = FileTimeToTimet(info.ftLastAccessTime);
@@ -356,11 +405,13 @@ void compressOrigFiles(const std::string& sourceDirName, const std::string& targ
 	GetTempPath(_MAX_PATH, tmpPath);
 	GetTempFileName(tmpPath, "tex", 0, tmpFname);
 	HANDLE h = CreateFile(tmpFname, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_TEMPORARY, NULL);
-	if (!h)
+	if (h == INVALID_HANDLE_VALUE)
 	{
 		DEBUG_LOG(("Could not create temp file '%s'!  Unable to compress textures!\n", tmpFname));
+		return;
 	}
 
+	BOOL writeSuccess = TRUE;
 	StringSet::const_iterator sit;
 	for (sit = origFilesToCompress.begin(); sit != origFilesToCompress.end(); ++sit)
 	{
@@ -369,10 +420,26 @@ void compressOrigFiles(const std::string& sourceDirName, const std::string& targ
 		tmp.append(*sit);
 		tmp.append("\n");
 		DEBUG_LOG(("Compressing file: %s", tmp.c_str()));
-		DWORD len;
-		WriteFile(h, tmp.c_str(), tmp.length(), &len, NULL);
+		DWORD len = 0; // Initialize len
+		DWORD bytesToWrite = static_cast<DWORD>(tmp.length()); // Ensure length fits DWORD
+
+		if (!WriteFile(h, tmp.c_str(), bytesToWrite, &len, NULL))
+		{
+			DEBUG_LOG(("Failed to write to temp file '%s' for '%s'. Error: %d\n", tmpFname, (*sit).c_str(), GetLastError()));
+			writeSuccess = FALSE;
+			break; // Stop writing on first error
+		}
 	}
 	CloseHandle(h);
+	h = INVALID_HANDLE_VALUE; // Mark handle as invalid after closing
+
+	// If writing failed, we already closed the handle (triggering deletion), so just return.
+	if (!writeSuccess)
+	{
+		DEBUG_LOG(("Aborting compression due to write error.\n"));
+		// Temp file deletion is handled by FILE_FLAG_DELETE_ON_CLOSE
+		return;
+	}
 
 	std::string commandLine;
 	commandLine = "\\projects\\rts\\build\\nvdxt -list ";
