@@ -47,7 +47,22 @@ class Object;
 class Drawable;
 class INI;
 
-typedef std::unordered_map<AsciiString, ThingTemplate*, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ThingTemplateHashMap;
+struct AsciiStringHash {
+	size_t operator()(const AsciiString& p) const {
+		std::hash<std::string> hasher;
+		size_t result = hasher(std::string(p.str()));
+		return result;
+	}
+};
+
+// Define the equality function
+struct AsciiStringEqual {
+	bool operator()(const AsciiString& a, const AsciiString& b) const {
+		return a == b;
+	}
+};
+//typedef std::unordered_map<AsciiString, ThingTemplate*, rts::hash<AsciiString>, rts::equal_to<AsciiString> > ThingTemplateHashMap;
+typedef std::unordered_map<AsciiString, ThingTemplate*, AsciiStringHash, AsciiStringEqual > ThingTemplateHashMap;
 typedef ThingTemplateHashMap::iterator ThingTemplateHashMapIt;
 //-------------------------------------------------------------------------------------------------
 /** Implementation of the thing manager interface singleton */
