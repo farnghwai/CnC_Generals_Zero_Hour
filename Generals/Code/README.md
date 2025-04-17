@@ -2,7 +2,7 @@
 Able to compile using Visual Studio 2022
 
 # Progress Overview
-Completion: 89% (24 / 27)
+Rate: 100% (25 / 27 / 2) - (Completed / Total / Cancelled)
 
 ## Work-in-Progress
 Project | Path | Status | Remarks
@@ -17,11 +17,11 @@ GameEngine | GameEngine\GameEngine.vcxproj | Done | See note 7
 GameEngineDevice | GameEngineDevice\GameEngineDevice.vcxproj | Done | see note 8 and 9
 GUIEdit | Tools\GUIEdit\GUIEdit.vcxproj | Done
 ImagePacker | Tools\ImagePacker\ImagePacker.vcxproj | Done
-launcher | Tools\Launcher\launcher.vcxproj | Done*
-MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Done*
-max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Not Started | 3DSMax
+launcher | Tools\Launcher\launcher.vcxproj | Done
+MapCacheBuilder | Tools\MapCacheBuilder\MapCacheBuilder.vcxproj | Done
+max2w3d | Tools\WW3D\max2w3d\max2w3d.vcxproj | Cancelled | see note 10
 ParticleEditor | Tools\ParticleEditor\ParticleEditor.vcxproj | Done
-pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Not Started | 3DSMax
+pluglib | Tools\WW3D\pluglib\pluglib.vcxproj | Cancelled | see note 10
 textureCompress | Tools\textureCompress\textureCompress.vcxproj | Done
 versionUpdate | Tools\versionUpdate\versionUpdate.vcxproj | Done
 WorldBuilder | Tools\WorldBuilder\WorldBuilder.vcxproj | Done
@@ -33,7 +33,7 @@ wwmath | Libraries\Source\WWVegas\WWMath\wwmath.vcxproj | Done | See note 3
 wwsaveload | Libraries\Source\WWVegas\WWSaveLoad\wwsaveload.vcxproj | Done
 wwutil | Libraries\Source\WWVegas\Wwutil\wwutil.vcxproj | Done
 RTS | RTS.vcxproj | Done
-Solution | RTS.sln | Not Started
+Solution | RTS.sln | Done 
 
 ## Excluded
 Project | Path |
@@ -75,3 +75,4 @@ GameSpyStats | Libraries\Source\GameSpy\GameSpy\gstats\GameSpyStats.dsp
 - Remove 1.1 support
 - Compiled by DirectX HLSL compiler via Shadel Model 2  instead of NVIDIA nvasm compiler
 - Move Shader assembly code to individual file and remove DirectX depreciated code related shader compilation.
+10. Required 3DSMax 4 Library and not directly being used by main application.
